@@ -1,0 +1,300 @@
+options
+{
+ LOOKAHEAD=1;
+}
+PARSER_BEGIN(Javamm)
+public class Javamm
+{
+    public static void main(String args[]) throws ParseException {
+
+        Javamm myJavamm = new Javamm(System.in);
+        SimpleNode root = myJavamm.JavaMM(); // returns reference to root node
+
+        //System.out.println("Expression value: "+myJavamm.eval(root));
+
+        root.dump(""); // prints the tree on the screen
+    }
+}
+PARSER_END(Javamm)
+SKIP :
+{
+" " | "\r" | "\t" | "\n"
+}
+TOKEN: 
+{
+      < IMPORT : "import" > 
+    | < PUBLIC : "public" >
+    | < RETURN: "return" >
+    | < CLASS: "class" >
+    | < EXTENDS: "extends" >
+    | < IF: "if" >
+    | < ELSE: "else" >
+    | < WHILE: "while" > 
+    | < STATIC: "static" >
+    | < MAIN: "main" >
+    
+    //Brackets
+    | < LEFTBRACKET : "{" >
+    | < RIGHTBRACKET : "}" >
+    | < SQUARERIGHTBRACKET : "]" >
+    | < SQUARELEFTBRACKET : "[" >
+    | < LEFTPARENTHESES : "(" >
+    | < RIGHTPARENTHESES : ")" >
+    | < COMMA : "," >
+    | < DOT : "." >
+    | < SEMICOLON : ";" >
+    | < EQUAL: "=" >
+
+    //Operations
+    | < AND: "&&" >
+    | < LESS: "<" >
+    | < PLUS: "+" >
+    | < MINUS: "-" >
+    | < MULT: "*" >
+    | < DIV: "/" >
+    | < TRUE: "true" >
+    | < FALSE: "false" >
+    | < NEG: "!" >
+
+    //Special
+    | < THIS: "this" >
+    | < NEW: "new" >
+    | < LENGTH: "length" >
+
+    //Types
+    | < BOOLEAN: "boolean" >
+    | < INT: "int" >
+    | < STRING: "String" >
+    | < VOID: "void" >
+
+    // Java valid identifiers / literals
+    | < IDENTIFIER : ("_")(["a"-"z", "A"-"Z", "0"-"9", "_"])+ | ["a"-"z","A"-"Z"](["a"-"z","A"-"Z","0"-"9", "_"])* >
+    | < INTEGERLITERAL : (((["+","-"])?(["0"-"9"])+)|("0x"(["0"-"9","a"-"f","A"-"F"])+)|("0b"(["0","1"])+)) >
+}
+
+SimpleNode JavaMM(): {}
+{
+    (ImportDeclaration())* classDeclaration() (classDeclaration())* <EOF> {return jjtThis;} // Java code inside brackets
+}
+
+void ImportDeclaration() #void: {}
+{
+    <IMPORT> <IDENTIFIER> ImportDeclaration1()
+}
+
+void ImportDeclaration1() #void: {} 
+{
+    "." <IDENTIFIER> ImportDeclaration1()
+    | ImportDeclaration2()
+}
+
+void ImportDeclaration2() #void: {}
+{
+    [
+        "(" ImportDeclaration3() ")" ImportDeclaration5() 
+    ] ";"
+}
+
+void ImportDeclaration3() #void: {}
+{
+    [
+        type() ImportDeclaration4()
+    ]
+}
+
+void ImportDeclaration4() #void:{}
+{
+    [
+        "," type() ImportDeclaration4()
+    ]
+}
+
+void ImportDeclaration5() #void:{}
+{
+    [
+        ":" type()
+    ]
+}
+
+
+void type() : {}
+{
+    <BOOLEAN> #Boolean
+    | <STRING> #String
+    | <INT> #Int
+
+}
+
+
+void methodDeclaration() : {}
+{
+    <PUBLIC> (
+        type() <IDENTIFIER>
+        <LEFTPARENTHESES> 
+            methodArguments() 
+        <RIGHTPARENTHESES> 
+        <LEFTBRACKET> 
+            methodBody()
+        <RIGHTBRACKET>
+        |
+        <STATIC> <VOID> <MAIN> 
+        <LEFTPARENTHESES> <STRING> <SQUARELEFTBRACKET> <SQUARERIGHTBRACKET>
+        <IDENTIFIER>
+        <RIGHTPARENTHESES>
+        <LEFTBRACKET>
+        (varDeclaration())*
+        methodBody2()
+        <RIGHTBRACKET>
+    )
+}
+void methodArguments() : {}
+{
+    [type() <IDENTIFIER> ( <COMMA> type() <IDENTIFIER> )*]
+}
+
+void varDeclaration() : {}
+{
+    type() <IDENTIFIER> ";"
+}
+
+void variableAndStatement() : {}
+{
+    (varDeclaration())* methodBody2()
+}
+
+void methodBody() : {}
+{
+   variableAndStatement()  <RETURN> (<IDENTIFIER> | Expression()) <SEMICOLON>
+}
+
+void methodBody2() : {} 
+{
+    (statement())*
+}
+
+void classDeclaration() : {}
+{
+    <CLASS> <IDENTIFIER> (<EXTENDS> <IDENTIFIER>)* <LEFTBRACKET> variableAndStatement() methodDeclaration() <RIGHTBRACKET>
+}
+
+void statement() : {}
+{
+    <LEFTBRACKET> statement() <RIGHTBRACKET> 
+    | ifStatement() 
+    | whileStatement() 
+    | (Expression() <SEMICOLON>) 
+    | (<IDENTIFIER> statement1())
+}
+
+void statement1() : {}
+{
+    (<EQUAL> Expression() <SEMICOLON>) 
+    | ( <SQUARELEFTBRACKET> Expression() <SQUARERIGHTBRACKET> [<EQUAL> Expression() <SEMICOLON>])
+    | ObjAcc()
+}
+
+void ifStatement() : {}
+{
+    <IF> <LEFTPARENTHESES> Expression() <RIGHTPARENTHESES>
+    statement()
+    <ELSE> statement()
+}
+
+void whileStatement() : {}
+{
+    <WHILE> <LEFTPARENTHESES> Expression() <RIGHTPARENTHESES> statement()
+}
+
+void Expression() : {} 
+{
+    Expr1() Oper1()
+}
+
+void Oper1() : {} 
+{
+    [
+        <AND> Expr1() Oper1()
+    ]
+}
+
+void Expr1() : {}
+{
+    Expr2() Oper2()
+}
+
+void Oper2() : {}
+{
+    [
+        <LESS> Expr2() Oper2()
+    ]
+}
+
+void Expr2() : {}
+{
+    Expr3() Oper3()
+}
+
+void Oper3() : {}
+{
+    [
+        <PLUS> Expr3() Oper3() |
+        <MINUS> Expr3() Oper3()
+    ]
+}
+
+void Expr3() : {}
+{
+    Expr4() Oper4()
+}
+
+void Oper4() : {}
+{
+    [
+        <MULT> Expr4() Oper4() |
+        <DIV> Expr4() Oper4()
+    ]
+}
+
+void Expr4() : {}
+{
+    <INTEGERLITERAL> |
+    <TRUE> ExprTail() |
+    <FALSE> ExprTail() |
+    <THIS> ExprTail() |
+    <NEW> NewExpr() |
+    <LEFTPARENTHESES> Expression() <RIGHTPARENTHESES> ExprTail() |
+    <NEG> Expr4()
+}
+
+void ExprTail() : {}
+{
+    <SQUARELEFTBRACKET> Expression() <SQUARERIGHTBRACKET> | ObjAcc()
+}
+
+void ObjAcc() : {}
+{
+    <DOT> ObjAccTail()
+}
+
+void ObjAccTail() : {}
+{
+    <LENGTH> | 
+    <IDENTIFIER> Args()
+}
+
+void Args() : {} 
+{
+    <LEFTPARENTHESES> Expression() OptArgs()
+}
+
+void OptArgs() : {}
+{
+    <COMMA> Expression() OptArgs()
+    | <RIGHTPARENTHESES>
+}
+
+void NewExpr() : {}
+{
+    <INT> <SQUARELEFTBRACKET> Expression() <SQUARERIGHTBRACKET> |
+    <IDENTIFIER> <LEFTPARENTHESES> <RIGHTBRACKET>
+}
