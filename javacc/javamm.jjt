@@ -72,9 +72,9 @@ TOKEN:
     | < INTEGERLITERAL : (((["+","-"])?(["0"-"9"])+)|("0x"(["0"-"9","a"-"f","A"-"F"])+)|("0b"(["0","1"])+)) >
 }
 
-SimpleNode JavaMM(): {}
+SimpleNode JavaMM() : {}
 {
-    (ImportDeclaration())* classDeclaration() (classDeclaration())* <EOF> {return jjtThis;} // Java code inside brackets
+    (ImportDeclaration())* (ClassDeclaration())+ <EOF> {return jjtThis;} // Java code inside brackets
 }
 
 void ImportDeclaration() #void: {}
@@ -84,191 +84,247 @@ void ImportDeclaration() #void: {}
 
 void ImportDeclaration1() #void: {} 
 {
-    "." <IDENTIFIER> ImportDeclaration1()
-    | ImportDeclaration2()
+    <DOT> <IDENTIFIER> ImportDeclaration1()
+    | 
+    [
+        <LEFTPARENTHESES> [ Type() ImportDeclaration2() ] <RIGHTPARENTHESES> [ ":" Type() ]
+    ] <SEMICOLON>
 }
 
 void ImportDeclaration2() #void: {}
 {
     [
-        "(" ImportDeclaration3() ")" ImportDeclaration5() 
-    ] ";"
-}
-
-void ImportDeclaration3() #void: {}
-{
-    [
-        type() ImportDeclaration4()
+        <SEMICOLON> Type() ImportDeclaration2()
     ]
 }
 
-void ImportDeclaration4() #void:{}
+void Type() #void: {Token t;}
 {
-    [
-        "," type() ImportDeclaration4()
-    ]
-}
-
-void ImportDeclaration5() #void:{}
-{
-    [
-        ":" type()
-    ]
-}
-
-
-void type() : {}
-{
-    <BOOLEAN> #Boolean
-    | <STRING> #String
-    | <INT> #Int
+    (t=<BOOLEAN>| t=<STRING>| t=<INT>){jjtThis.jjtSetVal(t.image);} #Type
 
 }
 
-
-void methodDeclaration() : {}
+void MethodDeclaration() : {}
 {
     <PUBLIC> (
-        type() <IDENTIFIER>
+        Type() <IDENTIFIER>
         <LEFTPARENTHESES> 
-            methodArguments() 
+            MethodArguments() 
         <RIGHTPARENTHESES> 
         <LEFTBRACKET> 
-            methodBody()
+            MethodBody()
         <RIGHTBRACKET>
-        |
-        <STATIC> <VOID> <MAIN> 
-        <LEFTPARENTHESES> <STRING> <SQUARELEFTBRACKET> <SQUARERIGHTBRACKET>
-        <IDENTIFIER>
-        <RIGHTPARENTHESES>
-        <LEFTBRACKET>
-        (varDeclaration())*
-        methodBody2()
-        <RIGHTBRACKET>
+        | MainDeclaration()   
     )
 }
-void methodArguments() : {}
+
+void MainDeclaration() : {}
 {
-    [type() <IDENTIFIER> ( <COMMA> type() <IDENTIFIER> )*]
+    <STATIC> <VOID> <MAIN> <LEFTPARENTHESES> <STRING> <SQUARELEFTBRACKET> <SQUARERIGHTBRACKET> <IDENTIFIER>
+        <RIGHTPARENTHESES>
+        <LEFTBRACKET>
+        VariableAndStatement()
+        <RIGHTBRACKET>
+
+}
+void MethodArguments() : {}
+{
+    [Type() <IDENTIFIER> ( <COMMA> Type() <IDENTIFIER> )*]
 }
 
-void varDeclaration() : {}
+void VarDeclaration() #VariableDeclaration : {Token t;}
 {
-    type() <IDENTIFIER> ";"
+    Type() 
+    t=<IDENTIFIER>{ jjtThis.jjtSetVal(t.image);} #VariableName
+    <SEMICOLON>
 }
 
-void variableAndStatement() : {}
+void VariableAndStatement() #void : {}
 {
-    (varDeclaration())* methodBody2()
+    (VarDeclaration())* (Statement())*
 }
 
-void methodBody() : {}
+void MethodBody() : {}
 {
-   variableAndStatement()  <RETURN> (<IDENTIFIER> | Expression()) <SEMICOLON>
+   VariableAndStatement()  <RETURN> Expression() <SEMICOLON>
 }
 
-void methodBody2() : {} 
+void ClassDeclaration() : {}
 {
-    (statement())*
+    <CLASS> <IDENTIFIER> 
+    (<EXTENDS> <IDENTIFIER>)* 
+    <LEFTBRACKET> 
+        (VarDeclaration())* 
+        (MethodDeclaration())* 
+    <RIGHTBRACKET>
 }
 
-void classDeclaration() : {}
+
+void Statement() : {}
 {
-    <CLASS> <IDENTIFIER> (<EXTENDS> <IDENTIFIER>)* <LEFTBRACKET> variableAndStatement() methodDeclaration() <RIGHTBRACKET>
+    <LEFTBRACKET> (Statement())* <RIGHTBRACKET> 
+    | IfStatement() 
+    | WhileStatement() 
+    | LineStatement()
 }
 
-void statement() : {}
+void LineStatement() : {}
 {
-    <LEFTBRACKET> statement() <RIGHTBRACKET> 
-    | ifStatement() 
-    | whileStatement() 
-    | (Expression() <SEMICOLON>) 
-    | (<IDENTIFIER> statement1())
+    (
+        LiteralExpr4() ExpressionTail()
+        |
+        (
+            <IDENTIFIER> (
+                <EQUAL> Expression()
+                |
+                (ArrAcc() [<EQUAL> Expression()])
+                |
+                (ObjAcc() ExpressionTail())
+                |
+                ExpressionTail()
+            )
+        )
+    )
+    <SEMICOLON>
 }
 
-void statement1() : {}
+void ExpressionTail() : {}
+{
+    (Oper4())* (Oper3())* (Oper2())* (Oper1())*
+}
+
+void Statement1() : {}
 {
     (<EQUAL> Expression() <SEMICOLON>) 
     | ( <SQUARELEFTBRACKET> Expression() <SQUARERIGHTBRACKET> [<EQUAL> Expression() <SEMICOLON>])
     | ObjAcc()
 }
 
-void ifStatement() : {}
+void IfStatement() : {}
 {
     <IF> <LEFTPARENTHESES> Expression() <RIGHTPARENTHESES>
-    statement()
-    <ELSE> statement()
+    Statement()
+    <ELSE> Statement()
 }
 
-void whileStatement() : {}
+
+// void error_skipto(int kind){
+//     ParseException e = generateParseException();  // generate the exception object.
+//     System.out.println(e.toString());  // print the error message
+//     Token t;
+//     do {
+//       t = getNextToken();
+//     } while (t.kind != kind);
+//       // The above loop consumes tokens all the way up to a token of
+//       // "kind".  We use a do-while loop rather than a while because the
+//       // current token is the one immediately before the erroneous token
+//       // (in our case the token immediately before what should have been
+//       // "if"/"while".
+//   }
+
+
+void WhileStatement() : {}
 {
-    <WHILE> <LEFTPARENTHESES> Expression() <RIGHTPARENTHESES> statement()
+    try{
+        <WHILE> <LEFTPARENTHESES>
+    }catch(ParseException e){
+        //t = getNextToken();       
+    }
+
+    try {
+        Expression() 
+        try{
+            <RIGHTPARENTHESES>
+        }catch(ParseException e) {
+            //t = getNextToken();
+        }
+    }
+    catch (ParseException e) {
+        System.out.println(e.toString());
+        Token t;
+        do {
+            t = getToken(1);
+            if(t.kind == LEFTBRACKET)
+                break;
+            getNextToken();
+        } while (true);        
+    }
+
+    Statement()
 }
 
 void Expression() : {} 
 {
-    Expr1() Oper1()
+    Expr1() (Oper1())*
 }
 
 void Oper1() : {} 
 {
-    [
-        <AND> Expr1() Oper1()
-    ]
+    <AND> Expr1() 
 }
 
 void Expr1() : {}
 {
-    Expr2() Oper2()
+    Expr2() (Oper2())*
 }
 
 void Oper2() : {}
 {
-    [
-        <LESS> Expr2() Oper2()
-    ]
+    <LESS> Expr2() 
 }
 
 void Expr2() : {}
 {
-    Expr3() Oper3()
+    Expr3() (Oper3())*
 }
 
 void Oper3() : {}
 {
-    [
-        <PLUS> Expr3() Oper3() |
-        <MINUS> Expr3() Oper3()
-    ]
+    <PLUS> Expr3() |
+    <MINUS> Expr3() 
 }
 
 void Expr3() : {}
 {
-    Expr4() Oper4()
+    Expr4() (Oper4())*
 }
 
 void Oper4() : {}
 {
-    [
-        <MULT> Expr4() Oper4() |
-        <DIV> Expr4() Oper4()
-    ]
+    <MULT> Expr4()  |
+    <DIV> Expr4() 
 }
 
 void Expr4() : {}
 {
-    <INTEGERLITERAL> |
-    <TRUE> ExprTail() |
-    <FALSE> ExprTail() |
-    <THIS> ExprTail() |
+    IdentifierExpr4() |
+    LiteralExpr4()
+}
+
+void LiteralExpr4() : {}
+{
+    <INTEGERLITERAL> (ExprTail())* |
+    <TRUE> (ExprTail())* |
+    <FALSE> (ExprTail())* |
+    <THIS> (ExprTail())* |
     <NEW> NewExpr() |
-    <LEFTPARENTHESES> Expression() <RIGHTPARENTHESES> ExprTail() |
-    <NEG> Expr4()
+    <LEFTPARENTHESES> Expression() <RIGHTPARENTHESES> (ExprTail())* |
+    <NEG> Expr4() 
+}
+
+void IdentifierExpr4() : {}
+{
+    <IDENTIFIER> (ExprTail())*
 }
 
 void ExprTail() : {}
 {
-    <SQUARELEFTBRACKET> Expression() <SQUARERIGHTBRACKET> | ObjAcc()
+    ArrAcc() | ObjAcc()
+}
+
+void ArrAcc() : {}
+{
+    <SQUARELEFTBRACKET> Expression() <SQUARERIGHTBRACKET>
 }
 
 void ObjAcc() : {}
