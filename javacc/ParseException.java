@@ -76,6 +76,12 @@ public class ParseException extends Exception {
    */
   public String[] tokenImage;
 
+  private static String importantMessage;
+
+  public static String getImportantMessage(){
+    return importantMessage;
+  }
+
   /**
    * It uses "currentToken" and "expectedTokenSequences" to generate a parse
    * error message and returns it.  If this object has been created
