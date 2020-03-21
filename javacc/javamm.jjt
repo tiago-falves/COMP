@@ -350,9 +350,10 @@ void WhileStatement() : {Token w, lp, rp;}
             }
             ParseException.countError(); 
 
+            System.out.println(e.getImportantMessage());
             Token p = getToken(0);
             if (p.kind != RIGHTPARENTHESES)
-                System.out.println("Missing ')' on line "+p.beginLine+", column "+p.beginColumn);
+                System.out.println("Missing ')' on line "+p.beginLine+", column "+p.beginColumn+".\n");
         }
     }
     catch (ParseException e) {

@@ -123,6 +123,7 @@ public class ParseException extends Exception {
     }
     retval += "\" at line " + currentToken.next.beginLine + ", column " + currentToken.next.beginColumn;
     retval += "." + eol;
+    importantMessage = retval.trim();
     if (expectedTokenSequences.length == 1) {
       retval += "Was expecting:" + eol + "    ";
     } else {
