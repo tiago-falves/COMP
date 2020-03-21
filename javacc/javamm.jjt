@@ -337,7 +337,8 @@ void WhileStatement() : {Token w, lp, rp;}
         
         System.out.println(e.getImportantMessage());
         Token p = getToken(0);
-        if (p.kind != LEFTPARENTHESES)
+        if (p.kind == WHILE)
+            if (getToken(1).kind != LEFTPARENTHESES)
             System.out.println("Missing '(' on line "+p.beginLine+", column "+p.beginColumn+".\n");
     }
 
