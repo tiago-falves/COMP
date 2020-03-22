@@ -85,12 +85,17 @@ SimpleNode JavaMM() : {}
     (ImportDeclaration())* (ClassDeclaration())+ <EOF> {return jjtThis;} // Java code inside brackets
 }
 
-void ImportDeclaration() : {Token t;}
+void ImportDeclaration() : {Token t, s;}
 {
-    <IMPORT> [<STATIC>] t=<IDENTIFIER>{jjtThis.jjtSetVal(t.image);} #Identifier ImportDeclaration1()
+    <IMPORT> 
+    [
+        s=<STATIC>{jjtThis.jjtSetVal(s.image);} #Static
+    ] 
+    t=<IDENTIFIER>{jjtThis.jjtSetVal(t.image);} #Identifier 
+    ImportDeclaration1()
 }
 
-void ImportDeclaration1() #void: {Token d, i, l, r, s;} 
+void ImportDeclaration1() #void: {Token d, i, l, r;} 
 {
     d=<DOT>{jjtThis.jjtSetVal(d.image);} #Dot
     i=<IDENTIFIER>{jjtThis.jjtSetVal(i.image);} #Identifier 
@@ -102,7 +107,7 @@ void ImportDeclaration1() #void: {Token d, i, l, r, s;}
         r=<RIGHTPARENTHESES>{jjtThis.jjtSetVal(r.image);} #RightParentheses
         [ TypeImport() ]
     ] 
-    s=<SEMICOLON>{jjtThis.jjtSetVal(s.image);} #Semicolon
+    <SEMICOLON>
 }
 
 void ImportDeclaration2() #void: {Token s;}
@@ -127,7 +132,7 @@ void Type() #void: {Token t;}
     ){jjtThis.jjtSetVal(t.image);} #Type
 }
 
-void MethodDeclaration() : {Token p, i, lp, rp, lb, rb;}
+void MethodDeclaration() : {Token p, i, lp, rp;}
 {
     p=<PUBLIC>{jjtThis.jjtSetVal(p.image);} #Modifier{}
     (
@@ -135,27 +140,27 @@ void MethodDeclaration() : {Token p, i, lp, rp, lb, rb;}
         lp=<LEFTPARENTHESES>{jjtThis.jjtSetVal(lp.image);} #LeftParentheses
             MethodArguments() 
         rp=<RIGHTPARENTHESES>{jjtThis.jjtSetVal(rp.image);} #RightParentheses
-        lb=<LEFTBRACKET>{jjtThis.jjtSetVal(lb.image);} #LeftBracket
+        <LEFTBRACKET>
             MethodBody()
-        rb=<RIGHTBRACKET>{jjtThis.jjtSetVal(rb.image);} #RightBracket
+        <RIGHTBRACKET>
         | MainDeclaration()   
     )
 }
 
-void MainDeclaration() : {Token st, v, m, lp, rp, s, slb, srb, i, lb, rb;}
+void MainDeclaration() : {Token lp, rp, s, slb, srb, i;}
 {
-    st=<STATIC>{jjtThis.jjtSetVal(st.image);} #Static
-    v=<VOID>{jjtThis.jjtSetVal(v.image);} #Void
-    m=<MAIN>{jjtThis.jjtSetVal(m.image);} #Main 
+    <STATIC>
+    <VOID>
+    <MAIN>
     lp=<LEFTPARENTHESES>{jjtThis.jjtSetVal(lp.image);} #LeftParentheses
     s=<STRING>{jjtThis.jjtSetVal(s.image);} #Type 
     slb=<SQUARELEFTBRACKET>{jjtThis.jjtSetVal(slb.image);} #SquareLeftBracket 
-    srb=<SQUARERIGHTBRACKET>{jjtThis.jjtSetVal(st.image);} #SquareRightBracket 
+    srb=<SQUARERIGHTBRACKET>{jjtThis.jjtSetVal(srb.image);} #SquareRightBracket 
     i=<IDENTIFIER>{jjtThis.jjtSetVal(i.image);} #Identifier 
     rp=<RIGHTPARENTHESES>{jjtThis.jjtSetVal(rp.image);} #RightParentheses
-        lb=<LEFTBRACKET>{jjtThis.jjtSetVal(lb.image);} #LeftBracket
+        <LEFTBRACKET>
         VariableAndStatement()
-        rb=<RIGHTBRACKET>{jjtThis.jjtSetVal(rb.image);} #RightBracket
+        <RIGHTBRACKET>
 
 }
 
@@ -170,13 +175,13 @@ void MethodArguments() : {Token i1, c, i2;}
     )*]
 }
 
-void VarDeclaration() #VariableDeclaration : {Token c, t, s;}
+void VarDeclaration() #VariableDeclaration : {Token c, t;}
 {
     (
         Type() | c=<IDENTIFIER>{jjtThis.jjtSetVal(c.image);} #ClassType
     )
     t=<IDENTIFIER>{jjtThis.jjtSetVal(t.image);} #VariableName
-    s=<SEMICOLON>{jjtThis.jjtSetVal(s.image);} #Semicolon
+    <SEMICOLON>
 }
 
 void VariableAndStatement() #void : {Token i1, i2, s1, s2, e;}
@@ -215,15 +220,15 @@ void VariableAndStatement() #void : {Token i1, i2, s1, s2, e;}
     [LiteralStatement() (Statement())*]
 }
 
-void MethodBody() #void : {Token r, s;}
+void MethodBody() #void : {Token r;}
 {
     VariableAndStatement() 
     r=<RETURN>{jjtThis.jjtSetVal(r.image);}  #Return
     Expression() 
-    s=<SEMICOLON>{jjtThis.jjtSetVal(s.image);} #Semicolon
+    <SEMICOLON>
 }
 
-void ClassDeclaration() #ClassDeclaration : {Token i1, e, i2, l, r;}
+void ClassDeclaration() #ClassDeclaration : {Token i1, e, i2;}
 {
     <CLASS> 
     i1=<IDENTIFIER>{jjtThis.jjtSetVal(i1.image);} #ClassName{}
@@ -232,10 +237,10 @@ void ClassDeclaration() #ClassDeclaration : {Token i1, e, i2, l, r;}
         i2=<IDENTIFIER>{jjtThis.jjtSetVal(i2.image);} #ClassName
     )* 
 
-    l=<LEFTBRACKET>{jjtThis.jjtSetVal(l.image);} #LeftBracket{}
+    <LEFTBRACKET>
         (VarDeclaration())* 
         (MethodDeclaration())* 
-    r=<RIGHTBRACKET>{jjtThis.jjtSetVal(r.image);} #RightBracket
+    <RIGHTBRACKET>
 }
 
 void CommonStatement() #void: {Token lb, rb;}
@@ -259,7 +264,7 @@ void LiteralStatement() #void : {}
     | LiteralLineStatement()
 }
 
-void LineStatement() : {Token i, e, s;}
+void LineStatement() : {Token i, e;}
 {
     (
         LiteralExpr4() ExpressionTail()
@@ -278,15 +283,14 @@ void LineStatement() : {Token i, e, s;}
             )
         )
     )
-    s=<SEMICOLON>{jjtThis.jjtSetVal(s.image);} #Semicolon
+    <SEMICOLON>
 }
 
-void LiteralLineStatement() : {Token i, e, s;}
+void LiteralLineStatement() #void : {}
 {
     LiteralExpr4() ExpressionTail()
-    s=<SEMICOLON>{jjtThis.jjtSetVal(s.image);} #Semicolon
+    <SEMICOLON>
 }
-
 
 void ExpressionTail() #void : {}
 {
@@ -468,7 +472,6 @@ void ExprTail() #void : {}
 {
     ArrAcc() | ObjAcc()
 }
-
     
 void ArrAcc() #void : {Token t1, t2;}
 {
