@@ -191,7 +191,7 @@ void VarDeclaration() #VariableDeclaration : {Token c, t;}
 void VariableAndStatement() #void : {Token i1, i2, s1, s2, e;}
 {
     Type() 
-    i1=<IDENTIFIER>{jjtThis.jjtSetVal(i1.image);} #Identifier 
+    i1=<IDENTIFIER>{jjtThis.jjtSetVal(i1.image);} #VariableName 
     s1=<SEMICOLON>{jjtThis.jjtSetVal(s1.image);} #Semicolon 
     VariableAndStatement()
     |
