@@ -336,7 +336,11 @@ void WhileStatement() : {Token w, lp, rp;}
         }
         ParseException.countError(); 
         
-        System.out.println(e.toString());
+        System.out.println(e.getImportantMessage());
+        Token p = getToken(0);
+        if (p.kind == WHILE)
+            if (getToken(1).kind != LEFTPARENTHESES)
+            System.out.println("Missing '(' on line "+p.beginLine+", column "+p.beginColumn+".\n");
     }
 
     try {
@@ -351,7 +355,10 @@ void WhileStatement() : {Token w, lp, rp;}
             }
             ParseException.countError(); 
 
-            System.out.println(e.toString());
+            System.out.println(e.getImportantMessage());
+            Token p = getToken(0);
+            if (p.kind != RIGHTPARENTHESES)
+                System.out.println("Missing ')' on line "+p.beginLine+", column "+p.beginColumn+".\n");
         }
     }
     catch (ParseException e) {
@@ -361,7 +368,10 @@ void WhileStatement() : {Token w, lp, rp;}
         }
         ParseException.countError(); 
 
-        System.out.println(e.toString());
+        System.out.println(e.getImportantMessage());
+        Token p = getToken(0);
+        System.out.println("Error in Expression inside while statement.\n");
+
         Token t;
         do {
             t = getToken(1);
