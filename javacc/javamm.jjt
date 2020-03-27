@@ -147,19 +147,25 @@ void Type() #void: {Token t;}
     
 }
 
-void MethodDeclaration() : {Token p, i;}
+void MethodDeclaration() : {}
 {
-    p=<PUBLIC>{jjtThis.jjtSetVal(p.image);} #Modifier{}
+    <PUBLIC>
     (
-        Type() i=<IDENTIFIER>{jjtThis.jjtSetVal(i.image);} #Identifier
-        <LEFTPARENTHESES> 
-            MethodArguments() 
-        <RIGHTPARENTHESES> 
+        MethodHeader()
         <LEFTBRACKET>
             MethodBody()
         <RIGHTBRACKET>
         | MainDeclaration()   
     )
+}
+
+void MethodHeader() : {Token i;}
+{
+    {jjtThis.jjtSetVal("public");} #Modifier
+    Type() i=<IDENTIFIER>{jjtThis.jjtSetVal(i.image);} #Identifier
+    <LEFTPARENTHESES> 
+        MethodArguments() 
+    <RIGHTPARENTHESES> 
 }
 
 void MainArgs() : {Token s, i;}
