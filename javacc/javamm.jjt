@@ -353,21 +353,7 @@ void WhileStatement() : {Token w, lp, rp;}
 
     try {
         Expression() 
-        try{
-            rp=<RIGHTPARENTHESES>{jjtThis.jjtSetVal(rp.image);} #RightParentheses
-        }catch(ParseException e) {
-
-            int errors = ParseException.getWhileErrors();
-            if(errors >= 10){
-                throw new ParseException("Too many errors"); 
-            }
-            ParseException.countError(); 
-
-            System.out.println(e.getImportantMessage());
-            Token p = getToken(0);
-            if (p.kind != RIGHTPARENTHESES)
-                System.out.println("Missing ')' on line "+p.beginLine+", column "+p.beginColumn+".\n");
-        }
+        rp=<RIGHTPARENTHESES>{jjtThis.jjtSetVal(rp.image);} #RightParentheses
     }
     catch (ParseException e) {
         int errors = ParseException.getWhileErrors();
@@ -383,8 +369,16 @@ void WhileStatement() : {Token w, lp, rp;}
         Token t;
         do {
             t = getToken(1);
-            if(t.kind == LEFTBRACKET)
+            if(t.kind == LEFTBRACKET) {
+                Token r = getToken(0);
+                if (r.kind != RIGHTPARENTHESES)
+                    System.out.println("Missing ')' on line "+r.beginLine+", column "+r.beginColumn+".\n");
                 break;
+            }
+            else if (t.kind == RIGHTPARENTHESES && getToken(2).kind != RIGHTPARENTHESES) {
+                getNextToken();
+                break;
+            }
             getNextToken();
         } while (true);        
     }
