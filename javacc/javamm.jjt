@@ -166,8 +166,8 @@ void MainArgs() : {Token s, i;}
 {
     <LEFTPARENTHESES> 
     s=<STRING>{jjtThis.jjtSetVal(s.image);} #Type 
-    <SQUARELEFTBRACKET> 
-    <SQUARERIGHTBRACKET> 
+    <SQUARELEFTBRACKET> #SquareLeftBracket
+    <SQUARERIGHTBRACKET> #SquareRightBracket
     i=<IDENTIFIER>{jjtThis.jjtSetVal(i.image);} #Identifier 
     <RIGHTPARENTHESES> 
 }
