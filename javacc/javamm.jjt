@@ -144,7 +144,6 @@ void Type() #void: {Token t;}
         <SQUARELEFTBRACKET> #SquareLeftBracket
         <SQUARERIGHTBRACKET> #SquareRightBracket 
     ]
-    
 }
 
 void MethodDeclaration() : {}
@@ -171,9 +170,9 @@ void MethodHeader() : {Token i;}
 void MainArgs() : {Token s, i;}
 {
     <LEFTPARENTHESES> 
-    s=<STRING>{jjtThis.jjtSetVal(s.image);} #Type 
-    <SQUARELEFTBRACKET> #SquareLeftBracket
-    <SQUARERIGHTBRACKET> #SquareRightBracket
+    s=<STRING>{jjtThis.jjtSetVal(s.image+"[]");} #Type 
+    <SQUARELEFTBRACKET>     
+    <SQUARERIGHTBRACKET>
     i=<IDENTIFIER>{jjtThis.jjtSetVal(i.image);} #Identifier 
     <RIGHTPARENTHESES> 
 }
