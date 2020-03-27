@@ -330,9 +330,7 @@ void Statement1() #void : {}
         <SEMICOLON> #Semicolon
     ) 
     | ( 
-        <SQUARELEFTBRACKET> #SquareLeftBracket
-        Expression() 
-        <SQUARERIGHTBRACKET> #SquareRightBracket
+        ArrAcc()
         [
             <EQUAL> #Equal
             Expression() 
