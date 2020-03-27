@@ -105,40 +105,46 @@ void ImportDeclaration1() #void: {Token i;}
     i=<IDENTIFIER>{jjtThis.jjtSetVal(i.image);} #Identifier 
     ImportDeclaration1()
     | 
-    ImportArgs()
+    [
+        ImportArgs()
+        [ TypeImport() ]
+    ]
     <SEMICOLON>
 }
 
 void ImportArgs() : {}
 {
-    [
-        <LEFTPARENTHESES>
-        [ TypeImport() ImportDeclaration2() ] 
-        <RIGHTPARENTHESES>
-        [ TypeImport() ]
-    ] 
+    <LEFTPARENTHESES>
+    [ TypeImport() ImportDeclaration2() ] 
+    <RIGHTPARENTHESES>
 }
 
 void ImportDeclaration2() #void: {}
 {
     [
-        <COMMA> #Comma 
+        <COMMA>
         TypeImport() ImportDeclaration2()
     ]
 }
 
 void TypeImport() #void: {Token t;}
 {
-    Type() | t=<VOID>{jjtThis.jjtSetVal(t.image);} #TypeImport
+    Type() | t=<VOID>{jjtThis.jjtSetVal(t.image);} #Type
 
 }
 
 void Type() #void: {Token t;}
 {
-    (t=<BOOLEAN>| 
-     t=<STRING> | 
-     t=<INT> [<SQUARELEFTBRACKET> <SQUARERIGHTBRACKET>]
-    ){jjtThis.jjtSetVal(t.image);} #Type
+    t=<BOOLEAN>{jjtThis.jjtSetVal(t.image);} #Type
+    | 
+    t=<STRING>{jjtThis.jjtSetVal(t.image);} #Type 
+    | 
+    t=<INT>{jjtThis.jjtSetVal(t.image);} #Type
+    [
+        <SQUARELEFTBRACKET> #SquareLeftBracket
+        <SQUARERIGHTBRACKET> #SquareRightBracket 
+    ]
+    
 }
 
 void MethodDeclaration() : {Token p, i;}
@@ -146,9 +152,9 @@ void MethodDeclaration() : {Token p, i;}
     p=<PUBLIC>{jjtThis.jjtSetVal(p.image);} #Modifier{}
     (
         Type() i=<IDENTIFIER>{jjtThis.jjtSetVal(i.image);} #Identifier
-        <LEFTPARENTHESES> #LeftParentheses
+        <LEFTPARENTHESES> 
             MethodArguments() 
-        <RIGHTPARENTHESES> #RightParentheses
+        <RIGHTPARENTHESES> 
         <LEFTBRACKET>
             MethodBody()
         <RIGHTBRACKET>
@@ -156,17 +162,22 @@ void MethodDeclaration() : {Token p, i;}
     )
 }
 
-void MainDeclaration() : {Token s, i;}
+void MainArgs() : {Token s, i;}
+{
+    <LEFTPARENTHESES> 
+    s=<STRING>{jjtThis.jjtSetVal(s.image);} #Type 
+    <SQUARELEFTBRACKET> 
+    <SQUARERIGHTBRACKET> 
+    i=<IDENTIFIER>{jjtThis.jjtSetVal(i.image);} #Identifier 
+    <RIGHTPARENTHESES> 
+}
+
+void MainDeclaration() : {}
 {
     <STATIC>
     <VOID>
     <MAIN>
-    <LEFTPARENTHESES> #LeftParentheses
-    s=<STRING>{jjtThis.jjtSetVal(s.image);} #Type 
-    <SQUARELEFTBRACKET> #SquareLeftBracket 
-    <SQUARERIGHTBRACKET> #SquareRightBracket 
-    i=<IDENTIFIER>{jjtThis.jjtSetVal(i.image);} #Identifier 
-    <RIGHTPARENTHESES> #RightParentheses
+        MainArgs()
         <LEFTBRACKET>
         VariableAndStatement()
         <RIGHTBRACKET>
@@ -178,7 +189,7 @@ void MethodArguments() : {Token i1, i2;}
     [Type()
     i1=<IDENTIFIER>{jjtThis.jjtSetVal(i1.image);} #Identifier{} 
     ( 
-        <COMMA> #Comma
+        <COMMA>
         Type()
         i2=<IDENTIFIER>{jjtThis.jjtSetVal(i2.image);} #Identifier
     )*]
@@ -259,9 +270,9 @@ void ClassDeclaration() #ClassDeclaration : {Token i1, i2;}
 
 void CommonStatement() #void: {}
 {
-    <LEFTBRACKET> #LeftBracket{}
+    <LEFTBRACKET>
     (Statement())* 
-    <RIGHTBRACKET> #RightBracket
+    <RIGHTBRACKET> 
     | IfStatement() 
     | WhileStatement() 
 }
@@ -332,10 +343,10 @@ void Statement1() #void : {}
 
 void IfStatement() : {}
 {
-    <IF> #If
-    <LEFTPARENTHESES> #LeftParentheses
+    <IF> 
+    <LEFTPARENTHESES> 
     Expression() 
-    <RIGHTPARENTHESES> #RightParentheses
+    <RIGHTPARENTHESES>
     Statement()
     <ELSE> #Else
     Statement()
@@ -344,8 +355,8 @@ void IfStatement() : {}
 void WhileStatement() : {}
 {
     try{
-        <WHILE> #While
-        <LEFTPARENTHESES> #LeftParentheses
+        <WHILE>
+        <LEFTPARENTHESES> 
     }catch(ParseException e){
         
         int errors = ParseException.getWhileErrors();
@@ -362,8 +373,8 @@ void WhileStatement() : {}
     }
 
     try {
-        Expression() 
-        <RIGHTPARENTHESES> #RightParentheses
+        Expression() #WhileExpression
+        <RIGHTPARENTHESES> 
     }
     catch (ParseException e) {
         int errors = ParseException.getWhileErrors();
@@ -481,18 +492,20 @@ void ExprTail() #void : {}
     ArrAcc() | ObjAcc()
 }
     
-void ArrAcc() #void : {}
+void ArrAcc() #Array : {}
 {
-    <SQUARELEFTBRACKET> #SquareLeftBracket
+    <SQUARELEFTBRACKET> 
     Expression() 
-    <SQUARERIGHTBRACKET> #SquareRightBracket
+    <SQUARERIGHTBRACKET> 
 }
 
 void ObjAcc() #void : {}
 {
-    [<LEFTPARENTHESES> #LeftParentheses
     [
-        Expression()]
+        <LEFTPARENTHESES> #LeftParentheses
+        [
+            Expression()
+        ]
         <RIGHTPARENTHESES> #RightParentheses
     ]
     <DOT> #Dot
@@ -509,24 +522,22 @@ void ObjAccTail() #void : {Token t;}
 
 void Args() #Args : {} 
 {
-    <LEFTPARENTHESES> #LeftParentheses
+    <LEFTPARENTHESES>
     [Expression() [OptArgs()]]
-    <RIGHTPARENTHESES> #RightParentheses
+    <RIGHTPARENTHESES> 
 }
 
 void OptArgs() #void : {}
 {
-    <COMMA> #Comma
+    <COMMA> 
     Expression() [OptArgs()]
 
 }
 
-void NewExpr() : {Token i;}
+void NewExpr() #void : {Token i;}
 {
     i=<INT>{jjtThis.jjtSetVal(i.image);} #Integer
-    <SQUARELEFTBRACKET> #SquareLeftBracket
-    Expression() 
-    <SQUARERIGHTBRACKET> #SquareRightBracket
+    ArrAcc()
     |
     i=<IDENTIFIER>{jjtThis.jjtSetVal(i.image);} #Identifier
     <LEFTPARENTHESES> #LeftParentheses

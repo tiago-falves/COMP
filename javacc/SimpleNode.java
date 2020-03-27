@@ -75,7 +75,7 @@ class SimpleNode implements Node {
   
       if (children == null) {
         if (this.val != null) {
-          System.out.println("\t[ " + this.val + " ]");
+          System.out.println("\t\t[ " + this.val + " ]");
         }
       }
   
@@ -83,7 +83,7 @@ class SimpleNode implements Node {
         for (int i = 0; i < children.length; ++i) {
           SimpleNode n = (SimpleNode) children[i];
           if (n != null) {
-            n.dump(prefix + " ");
+            n.dump(prefix + "   ");
           }
         }
       }
