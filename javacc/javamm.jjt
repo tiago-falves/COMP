@@ -107,7 +107,7 @@ void ImportDeclaration1() #void: {Token i;}
     | 
     [
         ImportArgs()
-        [ TypeImport() ]
+        [ TypeImport() ] #ReturnImport
     ]
     <SEMICOLON>
 }
@@ -461,7 +461,7 @@ void Expr4() #void : {}
 
 void LiteralExpr4() #void : {Token t;}
 {
-    (t=<INTEGERLITERAL>{jjtThis.jjtSetVal(t.image);} #Type{} 
+    (t=<INTEGERLITERAL>{jjtThis.jjtSetVal(t.image);} #IntegerLiteral{} 
         (ExprTail())*) |
     (<TRUE> #True{}
         (ExprTail())*) |
@@ -521,14 +521,14 @@ void ObjAccTail() #void : {Token t;}
 void Args() #Args : {} 
 {
     <LEFTPARENTHESES>
-    [Expression() [OptArgs()]]
+    [Expression() #Argument [Argument()]]
     <RIGHTPARENTHESES> 
 }
 
-void OptArgs() #void : {}
+void Argument()  : {}
 {
     <COMMA> 
-    Expression() [OptArgs()]
+    Expression() [Argument()]
 
 }
 
