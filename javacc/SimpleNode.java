@@ -71,13 +71,14 @@ class SimpleNode implements Node {
      out its children. */
 
      public void dump(String prefix) {
-      System.out.println(toString(prefix));
+      System.out.print(toString(prefix));
   
       if (children == null) {
         if (this.val != null) {
-          System.out.println("\t\t[ " + this.val + " ]");
+          System.out.print(" [" + this.val + "]");
         }
       }
+      System.out.print('\n');
   
       if (children != null) {
         for (int i = 0; i < children.length; ++i) {
