@@ -343,7 +343,7 @@ void IfStatement() : {}
 {
     <IF> 
     <LEFTPARENTHESES> 
-    Expression() 
+    Expression() #IfExpression
     <RIGHTPARENTHESES>
     Statement()
     <ELSE> #Else
@@ -461,7 +461,7 @@ void Expr4() #void : {}
 
 void LiteralExpr4() #void : {Token t;}
 {
-    (t=<INTEGERLITERAL>{jjtThis.jjtSetVal(t.image);} #Integer{} 
+    (t=<INTEGERLITERAL>{jjtThis.jjtSetVal(t.image);} #Type{} 
         (ExprTail())*) |
     (<TRUE> #True{}
         (ExprTail())*) |
