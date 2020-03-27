@@ -534,7 +534,7 @@ void OptArgs() #void : {}
 
 void NewExpr() #void : {Token i;}
 {
-    i=<INT>{jjtThis.jjtSetVal(i.image);} #Integer
+    i=<INT>{jjtThis.jjtSetVal(i.image);} #Type
     ArrAcc()
     |
     i=<IDENTIFIER>{jjtThis.jjtSetVal(i.image);} #Identifier
