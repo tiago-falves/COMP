@@ -521,10 +521,10 @@ void ObjAccTail() #void : {Token t;}
     <LENGTH> #Length
     | 
     t=<IDENTIFIER>{jjtThis.jjtSetVal(t.image);} #Identifier 
-    Args()
+    Arguments()
 }
 
-void Args() #Args : {} 
+void Arguments() #Arguments : {} 
 {
     <LEFTPARENTHESES>
     [Expression() #Argument [Argument()]]
