@@ -139,11 +139,14 @@ void Type() #void: {Token t;}
     | 
     t=<STRING>{jjtThis.jjtSetVal(t.image);} #Type 
     | 
-    t=<INT>{jjtThis.jjtSetVal(t.image);} #Type
-    [
-        <SQUARELEFTBRACKET> #SquareLeftBracket
-        <SQUARERIGHTBRACKET> #SquareRightBracket 
-    ]
+    t=<INT>
+    (
+        <SQUARELEFTBRACKET> 
+        <SQUARERIGHTBRACKET> 
+        {jjtThis.jjtSetVal(t.image + "[]");} #Type
+        |
+        {jjtThis.jjtSetVal(t.image);} #Type
+    )
 }
 
 void MethodDeclaration() : {}
