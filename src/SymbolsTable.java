@@ -17,12 +17,12 @@ public class SymbolsTable {
         this.parent = parent;
     }
 
-    public boolean addSymbol(Descriptor descriptor) {
-        if (table.containsKey(descriptor.getIdentifier())) {
+    public boolean addSymbol(String name, Descriptor descriptor) {
+        if (table.containsKey(name)) {
             System.out.println("A symbol with that identifier already exists.");
             return false;
         }
-        table.put(descriptor.getIdentifier(), descriptor);
+        table.put(name, descriptor);
         return true;
     }
 
@@ -30,6 +30,7 @@ public class SymbolsTable {
         if(table.containsKey(identifier)){
             return table.get(identifier);
         }
+        
         if(parent != null){
             return parent.getDescriptor(identifier);
         }

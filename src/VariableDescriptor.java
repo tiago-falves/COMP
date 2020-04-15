@@ -1,14 +1,13 @@
 
 public class VariableDescriptor extends Descriptor{
-    String type;
+    Type type;
     boolean isInitialized;
 
-    public VariableDescriptor(String name, String type) {
-        super(name);
+    public VariableDescriptor(Type type) {
         this.type = type;
 
     }
-    public String getType(){
+    public Type getType(){
         return this.type;
     }
     public boolean isInitialized(){

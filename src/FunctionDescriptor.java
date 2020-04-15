@@ -1,36 +1,40 @@
-public class FunctionDescriptor extends Descriptor{
-    protected FunctionParameterDescriptor parameterDescriptor;
+public class FunctionDescriptor extends Descriptor {
+    
+    protected FunctionBodyDescriptor bodyDescriptor;
     private String returnValue;
     private boolean isStatic;
-    private String access;
+    private Access access;
 
-
-    public FunctionDescriptor(String name,String access){
-        super(name);
+    public FunctionDescriptor(Access access){
         this.isStatic= false;
         this.access = access;
+    }
 
+    public FunctionBodyDescriptor getparameterDescriptor() {
+        return this.bodyDescriptor;
     }
-    public FunctionParameterDescriptor getparameterDescriptor() {
-        return this.parameterDescriptor;
-    }
-    public void setparameterDescriptor(FunctionParameterDescriptor parameterDescriptor){
-        this.parameterDescriptor = parameterDescriptor;
+    
+    public void setparameterDescriptor(FunctionBodyDescriptor bodyDescriptor){
+        this.bodyDescriptor = bodyDescriptor;
     }
 
     public String getReturnValue() {
         return this.returnValue;
     }
+    
     public void setReturnValue(String returnValue){
         this.returnValue = returnValue;
     }
+    
     public boolean isStatic(){
         return this.isStatic;
     }
-    public String getAccess(){
+    
+    public Access getAccess(){
         return access;
     }
-    public void setAccess(String access){
+    
+    public void setAccess(Access access){
         this.access = access;
     }
 

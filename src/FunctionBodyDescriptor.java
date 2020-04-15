@@ -1,16 +1,25 @@
 
-public class FunctionBodyDescriptor extends FunctionParameterDescriptor{
-    protected SymbolsTable symbolTable;
+public class FunctionBodyDescriptor extends Descriptor {
+    
+    // Local table: parent = parameter table
+    protected SymbolsTable localTable;
 
-
-    public FunctionBodyDescriptor(String name,String type){
-        super(name,type);
-    }
-    public SymbolsTable getSymbolTable() {
-        return this.symbolTable;
-    }
-    public void setSymbolTable(SymbolsTable symbolTable){
-        this.symbolTable = symbolTable;
+    public FunctionBodyDescriptor(SymbolsTable parameterTable){
+        localTable = new SymbolsTable();
+        localTable.setParent(parameterTable);
     }
 
+    public SymbolsTable getLocalTable() {
+        return this.localTable;
+    }
+    
+    public void addSymbol(String name, Descriptor descriptor){
+        this.localTable.addSymbol(name, descriptor);
+    }
+
+    /*
+    public void setSymbolTable(SymbolsTable localTable){
+        this.localTable = localTable;
+    }
+    */
 }

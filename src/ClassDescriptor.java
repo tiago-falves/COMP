@@ -1,12 +1,15 @@
 public class ClassDescriptor extends Descriptor{
-    protected SymbolsTable symbolTable;
+    
+    // Local table: parente = parameter table
+    protected SymbolsTable functionsTable;
+    
     private boolean isStatic;
     private String access;
 
-    public ClassDescriptor(String name,String access,Boolean isStatic){
-        super(name);
+    public ClassDescriptor(String access, Boolean isStatic){
         this.access = access;
         this.isStatic = isStatic;
+        this.functionsTable = new SymbolsTable();
     }
 
     public boolean isStatic(){

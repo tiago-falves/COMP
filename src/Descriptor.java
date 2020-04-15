@@ -1,6 +1,6 @@
 
-public class Descriptor {
-    protected String name;
+public abstract class Descriptor {
+/*    protected String name;
     protected String identifier;
 
     public Descriptor(String name) {
@@ -21,5 +21,5 @@ public class Descriptor {
     public void setIdentifier(String identifier){
         this.identifier = identifier;
     }
-
+*/
 }
