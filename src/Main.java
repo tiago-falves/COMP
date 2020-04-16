@@ -1,8 +1,12 @@
+import symbols.SymbolsTable;
+
 public class Main {
 	
 	public static void main(String[] args) throws ParseException, java.io.FileNotFoundException {
 
         ParseException.resetWhileErrors();
+
+        SymbolsTable symbolsTable = new SymbolsTable();
 
         Javamm myJavamm = new Javamm(new java.io.FileInputStream(args[0]));
         SimpleNode root = myJavamm.JavaMM(); // returns reference to root node
@@ -15,6 +19,7 @@ public class Main {
             throw new ParseException("Errors"); 
         }
 
-        root.dump(""); // prints the tree on the screen
+        //root.dump(""); // prints the tree on the screen
+        root.createSymbolTable(symbolsTable);
 	}	
 }
