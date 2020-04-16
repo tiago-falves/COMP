@@ -20,6 +20,6 @@ public class Main {
         }
 
         //root.dump(""); // prints the tree on the screen
-        root.createSymbolTable(symbolsTable);
+        root.dumpTest("", 10);
 	}	
 }
