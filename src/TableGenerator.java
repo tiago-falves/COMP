@@ -17,12 +17,13 @@ public class TableGenerator {
             switch(currentNode.getId()) {
                 case JavammTreeConstants.JJTIMPORTDECLARATION:
                     ImportDescriptor importDescriptor = inspectImport(currentNode);
-                    symbolsTable.addSymbol(importDescriptor.getLastIdentifier(), importDescriptor );
+                    symbolsTable.addSymbol(importDescriptor.getLastIdentifier(), importDescriptor);
                     break;
 
                 case JavammTreeConstants.JJTCLASSDECLARATION:
-                    //ClassDescriptor classDescriptor = inspectClass(currentNode);
-                    //symbolsTable.addSymbol(currentNode.jjtGetVal(), classDescriptor);
+                    ClassDescriptor classDescriptor = inspectClass(currentNode);
+                    //TODO
+                    //symbolsTable.addSymbol(classDescriptor.jjtGetVal(), classDescriptor);
                     break;
             }
 
@@ -62,8 +63,74 @@ public class TableGenerator {
         return importDescriptor;
     }
 
-    public void inspectClass(SimpleNode classNode) {
-        
+    public ClassDescriptor inspectClass(SimpleNode classNode) {
+        ClassDescriptor classDescriptor = new ClassDescriptor();
+
+        // collect identifiers, parameter types and return type
+        for (int i = 0; i < classNode.jjtGetNumChildren(); i++) {
+            SimpleNode child = (SimpleNode) classNode.jjtGetChild(i);
+            if (child.getId() == JavammTreeConstants.JJTVARIABLEDECLARATION) {
+                VariableDescriptor variableDescriptor = inspectVariable(child);
+                classDescriptor.addVariable(variableDescriptor);
+            }
+            else if (child.getId() == JavammTreeConstants.JJTMETHODDECLARATION) {
+                FunctionDescriptor functionDescriptor = inspectMethod(child);
+                classDescriptor.addMethod(functionDescriptor);
+            }
+        }
+
+        return classDescriptor;
     }
 
+    public VariableDescriptor inspectVariable(SimpleNode variableNode) {
+        VariableDescriptor variableDescriptor = new VariableDescriptor();
+
+        for (int i = 0; i < variableNode.jjtGetNumChildren(); i++) {
+            SimpleNode child = (SimpleNode) variableNode.jjtGetChild(i);
+
+            if (child.getId() == JavammTreeConstants.JJTTYPE) {
+                TypeString typeString = new TypeString(child.jjtGetVal());
+                variableDescriptor.setType(typeString.parseType());
+            } 
+            else if (child.getId() == JavammTreeConstants.JJTVARIABLENAME) {
+                String name = child.jjtGetVal();
+                variableDescriptor.setName(name);
+            }
+        }
+
+        return variableDescriptor;
+    }
+
+    public FunctionDescriptor inspectMethod(SimpleNode methodNode) {
+        FunctionDescriptor functionDescriptor = new FunctionDescriptor();
+
+        for (int i = 0; i < methodNode.jjtGetNumChildren(); i++) {
+            SimpleNode child = (SimpleNode) methodNode.jjtGetChild(i);
+
+            //check if is main or usual method
+            if (child.getId() == JavammTreeConstants.JJTMAINDECLARATION) {
+                functionDescriptor.makeStatic();
+                //TODO
+                //inspectMainDeclaration(child);
+            }
+            else if (child.getId() == JavammTreeConstants.JJTMETHODHEADER) {
+                //TODO
+                //inspectMethodHeader(child);
+            }
+        }
+
+        return functionDescriptor;
+    }
+
+    /*public FunctionParametersDescriptor inspectMainDeclaration(SimpleNode parameterNode) {
+
+    }
+
+    public FunctionParametersDescriptor inspectMethodHeader(SimpleNode headerNode) {
+
+    }
+
+    public FunctionBodyDescriptor inspectMethodBody(SimpleNode bodyNode) {
+
+    }*/
 }

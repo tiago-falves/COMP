@@ -6,10 +6,11 @@ public class FunctionDescriptor extends Descriptor {
     private String returnValue;
     private boolean isStatic;
     private Access access;
+    private String name;
 
-    public FunctionDescriptor(Access access){
-        this.isStatic= false;
-        this.access = access;
+    public FunctionDescriptor(){
+        this.isStatic = false;
+        this.access = Access.DEFAULT;
     }
 
     public FunctionBodyDescriptor getparameterDescriptor() {
@@ -27,6 +28,10 @@ public class FunctionDescriptor extends Descriptor {
     public void setReturnValue(String returnValue){
         this.returnValue = returnValue;
     }
+
+    public void makeStatic() {
+        this.isStatic = true;
+    }
     
     public boolean isStatic(){
         return this.isStatic;
@@ -38,6 +43,13 @@ public class FunctionDescriptor extends Descriptor {
     
     public void setAccess(Access access){
         this.access = access;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+    public String getName() {
+        return this.name;
     }
 
 }
