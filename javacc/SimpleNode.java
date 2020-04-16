@@ -56,6 +56,10 @@ public class SimpleNode implements Node {
   public void jjtSetValue(Object value) { this.value = value; }
   public Object jjtGetValue() { return value; }
 
+  public String jjtGetVal() {
+    return val;
+  }
+
   public void jjtSetVal(String val) {
     this.val = val;
   }
@@ -91,11 +95,35 @@ public class SimpleNode implements Node {
         }
       }
     }
+
   public void createSymbolTable(SymbolsTable table) {
     if (children == null) return;
 
     for (int i = 0; i < children.length; i++) {
       ((SimpleNode) children[i]).createSymbolTable(table);
+    }
+  }
+
+  public void dumpTest(String prefix,int depth) {
+    if(depth < 0){
+      return;
+    }
+    System.out.print(toString(prefix));
+
+    if (children == null) {
+      if (this.val != null) {
+        System.out.print(" [" + this.val + "]");
+      }
+    }
+    System.out.print('\n');
+
+    if (children != null) {
+      for (int i = 0; i < children.length; ++i) {
+        SimpleNode n = (SimpleNode) children[i];
+        if (n != null) {
+          n.dumpTest(prefix + "   ",depth-1);
+        }
+      }
     }
   }
 
