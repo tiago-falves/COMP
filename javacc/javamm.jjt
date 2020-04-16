@@ -99,10 +99,17 @@ void ImportDeclaration() : {Token t;}
     ImportDeclaration1()
 }
 
-void ImportDeclaration1() #void: {Token i;} 
+void ImportIdentifier() #void : {Token i;}
+{
+    <LENGTH> #Length
+    |
+    i=<IDENTIFIER>{jjtThis.jjtSetVal(i.image);} #Identifier       
+}
+
+void ImportDeclaration1() #void: {} 
 {
     <DOT> #Dot
-    i=<IDENTIFIER>{jjtThis.jjtSetVal(i.image);} #Identifier 
+    ImportIdentifier()
     ImportDeclaration1()
     | 
     [
