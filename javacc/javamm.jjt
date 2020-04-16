@@ -2,10 +2,14 @@ options
 {
  LOOKAHEAD=1;
 }
-
 PARSER_BEGIN(Javamm)
+
+import java.util.ArrayList;
+import symbols.*;
+
 public class Javamm
-{ 
+{
+    private ArrayList<SymbolsTable> symbolsTables = new ArrayList<SymbolsTable>();
     public static void main(String args[]) throws ParseException, java.io.FileNotFoundException {
 
         ParseException.resetWhileErrors();
@@ -16,9 +20,13 @@ public class Javamm
             throw new ParseException("Errors"); 
         }
 
+
         //System.out.println("Expression value: "+myJavamm.eval(root));
 
         root.dump(""); // prints the tree on the screen
+    }
+    public void setSymbolsTables(ArrayList<SymbolsTable> symbolsTables){
+        this.symbolsTables = symbolsTables;
     }
 }
 PARSER_END(Javamm)
@@ -133,16 +141,32 @@ void TypeImport() #void: {Token t;}
 
 }
 
-void Type() #void: {Token t;}
+void TypeVar(VariableDescriptor descriptor) #void: {Token t;}
 {
-    t=<BOOLEAN>{jjtThis.jjtSetVal(t.image);} #Type
+    t=<BOOLEAN>{jjtThis.jjtSetVal(t.image);} #Type {descriptor.setType(Type.BOOLEAN);}
     | 
-    t=<STRING>{jjtThis.jjtSetVal(t.image);} #Type 
+    t=<STRING>{jjtThis.jjtSetVal(t.image);} #Type {descriptor.setType(Type.STRING);}
     | 
-    t=<INT>
+    t=<INT> {descriptor.setType(Type.INT);}
     (
         <SQUARELEFTBRACKET> 
         <SQUARERIGHTBRACKET> 
+        {jjtThis.jjtSetVal(t.image + "[]");} #Type
+        |
+        {jjtThis.jjtSetVal(t.image);} #Type
+    )
+}
+
+void Type() #void: {Token t;}
+{
+    t=<BOOLEAN>{jjtThis.jjtSetVal(t.image);} #Type
+    |
+    t=<STRING>{jjtThis.jjtSetVal(t.image);} #Type
+    |
+    t=<INT>
+    (
+        <SQUARELEFTBRACKET>
+        <SQUARERIGHTBRACKET>
         {jjtThis.jjtSetVal(t.image + "[]");} #Type
         |
         {jjtThis.jjtSetVal(t.image);} #Type
@@ -203,13 +227,15 @@ void MethodArguments() : {Token i1, i2;}
     )*]
 }
 
-void VarDeclaration() #VariableDeclaration : {Token c, t;}
+void VarDeclaration(SymbolsTable table) #VariableDeclaration : {Token c, t; VariableDescriptor var;}
 {
+    {var = new VariableDescriptor();}
     (
-        Type() | c=<IDENTIFIER>{jjtThis.jjtSetVal(c.image);} #ClassType
+        TypeVar(var) | c=<IDENTIFIER>{jjtThis.jjtSetVal(c.image);} #ClassType
     )
-    t=<IDENTIFIER>{jjtThis.jjtSetVal(t.image);} #VariableName
+    t=<IDENTIFIER>{jjtThis.jjtSetVal(t.image);} #VariableName {var.setName(t.image);}
     <SEMICOLON>
+    {table.addSymbol(var); System.out.println("ZASS");}
 }
 
 void VarDeclaration2() #VariableDeclaration : {Token i;}
@@ -261,8 +287,10 @@ void MethodBody() #void : {}
     <SEMICOLON>
 }
 
-void ClassDeclaration() #ClassDeclaration : {Token i1, i2;}
+void ClassDeclaration() #ClassDeclaration : {Token i1, i2; SymbolsTable classTable;}
 {
+    {classTable = new SymbolsTable();}
+    {symbolsTables.add(classTable);}
     <CLASS> 
     i1=<IDENTIFIER>{jjtThis.jjtSetVal(i1.image);} #ClassName{}
     (
@@ -271,7 +299,7 @@ void ClassDeclaration() #ClassDeclaration : {Token i1, i2;}
     )* 
 
     <LEFTBRACKET>
-        (VarDeclaration())* 
+        (VarDeclaration(classTable))*
         (MethodDeclaration())* 
     <RIGHTBRACKET>
 }
