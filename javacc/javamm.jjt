@@ -226,38 +226,54 @@ void VarDeclaration2() #VariableDeclaration : {Token i;}
     <SEMICOLON>
 }
 
-void VariableAndStatement() #void : {Token i1, i2;}
+void VariableAndStatement() #void : {}
 {
     VarDeclaration2()
     VariableAndStatement()
     |
-    i1=<IDENTIFIER>{jjtThis.jjtSetVal(i1.image);} #Identifier{} 
-    (
-        i2=<IDENTIFIER>{jjtThis.jjtSetVal(i2.image);} #Identifier 
-        <SEMICOLON>
-        VariableAndStatement()
-        |
-        (
-            (
-                (
-                    <EQUAL> #Equal 
-                    Expression()
-                )
-                |
-                (ArrAcc() [
-                    <EQUAL> #Equal 
-                    Expression()
-                    ])
-                |
-                (ObjAcc() ExpressionTail())
-                |
-                (ExpressionTail())
-            ) 
-            <SEMICOLON>
-        ) (Statement())*
-    )
+    IdentifierStatement()
     |
     [LiteralStatement() (Statement())*]
+}
+
+void IdentifierStatement() #void : {Token i1;}
+{
+    i1=<IDENTIFIER>{} 
+    (
+        IdentifierVariableDeclaration(i1)
+        VariableAndStatement()
+        |
+        IdentifierStatement2(i1)
+    )
+}
+
+void IdentifierVariableDeclaration(Token i1) #VariableDeclaration : {Token i2;}
+{
+    {jjtThis.jjtSetVal(i1.image);} #ClassType
+    i2=<IDENTIFIER>{jjtThis.jjtSetVal(i2.image);} #Identifier 
+    <SEMICOLON>
+}
+
+void IdentifierStatement2(Token i1) #void : {}
+{
+    {jjtThis.jjtSetVal(i1.image);} #Identifier {}
+    (
+        (
+            <EQUAL> #Equal 
+            Expression()
+        )
+        |
+        (ArrAcc() [
+            <EQUAL> #Equal 
+            Expression()
+            ])
+        |
+        (ObjAcc() ExpressionTail())
+        |
+        (ExpressionTail())
+    ) 
+    <SEMICOLON>
+    (Statement())*
 }
 
 void MethodBody() #void : {}
