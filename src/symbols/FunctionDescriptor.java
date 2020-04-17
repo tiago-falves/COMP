@@ -6,6 +6,7 @@ public class FunctionDescriptor extends Descriptor {
     protected SymbolsTable bodyTable;
     protected SymbolsTable parametersTable;
     private Type returnValue;
+    private Type actualReturnValue;
     private boolean isStatic;
     private Access access;
     private String name;
@@ -19,8 +20,8 @@ public class FunctionDescriptor extends Descriptor {
         this.parametersTable.addSymbol(parameterDescriptor.getName(), parameterDescriptor);
     }
 
-    public void addBodyVariable(VariableDescriptor variableDescriptor) {
-        this.bodyTable.addSymbol(variableDescriptor.getName(), variableDescriptor);
+    public void addBodyVariable(String name,VariableDescriptor variableDescriptor) {
+        this.bodyTable.addSymbol(name, variableDescriptor);
     }
 
     /*public FunctionBodyDescriptor getBodyDescriptor() {
@@ -36,18 +37,23 @@ public class FunctionDescriptor extends Descriptor {
     }
     
     public void setReturnValue(String returnValue){
+
+        TypeString typeString = new TypeString(returnValue);
+        Type type = typeString.parseType();
         //Nao falta string no type?
-        if(returnValue == "int"){
-            this.returnValue = Type.INT;
-        } else if(returnValue == "int[]"){
-            this.returnValue = Type.INT_ARRAY;
-        } else if(returnValue=="void"){
-            this.returnValue = Type.VOID;
-        } else if(returnValue=="boolean"){
-            this.returnValue = Type.BOOLEAN;
-        } else{
-            this.returnValue = Type.CLASS;
-        }
+        this.returnValue = type;
+    }
+
+    public Type getActualReturnValue() {
+        return this.actualReturnValue;
+    }
+    
+    public void setActualReturnValue(String returnValue){
+        //Nao falta string no type?
+        TypeString typeString = new TypeString(returnValue);
+        Type type = typeString.parseType();
+        //Nao falta string no type?
+        this.actualReturnValue = type;
     }
 
     public void makeStatic() {
@@ -82,5 +88,7 @@ public class FunctionDescriptor extends Descriptor {
     public String getName() {
         return this.name;
     }
+
+  
 
 }

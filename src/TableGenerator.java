@@ -112,7 +112,7 @@ public class TableGenerator {
             // return inspectMainDeclaration(child);
         }
         else if (child.getId() == JavammTreeConstants.JJTMETHODHEADER) {
-            return inspectMethodHeader(methodNode);
+            return inspectMethodHeaderBody(methodNode);
         }
         return null;
     }
@@ -143,7 +143,7 @@ public class TableGenerator {
             }
             else if (child.getId() == JavammTreeConstants.JJTVARIABLEDECLARATION) {
                 VariableDescriptor variableDescriptor = inspectVariable(child);
-                functionDescriptor.addBodyVariable(variableDescriptor);
+                functionDescriptor.addBodyVariable(variableDescriptor.getName(),variableDescriptor);
             }
             //TODO statements inside main
         }
@@ -151,7 +151,8 @@ public class TableGenerator {
         return functionDescriptor;
     }
 
-    public FunctionDescriptor inspectMethodHeader(SimpleNode methodNode) {
+    //Inspects all the methods except main
+    public FunctionDescriptor inspectMethodHeaderBody(SimpleNode methodNode) {
 
         FunctionDescriptor functionDescriptor = new FunctionDescriptor();
 
@@ -159,6 +160,7 @@ public class TableGenerator {
         for (int i = 0; i < methodNode.jjtGetNumChildren(); i++) {
             SimpleNode child = (SimpleNode) methodNode.jjtGetChild(i);
             
+            //Method Header Parser
             if (child.getId() == JavammTreeConstants.JJTMETHODHEADER) {
                 for (int j = 0; j < child.jjtGetNumChildren(); j++) {
                     SimpleNode grandChild = (SimpleNode) child.jjtGetChild(j);
@@ -170,26 +172,33 @@ public class TableGenerator {
                     else if(grandChild.getId() == JavammTreeConstants.JJTTYPE){
                         functionDescriptor.setReturnValue(grandChild.val);
                     }
-
-                    
+                    else if(grandChild.getId() == JavammTreeConstants.JJTIDENTIFIER){
+                        functionDescriptor.setName(grandChild.val);
+                    }
+                    else if(grandChild.getId() == JavammTreeConstants.JJTMETHODARGUMENTS){
+                        //Todo
+                    }
                 }
 
+            } //Mais vale substituir se isto tudo por um variable and statement nao?
+            else if (child.getId() == JavammTreeConstants.JJTVARIABLEDECLARATION) {
+                VariableDescriptor variableDescriptor = inspectVariable(child);
+                // functionDescriptor.addBodyVariable(variableDescriptor.getName(),variableDescriptor);
             }
-            // else if (child.getId() == JavammTreeConstants.JJTVARIABLEDECLARATION) {
-            //     VariableDescriptor variableDescriptor = inspectVariable(child);
-            //     functionDescriptor.addBodyVariable(variableDescriptor);
-            // }
-            //Se calhar aqui chamar função para statement
-            else if (child.getId() == JavammTreeConstants.JJTLINESTATEMENT) {
-                //TODO
-            }
-            else if (child.getId() == JavammTreeConstants.JJTWHILESTATEMENT) {
-                //TODO
-            }
+            else if (child.getId() == JavammTreeConstants.JJTRETURN){
+                SimpleNode actualReturn = (SimpleNode) child.jjtGetChild(0);
+                functionDescriptor.setActualReturnValue(actualReturn.val);
 
+            }else if(child.getId() == JavammTreeConstants.JJTLINESTATEMENT || child.getId() == JavammTreeConstants.JJTWHILESTATEMENT || child.getId() == JavammTreeConstants.JJTIFSTATEMENT){
+                inspectStatement(child);
+            }
         }
 
         return functionDescriptor;
+
+    }
+
+    public void inspectStatement(SimpleNode statementNode){
 
     }
 

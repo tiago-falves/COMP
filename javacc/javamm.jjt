@@ -284,7 +284,11 @@ void IdentifierStatement2(Token i1) #void : {}
 void MethodBody() #void : {}
 {
     VariableAndStatement() 
-    <RETURN> #Return
+    Return()
+}
+void Return() : {}
+{
+    <RETURN>
     Expression() 
     <SEMICOLON>
 }
