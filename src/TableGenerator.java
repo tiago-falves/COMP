@@ -102,31 +102,45 @@ public class TableGenerator {
     }
 
     public FunctionDescriptor inspectMethod(SimpleNode methodNode) {
-        FunctionDescriptor functionDescriptor = new FunctionDescriptor();
+        SimpleNode child = (SimpleNode) methodNode.jjtGetChild(0);
 
-        for (int i = 0; i < methodNode.jjtGetNumChildren(); i++) {
-            SimpleNode child = (SimpleNode) methodNode.jjtGetChild(i);
+        //check if is main or usual method
+        if (child.getId() == JavammTreeConstants.JJTMAINDECLARATION) {
+            return inspectMainDeclaration(child);
+        }
+        else if (child.getId() == JavammTreeConstants.JJTMETHODHEADER) {
+            return inspectMethod(methodNode);
+        }
+    }
+
+    public FunctionDescriptor inspectMainDeclaration(SimpleNode mainNode) {
+        FunctionDescriptor functionDescriptor = new FunctionDescriptor();
+        functionDescriptor.makeStatic();
+
+        for (int i = 0; i < mainNode.jjtGetNumChildren(); i++) {
+            SimpleNode child = (SimpleNode) mainNode.jjtGetChild(i);
 
             //check if is main or usual method
-            if (child.getId() == JavammTreeConstants.JJTMAINDECLARATION) {
-                functionDescriptor.makeStatic();
-                //TODO
-                //inspectMainDeclaration(child);
+            if (child.getId() == JavammTreeConstants.JJTMAINARGS) {
+
+                for(int j = 0; j < child.jjtGetNumChildren(); j+=2) {
+                    SimpleNode grandChild = (SimpleNode) child.jjtGetChild(j);
+                    if (grandChild.getId() == JavammTreeConstants.JJTTYPE) {
+                        TypeString typeString = new TypeString(grandChild.jjtGetVal());
+                        parametersDescriptor.addSymbol(typeString.parseType());
+                    }
+                }
+
             }
-            else if (child.getId() == JavammTreeConstants.JJTMETHODHEADER) {
-                //TODO
-                //inspectMethodHeader(child);
+            else if (child.getId() == JavammTreeConstants.JJTVARIABLEDECLARATION) {
+                
             }
         }
 
-        return functionDescriptor;
+        return parametersDescriptor;
     }
 
-    /*public FunctionParametersDescriptor inspectMainDeclaration(SimpleNode parameterNode) {
-
-    }
-
-    public FunctionParametersDescriptor inspectMethodHeader(SimpleNode headerNode) {
+    /*public FunctionParametersDescriptor inspectMethodHeader(SimpleNode headerNode) {
 
     }
 
