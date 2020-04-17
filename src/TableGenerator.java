@@ -111,6 +111,7 @@ public class TableGenerator {
         else if (child.getId() == JavammTreeConstants.JJTMETHODHEADER) {
             return inspectMethod(methodNode);
         }
+        else return null;
     }
 
     public FunctionDescriptor inspectMainDeclaration(SimpleNode mainNode) {
@@ -120,24 +121,31 @@ public class TableGenerator {
         for (int i = 0; i < mainNode.jjtGetNumChildren(); i++) {
             SimpleNode child = (SimpleNode) mainNode.jjtGetChild(i);
 
-            //check if is main or usual method
             if (child.getId() == JavammTreeConstants.JJTMAINARGS) {
 
                 for(int j = 0; j < child.jjtGetNumChildren(); j+=2) {
-                    SimpleNode grandChild = (SimpleNode) child.jjtGetChild(j);
-                    if (grandChild.getId() == JavammTreeConstants.JJTTYPE) {
-                        TypeString typeString = new TypeString(grandChild.jjtGetVal());
-                        parametersDescriptor.addSymbol(typeString.parseType());
+                    SimpleNode grandChildType = (SimpleNode) child.jjtGetChild(j);
+                    SimpleNode grandChildName;
+                    if (j+1 < child.jjtGetNumChildren()) {
+                        grandChildName = (SimpleNode) child.jjtGetChild(j+1);
+                        if (grandChildType.getId() == JavammTreeConstants.JJTTYPE && grandChildName.getId() == JavammTreeConstants.JJTIDENTIFIER) {
+                            TypeString typeString = new TypeString(grandChildType.jjtGetVal());
+                            String name = grandChildName.jjtGetVal();
+                            FunctionParameterDescriptor parameterDescriptor = new FunctionParameterDescriptor(name, typeString.parseType());
+                            functionDescriptor.addParameter(parameterDescriptor);
+                        }
                     }
                 }
 
             }
             else if (child.getId() == JavammTreeConstants.JJTVARIABLEDECLARATION) {
-                
+                VariableDescriptor variableDescriptor = inspectVariable(child);
+                functionDescriptor.addBodyVariable(variableDescriptor);
             }
+            //TODO statements inside main
         }
 
-        return parametersDescriptor;
+        return functionDescriptor;
     }
 
     /*public FunctionParametersDescriptor inspectMethodHeader(SimpleNode headerNode) {

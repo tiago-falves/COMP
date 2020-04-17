@@ -1,4 +1,4 @@
-package symbols;
+/*package symbols;
 
 public class FunctionBodyDescriptor extends Descriptor {
     
@@ -22,4 +22,4 @@ public class FunctionBodyDescriptor extends Descriptor {
         this.localTable.addSymbol(name, descriptor);
     }
 
-}
+}*/

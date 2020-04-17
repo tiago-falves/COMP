@@ -254,7 +254,7 @@ void IdentifierVariableDeclaration(Token i1) #VariableDeclaration : {Token i2;}
     <SEMICOLON>
 }
 
-void IdentifierStatement2(Token i1) #void : {}
+void IdentifierNewStatement(Token i1) #LineStatement : {}
 {
     {jjtThis.jjtSetVal(i1.image);} #Identifier {}
     (
@@ -273,6 +273,11 @@ void IdentifierStatement2(Token i1) #void : {}
         (ExpressionTail())
     ) 
     <SEMICOLON>
+}
+
+void IdentifierStatement2(Token i1) #void : {}
+{
+    IdentifierNewStatement(i1)
     (Statement())*
 }
 
