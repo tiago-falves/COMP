@@ -5,7 +5,7 @@ public class FunctionDescriptor extends Descriptor {
     //protected FunctionBodyDescriptor bodyDescriptor;
     protected SymbolsTable bodyTable;
     protected SymbolsTable parametersTable;
-    private String returnValue;
+    private Type returnValue;
     private boolean isStatic;
     private Access access;
     private String name;
@@ -31,12 +31,23 @@ public class FunctionDescriptor extends Descriptor {
         this.bodyDescriptor = bodyDescriptor;
     }*/
 
-    public String getReturnValue() {
+    public Type getReturnValue() {
         return this.returnValue;
     }
     
     public void setReturnValue(String returnValue){
-        this.returnValue = returnValue;
+        //Nao falta string no type?
+        if(returnValue == "int"){
+            this.returnValue = Type.INT;
+        } else if(returnValue == "int[]"){
+            this.returnValue = Type.INT_ARRAY;
+        } else if(returnValue=="void"){
+            this.returnValue = Type.VOID;
+        } else if(returnValue=="boolean"){
+            this.returnValue = Type.BOOLEAN;
+        } else{
+            this.returnValue = Type.CLASS;
+        }
     }
 
     public void makeStatic() {
@@ -53,6 +64,16 @@ public class FunctionDescriptor extends Descriptor {
     
     public void setAccess(Access access){
         this.access = access;
+    }
+
+    public void setAccessVal(String val){
+        if(val == "public"){
+            this.access = Access.PUBLIC;
+        } else if(val == "private"){
+            this.access = Access.PRIVATE;
+        } else if(val=="protected"){
+            this.access = Access.PROTECTED;
+        }
     }
 
     public void setName(String name) {

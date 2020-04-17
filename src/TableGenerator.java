@@ -11,6 +11,7 @@ public class TableGenerator {
 
     public void build() {
         int i = 0;
+        // System.out.println(rootNode.jjtGetNumChildren());
         while(i < rootNode.jjtGetNumChildren()) {
             SimpleNode currentNode = (SimpleNode) rootNode.jjtGetChild(i);
 
@@ -26,6 +27,8 @@ public class TableGenerator {
                     //symbolsTable.addSymbol(classDescriptor.jjtGetVal(), classDescriptor);
                     break;
             }
+            i++;
+
 
         }
     }
@@ -75,7 +78,7 @@ public class TableGenerator {
             }
             else if (child.getId() == JavammTreeConstants.JJTMETHODDECLARATION) {
                 FunctionDescriptor functionDescriptor = inspectMethod(child);
-                classDescriptor.addMethod(functionDescriptor);
+                // classDescriptor.addMethod(functionDescriptor);
             }
         }
 
@@ -106,12 +109,12 @@ public class TableGenerator {
 
         //check if is main or usual method
         if (child.getId() == JavammTreeConstants.JJTMAINDECLARATION) {
-            return inspectMainDeclaration(child);
+            // return inspectMainDeclaration(child);
         }
         else if (child.getId() == JavammTreeConstants.JJTMETHODHEADER) {
-            return inspectMethod(methodNode);
+            return inspectMethodHeader(methodNode);
         }
-        else return null;
+        return null;
     }
 
     public FunctionDescriptor inspectMainDeclaration(SimpleNode mainNode) {
@@ -148,11 +151,49 @@ public class TableGenerator {
         return functionDescriptor;
     }
 
-    /*public FunctionParametersDescriptor inspectMethodHeader(SimpleNode headerNode) {
+    public FunctionDescriptor inspectMethodHeader(SimpleNode methodNode) {
+
+        FunctionDescriptor functionDescriptor = new FunctionDescriptor();
+
+        //Cycle can have MethodHeader, LineStatement return IntegralLiteral
+        for (int i = 0; i < methodNode.jjtGetNumChildren(); i++) {
+            SimpleNode child = (SimpleNode) methodNode.jjtGetChild(i);
+            
+            if (child.getId() == JavammTreeConstants.JJTMETHODHEADER) {
+                for (int j = 0; j < child.jjtGetNumChildren(); j++) {
+                    SimpleNode grandChild = (SimpleNode) child.jjtGetChild(j);
+                    //Tem 0 childs
+                    if(grandChild.getId() == JavammTreeConstants.JJTMODIFIER){
+                        functionDescriptor.setAccessVal(grandChild.val);
+                    } 
+                    //O Set return valu esta bem? nao falta String?
+                    else if(grandChild.getId() == JavammTreeConstants.JJTTYPE){
+                        functionDescriptor.setReturnValue(grandChild.val);
+                    }
+
+                    
+                }
+
+            }
+            // else if (child.getId() == JavammTreeConstants.JJTVARIABLEDECLARATION) {
+            //     VariableDescriptor variableDescriptor = inspectVariable(child);
+            //     functionDescriptor.addBodyVariable(variableDescriptor);
+            // }
+            //Se calhar aqui chamar função para statement
+            else if (child.getId() == JavammTreeConstants.JJTLINESTATEMENT) {
+                //TODO
+            }
+            else if (child.getId() == JavammTreeConstants.JJTWHILESTATEMENT) {
+                //TODO
+            }
+
+        }
+
+        return functionDescriptor;
 
     }
 
-    public FunctionBodyDescriptor inspectMethodBody(SimpleNode bodyNode) {
+    /*public FunctionBodyDescriptor inspectMethodBody(SimpleNode bodyNode) {
 
     }*/
 }

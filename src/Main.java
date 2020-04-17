@@ -21,5 +21,7 @@ public class Main {
 
         //root.dump(""); // prints the tree on the screen
         root.dumpTest("", 10);
+        TableGenerator tb = new TableGenerator(root);
+        tb.build();
 	}	
 }
