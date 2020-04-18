@@ -578,7 +578,6 @@ void NewExpr() #void : {Token i;}
     ArrAcc()
     |
     i=<IDENTIFIER>{jjtThis.jjtSetVal(i.image);} #Identifier
-    <LEFTPARENTHESES> #LeftParentheses
-    <RIGHTPARENTHESES> #RightParentheses
+    Arguments()
     [ObjAcc()]
 }
