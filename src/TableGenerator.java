@@ -78,7 +78,7 @@ public class TableGenerator {
             }
             else if (child.getId() == JavammTreeConstants.JJTMETHODDECLARATION) {
                 FunctionDescriptor functionDescriptor = inspectMethodHeader(child);
-                //classDescriptor.addMethod(functionDescriptor);
+                //classDescriptor.addMethod(functionDescriptor.getName(),functionDescriptor);
             }
         }
 
@@ -145,7 +145,9 @@ public class TableGenerator {
                 VariableDescriptor variableDescriptor = inspectVariable(child);
                 functionDescriptor.addBodyVariable(variableDescriptor.getName(),variableDescriptor);
             }
-            //TODO statements inside main
+            else if(child.getId() == JavammTreeConstants.JJTLINESTATEMENT || child.getId() == JavammTreeConstants.JJTWHILESTATEMENT || child.getId() == JavammTreeConstants.JJTIFSTATEMENT){
+                inspectStatement(child,functionDescriptor.getBodyTable());
+        }
         }
 
         return functionDescriptor;

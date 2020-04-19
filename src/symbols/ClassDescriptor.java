@@ -39,8 +39,8 @@ public class ClassDescriptor extends Descriptor{
         return this.functionsTable;
     }
 
-    public void addMethod(FunctionDescriptor method) {
-        functionsTable.addSymbol(method.getName(), method);
+    public void addMethod(String name,FunctionDescriptor method) {
+        functionsTable.addSymbol(name, method);
     }
 
 }
