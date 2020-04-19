@@ -33,11 +33,11 @@ class Quicksort {
 
     }
 
-    public boolean quicksort(int[] L) {
+    /*public boolean quicksort(int[] L) {
         return this.quicksort(L, 0, L.length - 1);
-    }
+    }*/
 
-    public boolean quicksort(int[] L, int lo, int hi) {
+    /*public boolean quicksort(int[] L, int lo, int hi) {
         int p;
 
         if (lo < hi) {
@@ -48,7 +48,7 @@ class Quicksort {
         } else {}
 
         return true;
-    }
+    }*/
 
     public int partition(int[] L, int lo, int hi) {
         int p;

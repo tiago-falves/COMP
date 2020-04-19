@@ -32,6 +32,12 @@ public class ClassDescriptor extends Descriptor{
         }
         variablesTable.addSymbol(variable.getName(), variable);
     }
+    public SymbolsTable getVariablesTable(){
+        return this.functionsTable.getParent();
+    }
+    public SymbolsTable getFunctionParamtersTable(){
+        return this.functionsTable;
+    }
 
     public void addMethod(FunctionDescriptor method) {
         functionsTable.addSymbol(method.getName(), method);

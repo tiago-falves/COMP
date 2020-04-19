@@ -77,8 +77,8 @@ public class TableGenerator {
                 classDescriptor.addVariable(variableDescriptor);
             }
             else if (child.getId() == JavammTreeConstants.JJTMETHODDECLARATION) {
-                FunctionDescriptor functionDescriptor = inspectMethod(child);
-                // classDescriptor.addMethod(functionDescriptor);
+                FunctionDescriptor functionDescriptor = inspectMethodHeader(child);
+                //classDescriptor.addMethod(functionDescriptor);
             }
         }
 
@@ -104,7 +104,7 @@ public class TableGenerator {
         return variableDescriptor;
     }
 
-    public FunctionDescriptor inspectMethod(SimpleNode methodNode) {
+    public FunctionDescriptor inspectMethodHeader(SimpleNode methodNode) {
         SimpleNode child = (SimpleNode) methodNode.jjtGetChild(0);
 
         //check if is main or usual method
@@ -112,7 +112,7 @@ public class TableGenerator {
             // return inspectMainDeclaration(child);
         }
         else if (child.getId() == JavammTreeConstants.JJTMETHODHEADER) {
-            return inspectMethodHeaderBody(methodNode);
+            return inspectMethod(methodNode);
         }
         return null;
     }
@@ -152,7 +152,7 @@ public class TableGenerator {
     }
 
     //Inspects all the methods except main
-    public FunctionDescriptor inspectMethodHeaderBody(SimpleNode methodNode) {
+    public FunctionDescriptor inspectMethod(SimpleNode methodNode) {
 
         FunctionDescriptor functionDescriptor = new FunctionDescriptor();
 
@@ -167,8 +167,7 @@ public class TableGenerator {
                     //Tem 0 childs
                     if(grandChild.getId() == JavammTreeConstants.JJTMODIFIER){
                         functionDescriptor.setAccessVal(grandChild.val);
-                    } 
-                    //O Set return valu esta bem? nao falta String?
+                    }
                     else if(grandChild.getId() == JavammTreeConstants.JJTTYPE){
                         functionDescriptor.setReturnValue(grandChild.val);
                     }
@@ -176,14 +175,14 @@ public class TableGenerator {
                         functionDescriptor.setName(grandChild.val);
                     }
                     else if(grandChild.getId() == JavammTreeConstants.JJTMETHODARGUMENTS){
-                        //Todo
+                        inspectMethodArguments(grandChild,functionDescriptor.getParametersTable());
                     }
                 }
 
             } //Mais vale substituir se isto tudo por um variable and statement nao?
             else if (child.getId() == JavammTreeConstants.JJTVARIABLEDECLARATION) {
                 VariableDescriptor variableDescriptor = inspectVariable(child);
-                // functionDescriptor.addBodyVariable(variableDescriptor.getName(),variableDescriptor);
+                functionDescriptor.addBodyVariable(variableDescriptor.getName(),variableDescriptor);
             }
             else if (child.getId() == JavammTreeConstants.JJTRETURN){
                 SimpleNode actualReturn = (SimpleNode) child.jjtGetChild(0);
@@ -195,6 +194,35 @@ public class TableGenerator {
         }
 
         return functionDescriptor;
+
+    }
+
+    public void inspectMethodArguments(SimpleNode methodArgumentsNode,SymbolsTable parametersTable) {
+
+        for (int i = 0; i < methodArgumentsNode.jjtGetNumChildren(); i++) {
+            SimpleNode child = (SimpleNode) methodArgumentsNode.jjtGetChild(i);
+            String name = "";
+            Type type = Type.VOID;
+
+            //Method Header Parser
+            if (child.getId() == JavammTreeConstants.JJTMETHODARGUMENT) {
+                for (int j = 0; j < child.jjtGetNumChildren() ; j++) {
+
+                    SimpleNode grandChild = (SimpleNode) child.jjtGetChild(j);
+
+                    if (grandChild.getId() == JavammTreeConstants.JJTTYPE) {
+                        TypeString typeString = new TypeString(grandChild.val);
+                        type = typeString.parseType();
+                    } else if (grandChild.getId() == JavammTreeConstants.JJTIDENTIFIER) {
+                        name = grandChild.val;
+                    }
+                }
+            }
+            FunctionParameterDescriptor parameter = new FunctionParameterDescriptor(name,type);
+            parametersTable.addSymbol(name,parameter);
+
+        }
+
 
     }
 

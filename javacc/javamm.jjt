@@ -198,17 +198,22 @@ void MainDeclaration() : {}
         <RIGHTBRACKET>
 
 }
+void MethodArgument() : {Token i1;}
+{
+    Type()
+    i1=<IDENTIFIER>{jjtThis.jjtSetVal(i1.image);} #Identifier{}
+}
 
 void MethodArguments() : {Token i1, i2;}
 {
-    [Type()
-    i1=<IDENTIFIER>{jjtThis.jjtSetVal(i1.image);} #Identifier{} 
+    [MethodArgument()
     ( 
         <COMMA>
-        Type()
-        i2=<IDENTIFIER>{jjtThis.jjtSetVal(i2.image);} #Identifier
+        MethodArgument()
     )*]
 }
+
+
 
 void VarDeclaration() #VariableDeclaration : {Token c, t;}
 {
