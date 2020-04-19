@@ -189,7 +189,7 @@ public class TableGenerator {
                 functionDescriptor.setActualReturnValue(actualReturn.val);
 
             }else if(child.getId() == JavammTreeConstants.JJTLINESTATEMENT || child.getId() == JavammTreeConstants.JJTWHILESTATEMENT || child.getId() == JavammTreeConstants.JJTIFSTATEMENT){
-                inspectStatement(child);
+                inspectStatement(child,functionDescriptor.getBodyTable());
             }
         }
 
@@ -226,11 +226,22 @@ public class TableGenerator {
 
     }
 
-    public void inspectStatement(SimpleNode statementNode){
+    public void inspectStatement(SimpleNode statementNode, SymbolsTable statementParent){
+
+        BlockDescriptor blockDescriptor = new BlockDescriptor(statementParent);
+
+        for (int j = 0; j < statementNode.jjtGetNumChildren() ; j++) {
+
+            SimpleNode child = (SimpleNode) statementNode.jjtGetChild(j);
+
+            if (child.getId() == JavammTreeConstants.JJTVARIABLEDECLARATION) {
+                VariableDescriptor variableDescriptor = inspectVariable(child);
+                blockDescriptor.addSymbol( variableDescriptor.getName(),variableDescriptor);
+            } else if(child.getId() == JavammTreeConstants.JJTLINESTATEMENT || child.getId() == JavammTreeConstants.JJTWHILESTATEMENT || child.getId() == JavammTreeConstants.JJTIFSTATEMENT){
+                inspectStatement(child,blockDescriptor.getLocalTable());
+            }
+        }
 
     }
 
-    /*public FunctionBodyDescriptor inspectMethodBody(SimpleNode bodyNode) {
-
-    }*/
 }
