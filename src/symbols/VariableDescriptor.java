@@ -27,7 +27,11 @@ public class VariableDescriptor extends Descriptor{
     }
 
     public void print(String prefix) {
-        System.out.println("");
+        String initializedString;
+        if (this.isInitialized) initializedString = "init";
+        else initializedString = "non-init";
+
+        System.out.println(prefix + name + " --> " + this.type + " (" + initializedString + ")");
     }
     
 }

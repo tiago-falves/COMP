@@ -21,7 +21,7 @@ public class Main {
         TableGenerator tb = new TableGenerator(root);
         tb.build();
 
-        System.out.println("\nPRINTING SYMBOLS TABLE\n");
+        System.out.println("\n\n\nPRINTING SYMBOLS TABLE...\n");
         tb.getTable().print("");
         System.out.println();
 	}	

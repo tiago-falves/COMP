@@ -76,6 +76,35 @@ public class ImportDescriptor extends Descriptor {
 
 
     public void print(String prefix) {
+        String newPrefix = prefix + "   ";
+
+        String staticString;
+        if(isStatic) staticString = "static";
+        else staticString = "non-static";
+
+        StringBuilder identifierBuilder = new StringBuilder();
+        for(String identifier : identifiers) {
+            identifierBuilder.append(identifier);
+        }
+
+        // printing the import name
+        System.out.println(prefix + "IMPORT " + identifierBuilder.toString() + " (" + staticString + ")");
+
+        // printing return value
+        System.out.println(newPrefix + "Return:\n" + newPrefix + "   " + this.returnType);
+
+        // printing parameters
+        if(parameters.size() > 0) {
+            System.out.println(newPrefix + "Parameters:");
+            for(Type paramater : this.parameters) {
+                System.out.println(newPrefix + "   " + paramater);
+            }
+        } else {
+            System.out.println(newPrefix + "Parameters:");
+            System.out.println(newPrefix + "   " + "None");
+        }
+
+
         System.out.println("");
     }
 }

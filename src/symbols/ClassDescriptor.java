@@ -56,7 +56,7 @@ public class ClassDescriptor extends Descriptor{
         if(isStatic) staticString = "static";
         else staticString = "non-static";
 
-        System.out.println(prefix + "CLASS " + name + " (" + staticString + ")\n");
+        System.out.println(prefix + "CLASS " + this.name + " (" + staticString + ")\n");
         functionsTable.print(prefix + "   ");
     }
 }

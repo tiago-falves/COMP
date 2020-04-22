@@ -46,8 +46,10 @@ public class SymbolsTable {
     }
 
     public void print(String prefix) {
+        /*
         if(this.parent != null) 
             this.parent.print(prefix);
+        */    
 
         for(Map.Entry<String, Descriptor> entry : table.entrySet()) {
             String name = entry.getKey();
@@ -61,7 +63,13 @@ public class SymbolsTable {
             }
             else if(descriptor.getClass().getName().equals("symbols.FunctionParameterDescriptor")) {
                 descriptor.print(prefix);
-            }            
+            }     
+            else if(descriptor.getClass().getName().equals("symbols.VariableDescriptor")) {
+                descriptor.print(prefix);
+            }     
+            else if(descriptor.getClass().getName().equals("symbols.ImportDescriptor")) {
+                descriptor.print(prefix);
+            }                 
             else {
                 System.out.println(prefix + name + " ---> " + descriptor.getClass().getName());
             }

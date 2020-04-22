@@ -94,6 +94,7 @@ public class FunctionDescriptor extends Descriptor {
     public void setName(String name) {
         this.name = name;
     }
+
     public String getName() {
         return this.name;
     }
@@ -114,9 +115,18 @@ public class FunctionDescriptor extends Descriptor {
         // printing parameters
         if(parametersTable.getSize() > 0) {
             System.out.println(newPrefix + "Parameters:");
-            parametersTable.print(newPrefix);
+            parametersTable.print(newPrefix + "   ");
         } else {
             System.out.println(newPrefix + "Parameters:");
+            System.out.println(newPrefix + "   " + "None");
+        }
+
+        // printing body
+        if(bodyTable.getSize() > 0) {
+            System.out.println(newPrefix + "Body:");
+            bodyTable.print(newPrefix + "   ");
+        } else {
+            System.out.println(newPrefix + "Body:");
             System.out.println(newPrefix + "   " + "None");
         }
 

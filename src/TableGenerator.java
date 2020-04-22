@@ -124,6 +124,7 @@ public class TableGenerator {
     public FunctionDescriptor inspectMainDeclaration(SimpleNode mainNode) {
         FunctionDescriptor functionDescriptor = new FunctionDescriptor();
         functionDescriptor.makeStatic();
+        functionDescriptor.setReturnValue("void");
         functionDescriptor.setName("main");
 
         for (int i = 0; i < mainNode.jjtGetNumChildren(); i++) {
@@ -229,6 +230,7 @@ public class TableGenerator {
         }
         else if(variableAndStatementNode.getId() == JavammTreeConstants.JJTLINESTATEMENT || variableAndStatementNode.getId() == JavammTreeConstants.JJTWHILESTATEMENT || variableAndStatementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
             inspectStatement(variableAndStatementNode, functionDescriptor.getBodyTable());
+            // TODO: insert somewhere
         }
     }
 
