@@ -5,6 +5,8 @@ public class TypeString {
 
     public TypeString(String type) {
         this.type = type;
+
+        System.out.println(this.type);
     }
 
     public Type parseType() {

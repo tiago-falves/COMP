@@ -1,3 +1,5 @@
+import javax.management.remote.JMXConnectorServerFactory;
+
 import symbols.*;
 
 public class TableGenerator {
@@ -221,15 +223,21 @@ public class TableGenerator {
             VariableDescriptor variableDescriptor = inspectVariable(variableAndStatementNode);
             functionDescriptor.addBodyVariable(variableDescriptor.getName(),variableDescriptor);
         }
-        else if(variableAndStatementNode.getId() == JavammTreeConstants.JJTLINESTATEMENT || variableAndStatementNode.getId() == JavammTreeConstants.JJTWHILESTATEMENT || variableAndStatementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
-            inspectStatement(variableAndStatementNode, functionDescriptor.getBodyTable());
+        else if(variableAndStatementNode.getId() == JavammTreeConstants.JJTWHILESTATEMENT || variableAndStatementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
+            inspectBlockStatement(variableAndStatementNode, functionDescriptor.getBodyTable());
+        }else if (variableAndStatementNode.getId() == JavammTreeConstants.JJTLINESTATEMENT ){
+            //TODO: Analizar statement
+            System.out.println("OLA");
+            //analyseOperation(statementNode, blockDescriptor.getLocalTable());
+        }else{
+            System.err.println("Error: Unknown symbol");
         }
     }
 
-    public void inspectStatement(SimpleNode statementNode, SymbolsTable statementParent){
+    public void inspectBlockStatement(SimpleNode statementNode, SymbolsTable statementParent){
 
         BlockDescriptor blockDescriptor = new BlockDescriptor(statementParent);
-        System.out.println("Checguei ao statement");
+        System.out.println("Cheguei ao statement");
 
         for (int j = 0; j < statementNode.jjtGetNumChildren() ; j++) {
 
@@ -241,47 +249,54 @@ public class TableGenerator {
                 System.out.println("Var declaration \n");
 
             } 
-            else if(child.getId() == JavammTreeConstants.JJTLINESTATEMENT || child.getId() == JavammTreeConstants.JJTWHILESTATEMENT || child.getId() == JavammTreeConstants.JJTIFSTATEMENT){
-                inspectStatement(child,blockDescriptor.getLocalTable());
+            else if( child.getId() == JavammTreeConstants.JJTWHILESTATEMENT || child.getId() == JavammTreeConstants.JJTIFSTATEMENT){
+                inspectBlockStatement(child,blockDescriptor.getLocalTable());
                 System.out.println("Mais um statement\n");
 
-            }else{
+            }else if(child.getId() == JavammTreeConstants.JJTLINESTATEMENT){
                 analyseOperation(statementNode,blockDescriptor.getLocalTable());
-            }
-
-
-        }
-
-    }
-
-    public void analyseOperation(SimpleNode statementNode,SymbolsTable symbolTable ){
-
-        Type type = Type.VOID;
-
-        for (int j = 0; j < statementNode.jjtGetNumChildren() ; j++) {
-            SimpleNode child = (SimpleNode) statementNode.jjtGetChild(j);
-
-            if(child.getId() == JavammTreeConstants.JJTIDENTIFIER){
-                TypeDescriptor var = (TypeDescriptor) symbolTable.getDescriptor(child.jjtGetVal());
-                //Checks if variable was created
-                if(var != null){
-                    if(j==0){
-                        type = var.getType();
-                    } else{
-                        if(type != var.getType()){
-                            System.out.println("Incompatible type: " + child.jjtGetVal());
-                        }
-                    }
-
-                } else{
-                    System.out.println("Variable not declared: " + child.jjtGetVal());
-                    System.exit(0);
-
-                }
+            }else{
+                System.err.println("Error: Unknown symbol");
             }
         }
 
     }
 
+    public void analyseOperation(SimpleNode statementNode, SymbolsTable symbolTable ){
 
+        if(statementNode.jjtGetNumChildren() < 3){
+            System.err.println("Error: Invalid Line Statement");
+            return;
+        }
+
+        SimpleNode firstChild = (SimpleNode) statementNode.jjtGetChild(0);
+        
+        if(firstChild.getId() != JavammTreeConstants.JJTIDENTIFIER){
+            System.err.println("Error: First Node of Line Statement must be an Identifier");
+            return;
+        }
+
+        TypeDescriptor var = (TypeDescriptor) symbolTable.getDescriptor(child.jjtGetVal());
+        if(var == null){
+            System.out.println("Error: Variable "+firstChild.jjtGetVal()+" not declared");
+            return;
+        }
+
+        Type type = var.getType();
+
+        SimpleNode secondChild = (SimpleNode) statementNode.jjtGetChild(1);
+
+        if(secondChild.getId() == JavammTreeConstants.JJTEQUAL){
+            //Assignement
+            analyzeAssignement(statementNode, symbolTable, type);
+        }
+        else{
+            //Function call
+        }
+
+    }
+
+    public void analyzeAssignement(SimpleNode statementNode, SymbolsTable symbolsTable, Type type){
+        
+    }
 }
