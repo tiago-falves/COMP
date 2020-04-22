@@ -2,14 +2,16 @@ package symbols;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.LinkedList;
+import java.util.List;
 
 public class SymbolsTable {
-    private LinkedHashMap<String, Descriptor> table;
+    private LinkedHashMap<String, List<Descriptor>> table;
     private SymbolsTable parent;
 
     public SymbolsTable() {
         this.parent = null;
-        table = new LinkedHashMap<String, Descriptor>();
+        table = new LinkedHashMap<String, List<Descriptor>>();
     }
 
     public SymbolsTable getParent() {
@@ -24,16 +26,30 @@ public class SymbolsTable {
         return table.size();
     }
 
-    public boolean addSymbol(String name, Descriptor descriptor) {
+    public boolean addSymbol(String name, Descriptor descriptor){
+        return addSymbol(name, descriptor, true);
+    }
+
+    public boolean addSymbol(String name, Descriptor descriptor, boolean allowsDuplicates) {
         if (table.containsKey(name)) {
+            if(allowsDuplicates){
+                List<Descriptor> descriptorList = table.get(name);
+                descriptorList.add(descriptor);
+                return true;
+            }
+
             System.out.println("A symbol with that identifier already exists.");
             return false;
         }
-        table.put(name, descriptor);
+
+        List<Descriptor> descriptors = new LinkedList<>();
+        descriptors.add(descriptor);
+        
+        table.put(name, descriptors);
         return true;
     }
 
-    public Descriptor getDescriptor(String identifier){
+    public List<Descriptor> getDescriptor(String identifier){
         if(table.containsKey(identifier)){
             return table.get(identifier);
         }
@@ -51,28 +67,30 @@ public class SymbolsTable {
             this.parent.print(prefix);
         */    
 
-        for(Map.Entry<String, Descriptor> entry : table.entrySet()) {
+        for(Map.Entry<String, List<Descriptor>> entry : table.entrySet()) {
             String name = entry.getKey();
-            Descriptor descriptor = entry.getValue();
 
-            if(descriptor.getClass().getName().equals("symbols.ClassDescriptor")) {
-                descriptor.print(prefix);
-            } 
-            else if(descriptor.getClass().getName().equals("symbols.FunctionDescriptor")) {
-                descriptor.print(prefix);
-            }
-            else if(descriptor.getClass().getName().equals("symbols.FunctionParameterDescriptor")) {
-                descriptor.print(prefix);
-            }     
-            else if(descriptor.getClass().getName().equals("symbols.VariableDescriptor")) {
-                descriptor.print(prefix);
-            }     
-            else if(descriptor.getClass().getName().equals("symbols.ImportDescriptor")) {
-                descriptor.print(prefix);
-            }                 
-            else {
-                System.out.println(prefix + name + " ---> " + descriptor.getClass().getName());
-            }
+            for(Descriptor descriptor : entry.getValue()) {
+
+                if(descriptor.getClass().getName().equals("symbols.ClassDescriptor")) {
+                    descriptor.print(prefix);
+                } 
+                else if(descriptor.getClass().getName().equals("symbols.FunctionDescriptor")) {
+                    descriptor.print(prefix);
+                }
+                else if(descriptor.getClass().getName().equals("symbols.FunctionParameterDescriptor")) {
+                    descriptor.print(prefix);
+                }     
+                else if(descriptor.getClass().getName().equals("symbols.VariableDescriptor")) {
+                    descriptor.print(prefix);
+                }     
+                else if(descriptor.getClass().getName().equals("symbols.ImportDescriptor")) {
+                    descriptor.print(prefix);
+                }                 
+                else {
+                    System.out.println(prefix + name + " ---> " + descriptor.getClass().getName());
+                }
+         }
 
         }
     }

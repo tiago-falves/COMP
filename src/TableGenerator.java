@@ -61,6 +61,10 @@ public class TableGenerator {
                 }
             }
             else if (child.getId() == JavammTreeConstants.JJTRETURNIMPORT) {
+                if (child.jjtGetNumChildren() == 0) {
+                    importDescriptor.setReturn(Type.VOID);
+                    continue;
+                }
                 SimpleNode grandChild = (SimpleNode) child.jjtGetChild(0);
                 TypeString typeString = new TypeString(grandChild.jjtGetVal());
                 importDescriptor.setReturn(typeString.parseType());
