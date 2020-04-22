@@ -256,6 +256,8 @@ public class TableGenerator {
 
     public void analyseOperation(SimpleNode statementNode,SymbolsTable symbolTable ){
 
+        Type type = Type.VOID;
+
         for (int j = 0; j < statementNode.jjtGetNumChildren() ; j++) {
             SimpleNode child = (SimpleNode) statementNode.jjtGetChild(j);
 
@@ -263,7 +265,13 @@ public class TableGenerator {
                 TypeDescriptor var = (TypeDescriptor) symbolTable.getDescriptor(child.jjtGetVal());
                 //Checks if variable was created
                 if(var != null){
-
+                    if(j==0){
+                        type = var.getType();
+                    } else{
+                        if(type != var.getType()){
+                            System.out.println("Incompatible type: " + child.jjtGetVal());
+                        }
+                    }
 
                 } else{
                     System.out.println("Variable not declared: " + child.jjtGetVal());
