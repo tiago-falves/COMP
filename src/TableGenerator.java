@@ -29,7 +29,7 @@ public class TableGenerator {
                     SimpleNode childNode = (SimpleNode) currentNode.jjtGetChild(0);
                     ClassDescriptor classDescriptor = inspectClass(currentNode);
                     classDescriptor.setName(childNode.jjtGetVal());
-                    symbolsTable.addSymbol(classDescriptor.getName(), classDescriptor);
+                    symbolsTable.addSymbol(classDescriptor.getName(), classDescriptor, false);
                     break;
             }
 
@@ -220,7 +220,7 @@ public class TableGenerator {
                 }
             }
             FunctionParameterDescriptor parameter = new FunctionParameterDescriptor(name,type);
-            parametersTable.addSymbol(name,parameter);
+            parametersTable.addSymbol(name, parameter, false);
 
         }
 
@@ -248,7 +248,7 @@ public class TableGenerator {
 
             if (child.getId() == JavammTreeConstants.JJTVARIABLEDECLARATION) {
                 VariableDescriptor variableDescriptor = inspectVariable(child);
-                blockDescriptor.addSymbol(variableDescriptor.getName(),variableDescriptor);
+                blockDescriptor.addSymbol(variableDescriptor.getName(), variableDescriptor);
             } 
             else if(child.getId() == JavammTreeConstants.JJTLINESTATEMENT || child.getId() == JavammTreeConstants.JJTWHILESTATEMENT || child.getId() == JavammTreeConstants.JJTIFSTATEMENT){
                 inspectStatement(child,blockDescriptor.getLocalTable());

@@ -20,11 +20,11 @@ public class FunctionDescriptor extends Descriptor {
     }
 
     public void addParameter(FunctionParameterDescriptor parameterDescriptor) {
-        this.parametersTable.addSymbol(parameterDescriptor.getName(), parameterDescriptor);
+        this.parametersTable.addSymbol(parameterDescriptor.getName(), parameterDescriptor, false);
     }
 
     public void addBodyVariable(String name,VariableDescriptor variableDescriptor) {
-        this.bodyTable.addSymbol(name, variableDescriptor);
+        this.bodyTable.addSymbol(name, variableDescriptor, false);
     }
 
 

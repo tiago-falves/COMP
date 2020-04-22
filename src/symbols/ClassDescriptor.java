@@ -38,7 +38,7 @@ public class ClassDescriptor extends Descriptor{
         if (variablesTable == null) {
             variablesTable = new SymbolsTable();
         }
-        variablesTable.addSymbol(variable.getName(), variable);
+        variablesTable.addSymbol(variable.getName(), variable, false);
     }
     public SymbolsTable getVariablesTable(){
         return this.functionsTable.getParent();
