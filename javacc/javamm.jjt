@@ -213,8 +213,6 @@ void MethodArguments() : {Token i1, i2;}
     )*]
 }
 
-
-
 void VarDeclaration() #VariableDeclaration : {Token c, t;}
 {
     (

@@ -29,7 +29,6 @@ public class TableGenerator {
             }
             i++;
 
-
         }
     }
 
@@ -109,7 +108,7 @@ public class TableGenerator {
 
         //check if is main or usual method
         if (child.getId() == JavammTreeConstants.JJTMAINDECLARATION) {
-            // return inspectMainDeclaration(child);
+            return inspectMainDeclaration(child);
         }
         else if (child.getId() == JavammTreeConstants.JJTMETHODHEADER) {
             return inspectMethod(methodNode);
@@ -141,13 +140,7 @@ public class TableGenerator {
                 }
 
             }
-            else if (child.getId() == JavammTreeConstants.JJTVARIABLEDECLARATION) {
-                VariableDescriptor variableDescriptor = inspectVariable(child);
-                functionDescriptor.addBodyVariable(variableDescriptor.getName(),variableDescriptor);
-            }
-            else if(child.getId() == JavammTreeConstants.JJTLINESTATEMENT || child.getId() == JavammTreeConstants.JJTWHILESTATEMENT || child.getId() == JavammTreeConstants.JJTIFSTATEMENT){
-                inspectStatement(child,functionDescriptor.getBodyTable());
-        }
+            else inspectVariableAndStatement(child, functionDescriptor);
         }
 
         return functionDescriptor;
@@ -181,18 +174,13 @@ public class TableGenerator {
                     }
                 }
 
-            } //Mais vale substituir se isto tudo por um variable and statement nao?
-            else if (child.getId() == JavammTreeConstants.JJTVARIABLEDECLARATION) {
-                VariableDescriptor variableDescriptor = inspectVariable(child);
-                functionDescriptor.addBodyVariable(variableDescriptor.getName(),variableDescriptor);
-            }
+            } 
             else if (child.getId() == JavammTreeConstants.JJTRETURN){
                 SimpleNode actualReturn = (SimpleNode) child.jjtGetChild(0);
                 functionDescriptor.setActualReturnValue(actualReturn.val);
 
-            }else if(child.getId() == JavammTreeConstants.JJTLINESTATEMENT || child.getId() == JavammTreeConstants.JJTWHILESTATEMENT || child.getId() == JavammTreeConstants.JJTIFSTATEMENT){
-                inspectStatement(child,functionDescriptor.getBodyTable());
             }
+            else inspectVariableAndStatement(child, functionDescriptor);
         }
 
         return functionDescriptor;
@@ -228,6 +216,16 @@ public class TableGenerator {
 
     }
 
+    public void inspectVariableAndStatement(SimpleNode variableAndStatementNode, FunctionDescriptor functionDescriptor) {
+        if (variableAndStatementNode.getId() == JavammTreeConstants.JJTVARIABLEDECLARATION) {
+            VariableDescriptor variableDescriptor = inspectVariable(variableAndStatementNode);
+            functionDescriptor.addBodyVariable(variableDescriptor.getName(),variableDescriptor);
+        }
+        else if(variableAndStatementNode.getId() == JavammTreeConstants.JJTLINESTATEMENT || variableAndStatementNode.getId() == JavammTreeConstants.JJTWHILESTATEMENT || variableAndStatementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
+            inspectStatement(variableAndStatementNode, functionDescriptor.getBodyTable());
+        }
+    }
+
     public void inspectStatement(SimpleNode statementNode, SymbolsTable statementParent){
 
         BlockDescriptor blockDescriptor = new BlockDescriptor(statementParent);
@@ -238,8 +236,9 @@ public class TableGenerator {
 
             if (child.getId() == JavammTreeConstants.JJTVARIABLEDECLARATION) {
                 VariableDescriptor variableDescriptor = inspectVariable(child);
-                blockDescriptor.addSymbol( variableDescriptor.getName(),variableDescriptor);
-            } else if(child.getId() == JavammTreeConstants.JJTLINESTATEMENT || child.getId() == JavammTreeConstants.JJTWHILESTATEMENT || child.getId() == JavammTreeConstants.JJTIFSTATEMENT){
+                blockDescriptor.addSymbol(variableDescriptor.getName(),variableDescriptor);
+            } 
+            else if(child.getId() == JavammTreeConstants.JJTLINESTATEMENT || child.getId() == JavammTreeConstants.JJTWHILESTATEMENT || child.getId() == JavammTreeConstants.JJTIFSTATEMENT){
                 inspectStatement(child,blockDescriptor.getLocalTable());
             }
         }
