@@ -77,7 +77,7 @@ public class TableGenerator {
             }
             else if (child.getId() == JavammTreeConstants.JJTMETHODDECLARATION) {
                 FunctionDescriptor functionDescriptor = inspectMethodHeader(child);
-                //classDescriptor.addMethod(functionDescriptor.getName(),functionDescriptor);
+                classDescriptor.addMethod(functionDescriptor.getName(),functionDescriptor);
             }
         }
 
