@@ -2,17 +2,19 @@ package symbols;
 
 import java.util.ArrayList;
 
-public class ImportDescriptor extends Descriptor {
+public class ImportDescriptor extends TypeDescriptor {
     boolean isStatic;
     ArrayList<String> identifiers;
     ArrayList<Type> parameters;
-    Type returnType;
+    //Type returnType;
 
     public ImportDescriptor() {
+        super(null);
         this.isStatic = false;
         this.identifiers = new ArrayList();
         this.parameters = new ArrayList();
-        this.returnType = null;
+        //this.returnType = null;
+
     }
 
     // Identifiers
@@ -63,14 +65,14 @@ public class ImportDescriptor extends Descriptor {
 
     // Return
     public boolean hasReturn() {
-        return this.returnType != null;
+        return this.type != null;
     }
 
-    public Type getReturn() {
+    /*public Type getReturn() {
         return this.returnType;
     }
 
     public void setReturn(Type returnType) {
         this.returnType = returnType;
-    }
+    }*/
 }

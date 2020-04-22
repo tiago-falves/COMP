@@ -1,12 +1,12 @@
 package symbols;
 
-public class FunctionParameterDescriptor extends Descriptor{
+public class FunctionParameterDescriptor extends TypeDescriptor{
     private String name;
-    private Type type;
+
 
     public FunctionParameterDescriptor(String name, Type type) {
+        super(type);
         this.name = name;
-        this.type = type;
     }
 
     public String getName() {

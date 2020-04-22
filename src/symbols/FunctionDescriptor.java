@@ -1,19 +1,20 @@
 package symbols;
 
-public class FunctionDescriptor extends Descriptor {
+public class FunctionDescriptor extends TypeDescriptor {
 
 
 
     //protected FunctionBodyDescriptor bodyDescriptor;
     protected SymbolsTable bodyTable;
     protected SymbolsTable parametersTable;
-    private Type returnValue;
+
     private Type actualReturnValue;
     private boolean isStatic;
     private Access access;
     private String name;
 
     public FunctionDescriptor(){
+        super(null);
         this.isStatic = false;
         this.access = Access.DEFAULT;
         this.bodyTable = new SymbolsTable();
@@ -47,7 +48,7 @@ public class FunctionDescriptor extends Descriptor {
     }
 
     public Type getReturnValue() {
-        return this.returnValue;
+        return type;
     }
     
     public void setReturnValue(String returnValue){
@@ -55,7 +56,7 @@ public class FunctionDescriptor extends Descriptor {
         TypeString typeString = new TypeString(returnValue);
         Type type = typeString.parseType();
         //Nao falta string no type?
-        this.returnValue = type;
+        this.type = type;
     }
 
     public Type getActualReturnValue() {

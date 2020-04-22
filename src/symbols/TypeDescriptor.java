@@ -1,9 +1,9 @@
 package symbols;
 
-public abstract class Descriptor {
-    /*protected Type type;
+public class TypeDescriptor extends Descriptor {
+    protected Type type;
 
-    public Descriptor(Type type) {
+    public TypeDescriptor(Type type) {
         this.type = type;
     }
 
@@ -13,6 +13,5 @@ public abstract class Descriptor {
 
     public void setType(Type type) {
         this.type = type;
-    }*/
-
+    }
 }

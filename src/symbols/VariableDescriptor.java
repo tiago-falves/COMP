@@ -1,20 +1,21 @@
 package symbols;
 
-public class VariableDescriptor extends Descriptor{
-    Type type;
+public class VariableDescriptor extends TypeDescriptor{
     boolean isInitialized;
     String name;
 
-    public void setType(Type type) {
-        this.type = type;
+    public VariableDescriptor(Type type) {
+        super(type);
     }
+
+    public VariableDescriptor() {
+        super(Type.VOID);
+    }
+
     public void setInitialized(boolean isInitialized) {
         this.isInitialized = isInitialized;
     }
 
-    public Type getType(){
-        return this.type;
-    }
     public boolean isInitialized(){
         return isInitialized;
     }
