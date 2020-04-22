@@ -21,4 +21,8 @@ public class BlockDescriptor extends Descriptor {
     public void addSymbol(String name, Descriptor descriptor){
         this.blockTable.addSymbol(name, descriptor);
     }
+
+    public void print(String prefix) {
+        System.out.println("");
+    }
 }

@@ -4,7 +4,7 @@ public class ClassDescriptor extends Descriptor{
     
     // Local table: parent = parameter table
     protected SymbolsTable functionsTable;
-    
+    private String name;
     private boolean isStatic;
     private Access access;
 
@@ -12,6 +12,14 @@ public class ClassDescriptor extends Descriptor{
         this.access = Access.DEFAULT;
         this.isStatic = false;
         this.functionsTable = new SymbolsTable();
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public boolean isStatic(){
@@ -43,4 +51,12 @@ public class ClassDescriptor extends Descriptor{
         functionsTable.addSymbol(name, method);
     }
 
+    public void print(String prefix) {
+        String staticString;
+        if(isStatic) staticString = "static";
+        else staticString = "non-static";
+
+        System.out.println(prefix + "CLASS " + name + " (" + staticString + ")\n");
+        functionsTable.print(prefix + "   ");
+    }
 }

@@ -1,6 +1,8 @@
 package symbols;
 
 public abstract class Descriptor {
+
+    abstract void print(String prefix);
 /*    protected String name;
     protected String identifier;
 

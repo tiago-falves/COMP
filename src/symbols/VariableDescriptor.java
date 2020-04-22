@@ -25,5 +25,9 @@ public class VariableDescriptor extends Descriptor{
     public String getName() {
         return this.name;
     }
+
+    public void print(String prefix) {
+        System.out.println("");
+    }
     
 }

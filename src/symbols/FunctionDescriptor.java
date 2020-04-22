@@ -2,8 +2,6 @@ package symbols;
 
 public class FunctionDescriptor extends Descriptor {
 
-
-
     //protected FunctionBodyDescriptor bodyDescriptor;
     protected SymbolsTable bodyTable;
     protected SymbolsTable parametersTable;
@@ -100,6 +98,29 @@ public class FunctionDescriptor extends Descriptor {
         return this.name;
     }
 
-  
+    public void print(String prefix) {
+        String newPrefix = prefix + "   ";
 
+        String staticString;
+        if(isStatic) staticString = "static";
+        else staticString = "non-static";
+
+        // printing function name and if it's static
+        System.out.println(prefix + "FUNCTION " + this.name + " (" + staticString + ")");
+
+        // printing return value
+        System.out.println(newPrefix + "Return:\n" + newPrefix + "   " + this.returnValue);
+
+        // printing parameters
+        if(parametersTable.getSize() > 0) {
+            System.out.println(newPrefix + "Parameters:");
+            parametersTable.print(newPrefix);
+        } else {
+            System.out.println(newPrefix + "Parameters:");
+            System.out.println(newPrefix + "   " + "None");
+        }
+
+        System.out.println();
+    }
+    
 }

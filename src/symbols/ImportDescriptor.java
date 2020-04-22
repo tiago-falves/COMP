@@ -73,4 +73,9 @@ public class ImportDescriptor extends Descriptor {
     public void setReturn(Type returnType) {
         this.returnType = returnType;
     }
+
+
+    public void print(String prefix) {
+        System.out.println("");
+    }
 }

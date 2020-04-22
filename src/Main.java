@@ -20,5 +20,9 @@ public class Main {
         root.dumpTest("", 10);
         TableGenerator tb = new TableGenerator(root);
         tb.build();
+
+        System.out.println("\nPRINTING SYMBOLS TABLE\n");
+        tb.getTable().print("");
+        System.out.println();
 	}	
 }

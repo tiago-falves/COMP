@@ -9,6 +9,10 @@ public class TableGenerator {
         this.symbolsTable = new SymbolsTable();
     }
 
+    public SymbolsTable getTable() {
+        return this.symbolsTable;
+    }
+
     public void build() {
         int i = 0;
         // System.out.println(rootNode.jjtGetNumChildren());
@@ -22,13 +26,14 @@ public class TableGenerator {
                     break;
 
                 case JavammTreeConstants.JJTCLASSDECLARATION:
+                    SimpleNode childNode = (SimpleNode) currentNode.jjtGetChild(0);
                     ClassDescriptor classDescriptor = inspectClass(currentNode);
-                    //TODO
-                    //symbolsTable.addSymbol(classDescriptor.jjtGetVal(), classDescriptor);
+                    classDescriptor.setName(childNode.jjtGetVal());
+                    symbolsTable.addSymbol(classDescriptor.getName(), classDescriptor);
                     break;
             }
-            i++;
 
+            i++;
         }
     }
 
@@ -119,6 +124,7 @@ public class TableGenerator {
     public FunctionDescriptor inspectMainDeclaration(SimpleNode mainNode) {
         FunctionDescriptor functionDescriptor = new FunctionDescriptor();
         functionDescriptor.makeStatic();
+        functionDescriptor.setName("main");
 
         for (int i = 0; i < mainNode.jjtGetNumChildren(); i++) {
             SimpleNode child = (SimpleNode) mainNode.jjtGetChild(i);

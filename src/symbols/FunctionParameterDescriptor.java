@@ -13,6 +13,10 @@ public class FunctionParameterDescriptor extends Descriptor{
         return this.name;
     }
 
+    public void print(String prefix) {
+        System.out.println(prefix + name + " --> " + this.type);
+    }
+
     //protected SymbolsTable parametersTable;
 
     /*public FunctionParameterDescriptor(){

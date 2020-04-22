@@ -1,6 +1,7 @@
 package symbols;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class SymbolsTable {
     private LinkedHashMap<String, Descriptor> table;
@@ -17,6 +18,10 @@ public class SymbolsTable {
 
     public void setParent(SymbolsTable parent) {
         this.parent = parent;
+    }
+
+    public int getSize() {
+        return table.size();
     }
 
     public boolean addSymbol(String name, Descriptor descriptor) {
@@ -38,5 +43,29 @@ public class SymbolsTable {
         }
 
         return null;
+    }
+
+    public void print(String prefix) {
+        if(this.parent != null) 
+            this.parent.print(prefix);
+
+        for(Map.Entry<String, Descriptor> entry : table.entrySet()) {
+            String name = entry.getKey();
+            Descriptor descriptor = entry.getValue();
+
+            if(descriptor.getClass().getName().equals("symbols.ClassDescriptor")) {
+                descriptor.print(prefix);
+            } 
+            else if(descriptor.getClass().getName().equals("symbols.FunctionDescriptor")) {
+                descriptor.print(prefix);
+            }
+            else if(descriptor.getClass().getName().equals("symbols.FunctionParameterDescriptor")) {
+                descriptor.print(prefix);
+            }            
+            else {
+                System.out.println(prefix + name + " ---> " + descriptor.getClass().getName());
+            }
+
+        }
     }
 }
