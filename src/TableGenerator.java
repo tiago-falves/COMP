@@ -23,8 +23,7 @@ public class TableGenerator {
 
                 case JavammTreeConstants.JJTCLASSDECLARATION:
                     ClassDescriptor classDescriptor = inspectClass(currentNode);
-                    //TODO
-                    //symbolsTable.addSymbol(classDescriptor.jjtGetVal(), classDescriptor);
+                    symbolsTable.addSymbol(currentNode.jjtGetVal(), classDescriptor);
                     break;
             }
             i++;
