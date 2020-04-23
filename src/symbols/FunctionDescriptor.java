@@ -24,7 +24,7 @@ public class FunctionDescriptor extends TypeDescriptor {
         this.parametersTable.addSymbol(parameterDescriptor.getName(), parameterDescriptor, false);
     }
 
-    public void addBodyVariable(String name,VariableDescriptor variableDescriptor) {
+    public void addBodyVariable(String name, VariableDescriptor variableDescriptor) {
         this.bodyTable.addSymbol(name, variableDescriptor, false);
     }
 

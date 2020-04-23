@@ -37,14 +37,11 @@ public class SymbolsTable {
                 descriptorList.add(descriptor);
                 return true;
             }
-
-            System.out.println("A symbol with that identifier already exists.");
             return false;
         }
 
         List<Descriptor> descriptors = new LinkedList<>();
         descriptors.add(descriptor);
-        
         table.put(name, descriptors);
         return true;
     }

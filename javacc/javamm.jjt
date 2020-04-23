@@ -253,7 +253,7 @@ void IdentifierStatement() #void : {Token i1;}
 void IdentifierVariableDeclaration(Token i1) #VariableDeclaration : {Token i2;}
 {
     {jjtThis.jjtSetVal(i1.image);} #ClassType
-    i2=<IDENTIFIER>{jjtThis.jjtSetVal(i2.image);} #Identifier 
+    i2=<IDENTIFIER>{jjtThis.jjtSetVal(i2.image);} #VariableName 
     <SEMICOLON>
 }
 
