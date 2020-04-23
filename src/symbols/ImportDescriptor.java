@@ -6,14 +6,14 @@ public class ImportDescriptor extends TypeDescriptor {
     boolean isStatic;
     ArrayList<String> identifiers;
     ArrayList<Type> parameters;
-    //Type returnType;
+    Type returnType;
 
     public ImportDescriptor() {
         super(null);
         this.isStatic = false;
         this.identifiers = new ArrayList();
         this.parameters = new ArrayList();
-        //this.returnType = null;
+        this.returnType = null;
 
     }
 
@@ -68,11 +68,44 @@ public class ImportDescriptor extends TypeDescriptor {
         return this.type != null;
     }
 
-    /*public Type getReturn() {
+    public Type getReturn() {
         return this.returnType;
     }
 
     public void setReturn(Type returnType) {
         this.returnType = returnType;
-    }*/
+    }
+
+    public void print(String prefix) {
+        String newPrefix = prefix + "   ";
+
+        String staticString;
+        if(isStatic) staticString = "static";
+        else staticString = "non-static";
+
+        StringBuilder identifierBuilder = new StringBuilder();
+        for(String identifier : identifiers) {
+            identifierBuilder.append(identifier);
+        }
+
+        // printing the import name
+        System.out.println(prefix + "IMPORT " + identifierBuilder.toString() + " (" + staticString + ")");
+
+        // printing return value
+        System.out.println(newPrefix + "Return:\n" + newPrefix + "   " + this.returnType);
+
+        // printing parameters
+        if(parameters.size() > 0) {
+            System.out.println(newPrefix + "Parameters:");
+            for(Type paramater : this.parameters) {
+                System.out.println(newPrefix + "   " + paramater);
+            }
+        } else {
+            System.out.println(newPrefix + "Parameters:");
+            System.out.println(newPrefix + "   " + "None");
+        }
+
+
+        System.out.println("");
+    }
 }

@@ -1,6 +1,6 @@
 package symbols;
 
-public class TypeDescriptor extends Descriptor {
+public abstract class TypeDescriptor extends Descriptor {
     protected Type type;
 
     public TypeDescriptor(Type type) {

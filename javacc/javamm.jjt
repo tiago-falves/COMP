@@ -354,7 +354,7 @@ void LineStatement() : {Token i;}
     <SEMICOLON>
 }
 
-void LiteralLineStatement() #void : {}
+void LiteralLineStatement() #LineStatement : {}
 {
     LiteralExpr4() ExpressionTail()
     <SEMICOLON>

@@ -2,8 +2,6 @@ package symbols;
 
 public class FunctionDescriptor extends TypeDescriptor {
 
-
-
     //protected FunctionBodyDescriptor bodyDescriptor;
     protected SymbolsTable bodyTable;
     protected SymbolsTable parametersTable;
@@ -23,11 +21,11 @@ public class FunctionDescriptor extends TypeDescriptor {
     }
 
     public void addParameter(FunctionParameterDescriptor parameterDescriptor) {
-        this.parametersTable.addSymbol(parameterDescriptor.getName(), parameterDescriptor);
+        this.parametersTable.addSymbol(parameterDescriptor.getName(), parameterDescriptor, false);
     }
 
     public void addBodyVariable(String name,VariableDescriptor variableDescriptor) {
-        this.bodyTable.addSymbol(name, variableDescriptor);
+        this.bodyTable.addSymbol(name, variableDescriptor, false);
     }
 
 
@@ -97,10 +95,43 @@ public class FunctionDescriptor extends TypeDescriptor {
     public void setName(String name) {
         this.name = name;
     }
+
     public String getName() {
         return this.name;
     }
 
-  
+    public void print(String prefix) {
+        String newPrefix = prefix + "   ";
 
+        String staticString;
+        if(isStatic) staticString = "static";
+        else staticString = "non-static";
+
+        // printing function name and if it's static
+        System.out.println(prefix + "FUNCTION " + this.name + " (" + staticString + ")");
+
+        // printing return value
+        System.out.println(newPrefix + "Return:\n" + newPrefix + "   " + this.type);
+
+        // printing parameters
+        if(parametersTable.getSize() > 0) {
+            System.out.println(newPrefix + "Parameters:");
+            parametersTable.print(newPrefix + "   ");
+        } else {
+            System.out.println(newPrefix + "Parameters:");
+            System.out.println(newPrefix + "   " + "None");
+        }
+
+        // printing body
+        if(bodyTable.getSize() > 0) {
+            System.out.println(newPrefix + "Body:");
+            bodyTable.print(newPrefix + "   ");
+        } else {
+            System.out.println(newPrefix + "Body:");
+            System.out.println(newPrefix + "   " + "None");
+        }
+
+        System.out.println();
+    }
+    
 }

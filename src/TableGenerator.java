@@ -11,6 +11,10 @@ public class TableGenerator {
         this.symbolsTable = new SymbolsTable();
     }
 
+    public SymbolsTable getTable() {
+        return this.symbolsTable;
+    }
+
     public void build() {
         int i = 0;
         // System.out.println(rootNode.jjtGetNumChildren());
@@ -24,12 +28,14 @@ public class TableGenerator {
                     break;
 
                 case JavammTreeConstants.JJTCLASSDECLARATION:
+                    SimpleNode childNode = (SimpleNode) currentNode.jjtGetChild(0);
                     ClassDescriptor classDescriptor = inspectClass(currentNode);
-                    symbolsTable.addSymbol(currentNode.jjtGetVal(), classDescriptor);
+                    classDescriptor.setName(childNode.jjtGetVal());
+                    symbolsTable.addSymbol(classDescriptor.getName(), classDescriptor, false);
                     break;
             }
-            i++;
 
+            i++;
         }
     }
 
@@ -57,6 +63,10 @@ public class TableGenerator {
                 }
             }
             else if (child.getId() == JavammTreeConstants.JJTRETURNIMPORT) {
+                if (child.jjtGetNumChildren() == 0) {
+                    importDescriptor.setReturn(Type.VOID);
+                    continue;
+                }
                 SimpleNode grandChild = (SimpleNode) child.jjtGetChild(0);
                 TypeString typeString = new TypeString(grandChild.jjtGetVal());
                 importDescriptor.setType(typeString.parseType());
@@ -120,6 +130,8 @@ public class TableGenerator {
     public FunctionDescriptor inspectMainDeclaration(SimpleNode mainNode) {
         FunctionDescriptor functionDescriptor = new FunctionDescriptor();
         functionDescriptor.makeStatic();
+        functionDescriptor.setReturnValue("void");
+        functionDescriptor.setName("main");
 
         for (int i = 0; i < mainNode.jjtGetNumChildren(); i++) {
             SimpleNode child = (SimpleNode) mainNode.jjtGetChild(i);
@@ -211,7 +223,7 @@ public class TableGenerator {
                 }
             }
             FunctionParameterDescriptor parameter = new FunctionParameterDescriptor(name,type);
-            parametersTable.addSymbol(name,parameter);
+            parametersTable.addSymbol(name, parameter, false);
 
         }
 
@@ -300,7 +312,7 @@ public class TableGenerator {
 
     }
 
-    public void analyzeFunctionCall(statementNode, symbolTable){
+    public void analyzeFunctionCall(SimpleNode statementNode, SymbolsTable symbolTable){
 
     }
 }
