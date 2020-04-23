@@ -276,27 +276,31 @@ public class TableGenerator {
             return;
         }
 
-        TypeDescriptor var = (TypeDescriptor) symbolTable.getDescriptor(child.jjtGetVal());
-        if(var == null){
+        TypeDescriptor typeDescriptor = (TypeDescriptor) symbolTable.getDescriptor(firstChild.jjtGetVal());
+        if(typeDescriptor == null){
             System.out.println("Error: Variable "+firstChild.jjtGetVal()+" not declared");
             return;
         }
-
-        Type type = var.getType();
 
         SimpleNode secondChild = (SimpleNode) statementNode.jjtGetChild(1);
 
         if(secondChild.getId() == JavammTreeConstants.JJTEQUAL){
             //Assignement
+            Type type = typeDescriptor.getType();
             analyzeAssignement(statementNode, symbolTable, type);
         }
         else{
             //Function call
+            analyzeFunctionCall(statementNode, symbolTable);
         }
 
     }
 
     public void analyzeAssignement(SimpleNode statementNode, SymbolsTable symbolsTable, Type type){
-        
+
+    }
+
+    public void analyzeFunctionCall(statementNode, symbolTable){
+
     }
 }
