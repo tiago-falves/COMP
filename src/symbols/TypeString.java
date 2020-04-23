@@ -19,6 +19,8 @@ public class TypeString {
                 return Type.BOOLEAN;
             case "class":
                 return Type.CLASS;
+            case "String[]":
+                return Type.STRING_ARRAY;
             //TODO: VER ISTO
             default:
                 return Type.VOID;

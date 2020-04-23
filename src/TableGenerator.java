@@ -3,6 +3,7 @@ import javax.management.remote.JMXConnectorServerFactory;
 import symbols.*;
 
 import java.util.List;
+import java.util.ArrayList;
 
 public class TableGenerator {
     SimpleNode rootNode;
@@ -284,7 +285,7 @@ public class TableGenerator {
 
         SimpleNode firstChild = (SimpleNode) statementNode.jjtGetChild(0);
         
-        if(firstChild.getId() != JavammTreeConstants.JJTIDENTIFIER){
+        if(firstChild.getId() != JavammTreeConstants.JJTIDENTIFIER && firstChild.getId() != JavammTreeConstants.JJTTHIS){
             System.err.println("Error: First Node of Line Statement must be an Identifier");
             return;
         }
@@ -327,8 +328,152 @@ public class TableGenerator {
     public void inspectAssignement(SimpleNode statementNode, SymbolsTable symbolsTable, Type type){
 
     }
+    
+    public String inspectFunctionCall(SimpleNode statementNode, SymbolsTable symbolTable){
+        return inspectFunctionCall(statementNode, symbolTable, 0);
+    }
 
-    public void inspectFunctionCall(SimpleNode statementNode, SymbolsTable symbolTable){
+    public String inspectFunctionCall(SimpleNode statementNode, SymbolsTable symbolTable, int initialChild){
+        List<String> identifiers = new ArrayList<>();
+        SimpleNode node = (SimpleNode) statementNode.jjtGetChild(initialChild);
+        identifiers.add(node.jjtGetVal());
 
+        SimpleNode child = (SimpleNode) statementNode.jjtGetChild(initialChild+1);
+        int nextChild = initialChild+1;
+        if(child.getId() == JavammTreeConstants.JJTDOT){
+            node = (SimpleNode) statementNode.jjtGetChild(initialChild+2);
+            identifiers.add(node.jjtGetVal());
+            nextChild = initialChild+3;
+        }
+
+        SimpleNode argumentsNode = (SimpleNode) statementNode.jjtGetChild(nextChild);
+        if(argumentsNode.getId() != JavammTreeConstants.JJTARGUMENTS){
+            System.err.println("Error: Unexpected node with id=" + argumentsNode.getId());
+            return null;
+        }
+
+        List<String> parameters = new ArrayList<>();
+        for(int i = 0; i < argumentsNode.jjtGetNumChildren(); i++){
+            SimpleNode argumentNode = (SimpleNode) argumentsNode.jjtGetChild(i);
+            if(argumentNode.getId() != JavammTreeConstants.JJTARGUMENT){
+                System.err.println("Error: Unexpected argument node with id=" + argumentNode.getId());
+                return null;
+            }
+            String parameterType = inspectArgument(argumentNode, symbolTable);
+            parameters.add(parameterType);
+        }
+
+        //TODO Verificar se a função existe e o seu retorno
+
+        return null;
+    }
+
+    public String inspectArgument(SimpleNode argumentNode, SymbolsTable symbolsTable){ 
+        SimpleNode node;
+        if(argumentNode.jjtGetNumChildren() == 1){
+            node = (SimpleNode) argumentNode.jjtGetChild(0);
+
+            switch(node.getId()){
+                case JavammTreeConstants.JJTINTEGERLITERAL: {
+                    return "int";
+                }
+                case JavammTreeConstants.JJTTRUE: 
+                case JavammTreeConstants.JJTFALSE: {
+                    return "boolean";
+                }
+                case JavammTreeConstants.JJTIDENTIFIER: {
+                    List<Descriptor> descriptors = symbolsTable.getDescriptor(node.jjtGetVal());
+                    if(descriptors.size() > 1){
+                        System.err.println("Error: Argument " + node.jjtGetVal() + " is defined more than once");
+                        return null;
+                    }
+                    TypeDescriptor descriptor = (TypeDescriptor) descriptors.get(0);
+                    
+                    Type type = descriptor.getType();
+                    if(type == Type.CLASS){
+                        return descriptor.getClassName();
+                    }
+                    return (new StringType(type)).getString();
+                }
+                default: {
+                    //TODO Adicionar mais casos
+                    System.out.println("Argument Node ID: " + node.getId()); //Para detetar novos casos 
+                }
+            }
+        }else{
+            //TODO Se tiver mais do que 1 children pode ser: chamada a função; operação
+            String type = null;
+            
+            for(int i = 0; i < argumentNode.jjtGetNumChildren(); i++){
+                node = (SimpleNode) argumentNode.jjtGetChild(i);
+                switch(node.getId()){
+                    case JavammTreeConstants.JJTINTEGERLITERAL: {
+                        if(type == null){
+                            type = "int";
+                        }else if(!type.equals("int")){
+                            System.err.println("ERROR: INT IS INCOMPATIBLE WITH " + type);
+                            return null;
+                        }
+                        break;
+                    }
+                    case JavammTreeConstants.JJTTRUE: 
+                    case JavammTreeConstants.JJTFALSE: {
+                        System.err.println("ERROR: OPERATION CAN'T INVOLVE A BOOLEAN TYPE");
+                        return null;
+                    }
+                    case JavammTreeConstants.JJTIDENTIFIER: {
+                        if(i+1 < argumentNode.jjtGetNumChildren()){
+                            SimpleNode nextNode = (SimpleNode) argumentNode.jjtGetChild(i+1);
+                            if(nextNode.getId() == JavammTreeConstants.JJTDOT){
+                                String functionType = inspectFunctionCall(argumentNode, symbolsTable, i);
+                                if(type == null){
+                                    type = functionType;
+                                }else if(!type.equals(functionType)){
+                                    System.err.println("ERROR: " + functionType + " IS INCOMPATIBLE WITH " + type);
+                                    return null;
+                                }
+                                i += 3; // Jump function identifiers
+                                continue;
+                            }
+                        }
+
+                        List<Descriptor> descriptors = symbolsTable.getDescriptor(node.jjtGetVal());
+                        if(descriptors == null ){
+                            System.err.println("Error: Argument " + node.jjtGetVal() + " is not defined");
+                            return null;
+                        }else if(descriptors.size() > 1){
+                            System.err.println("Error: Argument " + node.jjtGetVal() + " is defined more than once");
+                            return null;
+                        }
+                        TypeDescriptor descriptor = (TypeDescriptor) descriptors.get(0);
+                        
+                        Type descriptorType = descriptor.getType();
+                        if(descriptorType == Type.CLASS){
+                            System.err.println("ERROR: OPERATION CAN'T INVOLVE A CLASS TYPE");
+                            return null;
+                        }
+
+                        String descType = (new StringType(descriptorType)).getString();
+                        if(type == null){
+                            type = descType;
+                        }else if(!type.equals(descType)){
+                            System.err.println("ERROR: " + descType + " IS INCOMPATIBLE WITH " + type);
+                            return null;
+                        }
+                        break;
+                    }
+                    default:{ //Plus, Minus, ...
+
+                    }
+                }
+            }
+
+            return type;
+        }
+        /**
+         * Must return the argument type after check if it's valid
+         */
+        
+         return null;
     }
 }
