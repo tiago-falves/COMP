@@ -389,7 +389,7 @@ public class TableGenerator {
 
         SimpleNode argumentsNode = (SimpleNode) statementNode.jjtGetChild(nextChild);
         if(argumentsNode.getId() != JavammTreeConstants.JJTARGUMENTS){
-            System.err.println("Error: Unexpected node with id=" + argumentsNode.getId());
+            System.err.println("ERROR: Unexpected node with id=" + argumentsNode.getId());
             return null;
         }
 
@@ -397,7 +397,7 @@ public class TableGenerator {
         List<Descriptor> descriptorsList = symbolsTable.getDescriptor(((SimpleNode)statementNode.jjtGetChild(2)).jjtGetVal());
 
         if (descriptorsList == null) {
-            System.err.println("Error: Function "+((SimpleNode)statementNode.jjtGetChild(2)).jjtGetVal()+" not declared.");
+            System.err.println("ERROR: Function "+((SimpleNode)statementNode.jjtGetChild(2)).jjtGetVal()+" not declared.");
             return null;
         }
 
@@ -407,8 +407,13 @@ public class TableGenerator {
             SymbolsTable parametersTable = functionDescriptor.getParametersTable();
             HashMap<String, List<Descriptor>> functionParameters = parametersTable.getTable();
 
-            if(functionParameters.size() != parameters.size())
+            if(functionParameters.size() != parameters.size()) {
+                if (i == descriptorsList.size()-1) {
+                    System.err.println("ERROR: Wrong number of arguments for function call: "+ functionDescriptor.getName());
+                    return null;
+                }
                 continue;
+            }
 
             int j = 0;
             for(HashMap.Entry<String, List<Descriptor>> functionParametersEntry : functionParameters.entrySet()){
@@ -421,13 +426,13 @@ public class TableGenerator {
                     if(parameterType == Type.CLASS){
                         String className = parameterDescriptor.getClassName();
                         if(!className.equals(parameters.get(j))){
-                            System.err.println("ERROR: INCOMPATIBLE TYPE FOR ARGUMENT IN FUCTION "+functionDescriptor.getName());
+                            System.err.println("ERROR: Incompatible type for argument in function "+functionDescriptor.getName());
                             return null;
                         }
                     }else{
                         StringType type = new StringType(parameterType);
                         if(!type.getString().equals(parameters.get(j))){
-                            System.err.println("ERROR: INCOMPATIBLE TYPE FOR ARGUMENT IN FUCTION "+functionDescriptor.getName());
+                            System.err.println("ERROR: Incompatible type for argument in function "+functionDescriptor.getName());
                             return null;
                         }
                     }
