@@ -95,6 +95,7 @@ public class TableGenerator {
             }
             else if (child.getId() == JavammTreeConstants.JJTMETHODDECLARATION) {
                 FunctionDescriptor functionDescriptor = inspectFunctionHeader(child);
+                functionDescriptor.getParametersTable().setParent(classDescriptor.getFunctionsTable());
                 classDescriptor.addFunction(functionDescriptor.getName(),functionDescriptor);
                 functions.put(child, functionDescriptor);
             }
@@ -393,7 +394,47 @@ public class TableGenerator {
         }
 
         List<String> parameters = inspectArguments(argumentsNode, symbolsTable);
-        
+        List<Descriptor> descriptorsList = symbolsTable.getDescriptor(((SimpleNode)statementNode.jjtGetChild(2)).jjtGetVal());
+
+        if (descriptorsList == null) {
+            System.err.println("Error: Function "+((SimpleNode)statementNode.jjtGetChild(2)).jjtGetVal()+" not declared.");
+            return null;
+        }
+
+        for(int i = 0; i < descriptorsList.size(); i++){
+
+            FunctionDescriptor functionDescriptor = (FunctionDescriptor) descriptorsList.get(i);
+            SymbolsTable parametersTable = functionDescriptor.getParametersTable();
+            HashMap<String, List<Descriptor>> functionParameters = parametersTable.getTable();
+
+            if(functionParameters.size() != parameters.size())
+                continue;
+
+            int j = 0;
+            for(HashMap.Entry<String, List<Descriptor>> functionParametersEntry : functionParameters.entrySet()){
+                List<Descriptor> descList = functionParametersEntry.getValue();
+                for (int k = 0; k < descList.size(); k++) {
+                    FunctionParameterDescriptor parameterDescriptor = (FunctionParameterDescriptor) descList.get(k);
+                
+                    Type parameterType = parameterDescriptor.getType();
+                    
+                    if(parameterType == Type.CLASS){
+                        String className = parameterDescriptor.getClassName();
+                        if(!className.equals(parameters.get(j))){
+                            System.err.println("ERROR: INCOMPATIBLE TYPE FOR ARGUMENT IN FUCTION "+functionDescriptor.getName());
+                            return null;
+                        }
+                    }else{
+                        StringType type = new StringType(parameterType);
+                        if(!type.getString().equals(parameters.get(j))){
+                            System.err.println("ERROR: INCOMPATIBLE TYPE FOR ARGUMENT IN FUCTION "+functionDescriptor.getName());
+                            return null;
+                        }
+                    }
+                }
+                j++;
+            }
+        }
         //TODO Verificar se a função existe e o seu retorno
 
         return null;
@@ -488,23 +529,7 @@ public class TableGenerator {
 
                     break;
                 }
-                case JavammTreeConstants.JJTTHIS: {
-                    if (i+2 < argumentNode.jjtGetNumChildren()) {
-                        SimpleNode dot = (SimpleNode) argumentNode.jjtGetChild(i+1);
-                        SimpleNode function = (SimpleNode) argumentNode.jjtGetChild(i+2);
-                        if (dot.getId() != JavammTreeConstants.JJTDOT) {
-                            System.err.println("ERROR: Missing dot on function call inside function " + argumentNode.jjtGetVal() + " arguments");
-                            break;
-                        } 
-                        if (function.getId() != JavammTreeConstants.JJTIDENTIFIER) {
-                            System.err.println("ERROR: Missing identifier on function call inside function " + argumentNode.jjtGetVal() + " arguments");
-                            break;
-                        }
-                        i+=2; 
-                    }
-                    else System.err.println("ERROR: Wrong arguments in function " + argumentNode.jjtGetVal());
-                    break;
-                }
+                case JavammTreeConstants.JJTTHIS: 
                 case JavammTreeConstants.JJTIDENTIFIER: {
                     if(i+1 < argumentNode.jjtGetNumChildren()){
                         SimpleNode nextNode = (SimpleNode) argumentNode.jjtGetChild(i+1);
@@ -544,11 +569,6 @@ public class TableGenerator {
                         System.err.println("ERROR: " + descType + " IS INCOMPATIBLE WITH " + type);
                         return null;
                     }
-                    break;
-                }
-                case JavammTreeConstants.JJTARGUMENTS: {
-                    //TODO do something with the return of inspectArguments
-                    List<String> parameters = inspectArguments(node, symbolsTable);
                     break;
                 }
                 case JavammTreeConstants.JJTAND:{
