@@ -315,9 +315,9 @@ public class TableGenerator {
                 }
             }
 
-            //Assignement
+            //Assignment
             Type type = typeDescriptor.getType();
-            inspectAssignement(statementNode, symbolTable, type);
+            inspectAssignment(statementNode, symbolTable, type);
         }
         else{
             //Function call
@@ -325,7 +325,7 @@ public class TableGenerator {
         }
     }
 
-    public void inspectAssignement(SimpleNode statementNode, SymbolsTable symbolsTable, Type type){
+    public void inspectAssignment(SimpleNode statementNode, SymbolsTable symbolsTable, Type type){
 
     }
     
