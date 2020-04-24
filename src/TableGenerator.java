@@ -4,6 +4,7 @@ import symbols.*;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 public class TableGenerator {
     SimpleNode rootNode;
@@ -325,15 +326,15 @@ public class TableGenerator {
         }
     }
 
-    public void inspectAssignment(SimpleNode statementNode, SymbolsTable symbolsTable, Type type){
+    private void inspectAssignment(SimpleNode statementNode, SymbolsTable symbolsTable, Type type){
 
     }
     
-    public String inspectFunctionCall(SimpleNode statementNode, SymbolsTable symbolTable){
+    private String inspectFunctionCall(SimpleNode statementNode, SymbolsTable symbolTable){
         return inspectFunctionCall(statementNode, symbolTable, 0);
     }
 
-    public String inspectFunctionCall(SimpleNode statementNode, SymbolsTable symbolTable, int initialChild){
+    private String inspectFunctionCall(SimpleNode statementNode, SymbolsTable symbolTable, int initialChild){
         List<String> identifiers = new ArrayList<>();
         SimpleNode node = (SimpleNode) statementNode.jjtGetChild(initialChild);
         identifiers.add(node.jjtGetVal());
@@ -352,6 +353,13 @@ public class TableGenerator {
             return null;
         }
 
+        List<String> parameters = inspectArguments(argumentsNode, symbolTable);
+        //TODO Verificar se a função existe e o seu retorno
+
+        return null;
+    }
+
+    private List<String> inspectArguments(SimpleNode argumentsNode, SymbolsTable symbolTable){
         List<String> parameters = new ArrayList<>();
         for(int i = 0; i < argumentsNode.jjtGetNumChildren(); i++){
             SimpleNode argumentNode = (SimpleNode) argumentsNode.jjtGetChild(i);
@@ -363,12 +371,10 @@ public class TableGenerator {
             parameters.add(parameterType);
         }
 
-        //TODO Verificar se a função existe e o seu retorno
-
-        return null;
+        return parameters;
     }
 
-    public String inspectArgument(SimpleNode argumentNode, SymbolsTable symbolsTable){ 
+    private String inspectArgument(SimpleNode argumentNode, SymbolsTable symbolsTable){ 
         SimpleNode node;
         if(argumentNode.jjtGetNumChildren() == 1){
             node = (SimpleNode) argumentNode.jjtGetChild(0);
@@ -418,8 +424,14 @@ public class TableGenerator {
                     }
                     case JavammTreeConstants.JJTTRUE: 
                     case JavammTreeConstants.JJTFALSE: {
-                        System.err.println("ERROR: OPERATION CAN'T INVOLVE A BOOLEAN TYPE");
-                        return null;
+                        if(type == null){
+                            type = "boolean";
+                        } else if(!type.equals("boolean")){
+                            System.err.println("ERROR: BOOLEAN IS INCOMPATIBLE WITH " + type);
+                            return null;
+                        }
+
+                        break;
                     }
                     case JavammTreeConstants.JJTIDENTIFIER: {
                         if(i+1 < argumentNode.jjtGetNumChildren()){
@@ -462,8 +474,27 @@ public class TableGenerator {
                         }
                         break;
                     }
-                    default:{ //Plus, Minus, ...
+                    case JavammTreeConstants.JJTAND:{
+                        if(!type.equals("boolean")){
+                            System.err.println("ERROR: OPERATION && IS INCOMPATIBLE WITH " + type);
+                            return null;
+                        }
+                        break;
+                    }
+                    case JavammTreeConstants.JJTNEW: {
+                        if(i != 0 || i + 3 < argumentNode.jjtGetNumChildren()){
+                            System.err.println("ERROR: CAN'T INSTANTIATE CLASS INSIDE AN EXPRESSION");
+                            return null;
+                        }
 
+                        return inspectClassInstantiation(argumentNode, symbolsTable);
+                    }
+                    default:{ //Plus, Minus, ...
+                        if(!type.equals("int")){
+                            System.out.println("ERROR: OPERATIONS ARE INCOMPATIBLE WITH " + type);
+                            return null;
+                        }
+                        break;
                     }
                 }
             }
@@ -475,5 +506,67 @@ public class TableGenerator {
          */
         
          return null;
+    }
+
+    private String inspectClassInstantiation(SimpleNode node, SymbolsTable symbolsTable){
+        return inspectClassInstantiation(node, symbolsTable, 0);
+    }
+
+    private String inspectClassInstantiation(SimpleNode node, SymbolsTable symbolsTable, int newPosition){
+        SimpleNode classIdentifierNode = (SimpleNode) node.jjtGetChild(newPosition+1);
+                        
+        // Get all the Class constructors
+        List<Descriptor> descriptorsList = symbolsTable.getDescriptor(classIdentifierNode.jjtGetVal());  
+        
+        SimpleNode argumentsNode = (SimpleNode) node.jjtGetChild(newPosition+2);
+
+        List<String> parameters = inspectArguments(argumentsNode, symbolsTable);
+        
+        for(int i = 0; i < descriptorsList.size(); i++){
+            Descriptor descriptor = descriptorsList.get(i);
+            if(descriptor.getClass() == ImportDescriptor.class){
+                ImportDescriptor importDescriptor = (ImportDescriptor) descriptor;
+                if(importDescriptor.getIdentifiers().size() != 1)
+                    continue;
+                
+                List<Type> importParameters = importDescriptor.getParameters();
+                if(importParameters.size() != parameters.size())
+                    continue;
+                
+                //TODO Change ImportDescriptor: instead of returning a list of types, returns a list of Strings with the types 
+                
+            }else if(descriptor.getClass() == FunctionDescriptor.class){
+                FunctionDescriptor functionDescriptor = (FunctionDescriptor) descriptor;
+                SymbolsTable parametersTable = functionDescriptor.getParametersTable();
+            
+                LinkedHashMap<String, List<Descriptor>> functionParameters = parametersTable.getTable();
+                if(functionParameters.size() != parameters.size())
+                    continue;
+                
+                for(int j = 0; j < functionParameters.size(); j++){
+                    FunctionParameterDescriptor parameterDescriptor = (FunctionParameterDescriptor) functionParameters.get(j);
+
+                    Type parameterType = parameterDescriptor.getType();
+                    
+                    if(parameterType == Type.CLASS){
+                        String className = parameterDescriptor.getClassName();
+                        if(!className.equals(parameters.get(j))){
+                            System.err.println("ERROR: INCOMPATIBLE TYPE");
+                            return null;
+                        }
+                    }else{
+                        StringType type = new StringType(parameterType);
+                        if(!type.getString().equals(parameters.get(j))){
+                            System.err.println("ERROR: INCOMPATIBLE TYPE");
+                            return null;
+                        }
+                    }
+                }
+
+                return classIdentifierNode.jjtGetVal();
+            }
+        }
+
+        return null;
     }
 }

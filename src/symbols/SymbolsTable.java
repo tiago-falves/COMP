@@ -58,6 +58,10 @@ public class SymbolsTable {
         return null;
     }
 
+    public LinkedHashMap<String, List<Descriptor>> getTable(){
+        return this.table;
+    }
+
     public void print(String prefix) {
         /*
         if(this.parent != null) 
