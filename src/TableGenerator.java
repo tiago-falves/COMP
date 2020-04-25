@@ -62,6 +62,8 @@ public class TableGenerator {
                 
                 for(int j = 0; j < child.jjtGetNumChildren(); j++) {
                     SimpleNode grandChild = (SimpleNode) child.jjtGetChild(j);
+                    if(grandChild.jjtGetVal().equals("void"))
+                        continue;
                     TypeString typeString = new TypeString(grandChild.jjtGetVal());
                     importDescriptor.addParameter(typeString.parseType());
                 }
@@ -74,6 +76,10 @@ public class TableGenerator {
                 SimpleNode grandChild = (SimpleNode) child.jjtGetChild(0);
                 TypeString typeString = new TypeString(grandChild.jjtGetVal());
                 importDescriptor.setType(typeString.parseType());
+
+                if(typeString.parseType() == Type.CLASS){
+                    importDescriptor.setClassName(grandChild.jjtGetVal());
+                }
             }
         }
 
@@ -82,6 +88,10 @@ public class TableGenerator {
 
     public ClassDescriptor inspectClass(SimpleNode classNode) {
         ClassDescriptor classDescriptor = new ClassDescriptor();
+        
+        SymbolsTable classVariablesTable = classDescriptor.getVariablesTable();
+        classVariablesTable.setParent(this.symbolsTable);
+
         HashMap<SimpleNode, FunctionDescriptor> functions = new HashMap<SimpleNode, FunctionDescriptor>();
 
         // Collect attributes and methods access, return type and name 
@@ -278,7 +288,7 @@ public class TableGenerator {
         }
         else if (variableAndStatementNode.getId() == JavammTreeConstants.JJTLINESTATEMENT )
         {
-            //TODO: Analizar statement
+            //TODO: Analisar statement
             inspectLineStatement(variableAndStatementNode, functionDescriptor.getBodyTable());
         }
         /*else if(variableAndStatementNode.getId() == JavammTreeConstants.JJTWHILESTATEMENT || variableAndStatementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
@@ -457,55 +467,75 @@ public class TableGenerator {
 
         for(int i = 0; i < descriptorsList.size(); i++){
 
-            FunctionDescriptor functionDescriptor = (FunctionDescriptor) descriptorsList.get(i);
-            SymbolsTable parametersTable = functionDescriptor.getParametersTable();
-            HashMap<String, List<Descriptor>> functionParameters = parametersTable.getTable();
-
-            if(functionParameters.size() != parameters.size()) {
-                if (i == descriptorsList.size()-1) {
-                    System.err.println("ERROR: Wrong number of arguments for function call: "+ functionDescriptor.getName());
-                    return null;
-                }
-                continue;
-            }
-
-            int j = 0;
-            for(HashMap.Entry<String, List<Descriptor>> functionParametersEntry : functionParameters.entrySet()){
-                List<Descriptor> descList = functionParametersEntry.getValue();
+            if(descriptorsList.get(i).getClass()  == ImportDescriptor.class){
+                ImportDescriptor importDescriptor = (ImportDescriptor) descriptorsList.get(i);
+                if(importDescriptor.getIdentifiers().size() != 1)
+                    continue;
                 
-                if(descList.size() != 1){
-                    System.err.println("ERROR: Function can't have more than 1 parameter with the same identifier");
-                    return null;
-                }
+                List<Type> importParameters = importDescriptor.getParameters();
+                if(importParameters.size() != parameters.size())
+                    continue;
                 
-                FunctionParameterDescriptor parameterDescriptor = (FunctionParameterDescriptor) descList.get(0);
-            
-                Type parameterType = parameterDescriptor.getType();
-                
-                if(parameterType == Type.CLASS){
-                    String className = parameterDescriptor.getClassName();
-                    if(!className.equals(parameters.get(j))){
-                        System.err.println("ERROR: Incompatible type for argument in function "+functionDescriptor.getName());
+                for(int j = 0; j < importParameters.size(); j++){
+                    StringType stringType = new StringType(importParameters.get(j));
+                    if(!parameters.get(j).equals(stringType.getString())){
+                        System.err.println("ERROR: INCOMPATIBLE TYPE");
                         return null;
                     }
-                }else{
-                    StringType type = new StringType(parameterType);
-                    if(!type.getString().equals(parameters.get(j))){
-                        System.err.println("ERROR: Incompatible type for argument in function "+functionDescriptor.getName());
+                } 
+                
+            }else if(descriptorsList.get(i).getClass() == FunctionDescriptor.class){
+
+                FunctionDescriptor functionDescriptor = (FunctionDescriptor) descriptorsList.get(i);
+                SymbolsTable parametersTable = functionDescriptor.getParametersTable();
+                HashMap<String, List<Descriptor>> functionParameters = parametersTable.getTable();
+
+                if(functionParameters.size() != parameters.size()) {
+                    if (i == descriptorsList.size()-1) {
+                        System.err.println("ERROR: Wrong number of arguments for function call: "+ functionDescriptor.getName());
                         return null;
                     }
+                    continue;
                 }
-                j++;
+
+                int j = 0;
+                for(HashMap.Entry<String, List<Descriptor>> functionParametersEntry : functionParameters.entrySet()){
+                    List<Descriptor> descList = functionParametersEntry.getValue();
+                    
+                    if(descList.size() != 1){
+                        System.err.println("ERROR: Function can't have more than 1 parameter with the same identifier");
+                        return null;
+                    }
+                    
+                    FunctionParameterDescriptor parameterDescriptor = (FunctionParameterDescriptor) descList.get(0);
+                
+                    Type parameterType = parameterDescriptor.getType();
+                    
+                    if(parameterType == Type.CLASS){
+                        String className = parameterDescriptor.getClassName();
+                        if(!className.equals(parameters.get(j))){
+                            System.err.println("ERROR: Incompatible type for argument in function "+functionDescriptor.getName());
+                            return null;
+                        }
+                    }else{
+                        StringType type = new StringType(parameterType);
+                        if(!type.getString().equals(parameters.get(j))){
+                            System.err.println("ERROR: Incompatible type for argument in function "+functionDescriptor.getName());
+                            return null;
+                        }
+                    }
+                    j++;
+                }
+
+
+                // If the function was found, the function type is returned
+                Type functionType = functionDescriptor.getType();
+                if(functionType == Type.CLASS)
+                    return functionDescriptor.getClassName();
+                
+                StringType stringType = new StringType(functionType);
+                return stringType.getString();
             }
-
-            // If the function was found, the function type is returned
-
-            Type functionType = functionDescriptor.getType();
-            if(functionType == Type.CLASS)
-                return functionDescriptor.getClassName();
-            
-            StringType stringType = new StringType(functionType);
-            return stringType.getString();
         }
 
         return null;
@@ -830,7 +860,13 @@ public class TableGenerator {
                 if(importParameters.size() != parameters.size())
                     continue;
                 
-                //TODO Change ImportDescriptor: instead of returning a list of types, returns a list of Strings with the types 
+                for(int j = 0; j < importParameters.size(); j++){
+                    StringType stringType = new StringType(importParameters.get(j));
+                    if(!parameters.get(j).equals(stringType.getString())){
+                        System.err.println("ERROR: INCOMPATIBLE TYPE");
+                        return null;
+                    }
+                } 
                 
             }else if(descriptor.getClass() == FunctionDescriptor.class){
                 FunctionDescriptor functionDescriptor = (FunctionDescriptor) descriptor;
@@ -864,6 +900,7 @@ public class TableGenerator {
             }
         }
 
+        System.err.println("ERROR: Class " + classIdentifierNode.jjtGetVal() + " doesn't exist");
         return null;
     }
 }

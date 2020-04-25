@@ -2,7 +2,7 @@ package symbols;
 
 public class ClassDescriptor extends Descriptor {
     
-    // Local table: parent = parameter table
+    protected SymbolsTable classVariablesTable;
     protected SymbolsTable functionsTable;
     private String name;
     private boolean isStatic;
@@ -11,7 +11,9 @@ public class ClassDescriptor extends Descriptor {
     public ClassDescriptor() {
         this.access = Access.DEFAULT;
         this.isStatic = false;
+        this.classVariablesTable = new SymbolsTable();
         this.functionsTable = new SymbolsTable();
+        this.functionsTable.setParent(this.classVariablesTable);
     }
 
     public String getName() {
@@ -34,14 +36,14 @@ public class ClassDescriptor extends Descriptor {
     }
 
     public void addVariable(VariableDescriptor variable) {
-        SymbolsTable variablesTable = this.functionsTable.getParent();
+        SymbolsTable variablesTable = this.classVariablesTable;
         if (variablesTable == null) {
             variablesTable = new SymbolsTable();
         }
         variablesTable.addSymbol(variable.getName(), variable, false);
     }
     public SymbolsTable getVariablesTable(){
-        return this.functionsTable.getParent();
+        return this.classVariablesTable;
     }
     public SymbolsTable getFunctionsTable(){
         return this.functionsTable;
