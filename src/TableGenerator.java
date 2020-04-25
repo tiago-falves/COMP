@@ -330,7 +330,15 @@ public class TableGenerator {
 
             //Assignment
             Type type = typeDescriptor.getType();
-            inspectAssignment(statementNode, symbolTable, type);
+            String typeString;
+            if(type == Type.CLASS){
+                typeString = typeDescriptor.getClassName();
+            }else{
+                StringType strType = new StringType(type);
+                typeString = strType.getString();
+            }
+
+            inspectAssignment(statementNode, symbolTable, typeString);
         }
         else{
             //Function call
@@ -366,7 +374,52 @@ public class TableGenerator {
 
     }
 
-    private void inspectAssignment(SimpleNode statementNode, SymbolsTable symbolsTable, Type type){
+    private String inspectArrayAccess(SimpleNode statementNode, SymbolsTable symbolsTable, int initialChild){
+        SimpleNode idNode = (SimpleNode) statementNode.jjtGetChild(initialChild);
+
+        List<Descriptor> descriptors = symbolsTable.getDescriptor(idNode.jjtGetVal());
+
+        TypeDescriptor idDescriptor = null;
+        for(int i = 0; i < descriptors.size(); i++){
+            Descriptor d = descriptors.get(i);
+            if(d.getClass() == FunctionParameterDescriptor.class || d.getClass() == VariableDescriptor.class){
+                idDescriptor = (TypeDescriptor) d;
+                if(idDescriptor.getType() != Type.INT_ARRAY && idDescriptor.getType() != Type.STRING_ARRAY){
+                    System.err.println("ERROR: CAN ONLY ACCESS ARRAYS OF INT OR STRING");
+                    return null;
+                }
+                break;
+            }
+        }
+
+        if(idDescriptor == null)
+            return null;
+
+        SimpleNode arrayNode = (SimpleNode) statementNode.jjtGetChild(initialChild+1);
+       
+        String indexType = inspectExpression(arrayNode, symbolsTable);
+
+        if(indexType == null){
+            System.err.println("ERROR: Array index must be an int");
+            return null;
+        } else if(!indexType.equals("int")){
+            System.err.println("ERROR: Array index must be an int");
+            return null;
+        }
+
+        StringType stringType = new StringType(idDescriptor.getType());
+
+        return stringType.getString();
+    }
+
+    private void inspectAssignment(SimpleNode statementNode, SymbolsTable symbolsTable, String type){
+        String expType = inspectExpression(statementNode, symbolsTable, 2);
+        
+        if(expType == null){
+            System.err.println("ERROR: Can't assign invalid type");
+        } else if(!type.equals(expType)){
+            System.err.println("ERROR: Can't assign " + expType + " to variable of type " + type);
+        }
     }
     
     private String inspectFunctionCall(SimpleNode statementNode, SymbolsTable symbolsTable){
@@ -418,29 +471,41 @@ public class TableGenerator {
             int j = 0;
             for(HashMap.Entry<String, List<Descriptor>> functionParametersEntry : functionParameters.entrySet()){
                 List<Descriptor> descList = functionParametersEntry.getValue();
-                for (int k = 0; k < descList.size(); k++) {
-                    FunctionParameterDescriptor parameterDescriptor = (FunctionParameterDescriptor) descList.get(k);
                 
-                    Type parameterType = parameterDescriptor.getType();
-                    
-                    if(parameterType == Type.CLASS){
-                        String className = parameterDescriptor.getClassName();
-                        if(!className.equals(parameters.get(j))){
-                            System.err.println("ERROR: Incompatible type for argument in function "+functionDescriptor.getName());
-                            return null;
-                        }
-                    }else{
-                        StringType type = new StringType(parameterType);
-                        if(!type.getString().equals(parameters.get(j))){
-                            System.err.println("ERROR: Incompatible type for argument in function "+functionDescriptor.getName());
-                            return null;
-                        }
+                if(descList.size() != 1){
+                    System.err.println("ERROR: Function can't have more than 1 parameter with the same identifier");
+                    return null;
+                }
+                
+                FunctionParameterDescriptor parameterDescriptor = (FunctionParameterDescriptor) descList.get(0);
+            
+                Type parameterType = parameterDescriptor.getType();
+                
+                if(parameterType == Type.CLASS){
+                    String className = parameterDescriptor.getClassName();
+                    if(!className.equals(parameters.get(j))){
+                        System.err.println("ERROR: Incompatible type for argument in function "+functionDescriptor.getName());
+                        return null;
+                    }
+                }else{
+                    StringType type = new StringType(parameterType);
+                    if(!type.getString().equals(parameters.get(j))){
+                        System.err.println("ERROR: Incompatible type for argument in function "+functionDescriptor.getName());
+                        return null;
                     }
                 }
                 j++;
             }
+
+            // If the function was found, the function type is returned
+
+            Type functionType = functionDescriptor.getType();
+            if(functionType == Type.CLASS)
+                return functionDescriptor.getClassName();
+            
+            StringType stringType = new StringType(functionType);
+            return stringType.getString();
         }
-        //TODO Verificar se a função existe e o seu retorno
 
         return null;
     }
@@ -461,17 +526,26 @@ public class TableGenerator {
     }
 
     private String inspectArgument(SimpleNode argumentNode, SymbolsTable symbolsTable){ 
+        return inspectExpression(argumentNode, symbolsTable);
+    }
+
+    private String inspectExpression(SimpleNode expressionNode, SymbolsTable symbolsTable){
+        return inspectExpression(expressionNode, symbolsTable, 0);
+    }
+    
+    
+    private String inspectExpression(SimpleNode expressionNode, SymbolsTable symbolsTable, int initialChild){
         /**
          * Must return the argument type after check if it's valid
         */
-        if(argumentNode.jjtGetNumChildren() == 1) {
-            return inspectArgumentSimple(argumentNode, symbolsTable);
+        if(expressionNode.jjtGetNumChildren() - initialChild == 1) {
+            return inspectExpressionSimple(expressionNode, symbolsTable, initialChild);
         }
-        else return inspectArgumentComplex(argumentNode, symbolsTable);
+        return inspectExpressionComplex(expressionNode, symbolsTable, initialChild);
     }
 
-    private String inspectArgumentSimple(SimpleNode argumentNode, SymbolsTable symbolsTable) {
-        SimpleNode node = (SimpleNode) argumentNode.jjtGetChild(0);
+    private String inspectExpressionSimple(SimpleNode argumentNode, SymbolsTable symbolsTable, int initialChild) {
+        SimpleNode node = (SimpleNode) argumentNode.jjtGetChild(initialChild);
 
         switch(node.getId()){
             case JavammTreeConstants.JJTINTEGERLITERAL: {
@@ -505,11 +579,10 @@ public class TableGenerator {
         return null;
     }
 
-    private String inspectArgumentComplex(SimpleNode argumentNode, SymbolsTable symbolsTable) {
-        //TODO Se tiver mais do que 1 children pode ser: chamada a função; operação
+    private String inspectExpressionComplex(SimpleNode argumentNode, SymbolsTable symbolsTable, int initialChild) {
         String type = null;
 
-        for(int i = 0; i < argumentNode.jjtGetNumChildren(); i++){
+        for(int i = initialChild; i < argumentNode.jjtGetNumChildren(); i++){
             SimpleNode node = (SimpleNode) argumentNode.jjtGetChild(i);
 
             switch(node.getId()){
@@ -534,11 +607,28 @@ public class TableGenerator {
 
                     break;
                 }
-                case JavammTreeConstants.JJTTHIS: 
+                case JavammTreeConstants.JJTTHIS: {
+                    /*SimpleNode nextNode = (SimpleNode) argumentNode.jjtGetChild(i+1);
+
+                    if(nextNode.getId() == JavammTreeConstants.JJTDOT){ 
+                        String functionType = inspectFunctionCall(argumentNode, symbolsTable, i);
+                        if(type == null){
+                            type = functionType;
+                        }else if(!type.equals(functionType)){
+                            System.err.println("ERROR: " + functionType + " IS INCOMPATIBLE WITH " + type);
+                            return null;
+                        }
+                        i += 3; // Jump function identifiers
+                        continue;
+                    }*/
+
+                    break;
+                } 
                 case JavammTreeConstants.JJTIDENTIFIER: {
-                    if(i+1 < argumentNode.jjtGetNumChildren()){
+                    if(i+1 < argumentNode.jjtGetNumChildren()){ //CHECK IF THE IDENTIFIER BELONGS TO A FUNCTION OR ARRAY
                         SimpleNode nextNode = (SimpleNode) argumentNode.jjtGetChild(i+1);
-                        if(nextNode.getId() == JavammTreeConstants.JJTDOT){
+
+                        if(nextNode.getId() == JavammTreeConstants.JJTDOT){ //IF THE IDENTIFIER IS FOLLOWED BY A DOT, IT'S A FUNCTION CALL
                             String functionType = inspectFunctionCall(argumentNode, symbolsTable, i);
                             if(type == null){
                                 type = functionType;
@@ -548,6 +638,20 @@ public class TableGenerator {
                             }
                             i += 3; // Jump function identifiers
                             continue;
+                        } else if(nextNode.getId() == JavammTreeConstants.JJTARRAY){    
+                            String arrayType = inspectArrayAccess(argumentNode, symbolsTable, i);
+                            if(type == null){
+                                type = arrayType;
+                            }else if(!type.equals(arrayType)){
+                                System.err.println("ERROR: " + arrayType + " IS INCOMPATIBLE WITH " + type);
+                                return null;
+                            }
+
+                            i += 1; // Jump array nodes
+                            continue;
+                        } else {
+                            System.err.println("ERROR: Unknown symbol following an IDENTIFIER");
+                            return null;
                         }
                     }
 
@@ -584,12 +688,45 @@ public class TableGenerator {
                     break;
                 }
                 case JavammTreeConstants.JJTNEW: {
-                    if(i != 0 || i + 3 < argumentNode.jjtGetNumChildren()){
+                    if(i != initialChild || i + 3 < argumentNode.jjtGetNumChildren()){
                         System.err.println("ERROR: CAN'T INSTANTIATE CLASS INSIDE AN EXPRESSION");
                         return null;
                     }
+                    
+                    SimpleNode nextNode = (SimpleNode) argumentNode.jjtGetChild(initialChild+2);
 
-                    return inspectClassInstantiation(argumentNode, symbolsTable);
+                    if(nextNode.getId() == JavammTreeConstants.JJTARRAY){
+                        SimpleNode idNode = (SimpleNode) argumentNode.jjtGetChild(initialChild+1);
+                        if(idNode.jjtGetVal() != "int"){
+                            System.err.println("ERROR: CAN ONLY INSTANTIATE ARRAY OF INT");
+                            return null;
+                        }
+                        
+                        SimpleNode arrayNode = (SimpleNode) argumentNode.jjtGetChild(initialChild+2);
+                    
+                        String indexType = inspectExpression(arrayNode, symbolsTable);
+
+                        if(indexType == null){
+                            System.err.println("ERROR: Array index must be an int");
+                            return null;
+                        } else if(!indexType.equals("int")){
+                            System.err.println("ERROR: Array index must be an int");
+                            return null;
+                        }
+
+                        return "int[]";
+                    }
+                    return inspectClassInstantiation(argumentNode, symbolsTable, initialChild);
+                }
+                //TODO Check this  
+                case JavammTreeConstants.JJTNEGATION: {
+                    if(type == null){
+                        type = "boolean";
+                    }else if(!type.equals("boolean")){
+                        System.err.println("ERROR: OPERATION ! IS INCOMPATIBLE WITH " + type);
+                        return null;
+                    }
+                    break;
                 }
                 default:{ //Plus, Minus, ...
                     System.out.println(node.getId());
