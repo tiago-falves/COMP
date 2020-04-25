@@ -101,7 +101,7 @@ void ImportDeclaration() : {Token t;}
 
 void ImportIdentifier() #void : {Token i;}
 {
-    <LENGTH> #Length
+    <LENGTH> #IDENTIFIER
     |
     i=<IDENTIFIER>{jjtThis.jjtSetVal(i.image);} #Identifier       
 }
