@@ -281,21 +281,21 @@ public class TableGenerator {
     }
 
     public void inspectVariableAndStatement(SimpleNode variableAndStatementNode, FunctionDescriptor functionDescriptor) {
-        if (variableAndStatementNode.getId() == JavammTreeConstants.JJTVARIABLEDECLARATION) 
-        {
+        if (variableAndStatementNode.getId() == JavammTreeConstants.JJTVARIABLEDECLARATION) {
             VariableDescriptor variableDescriptor = inspectVariable(variableAndStatementNode);
             functionDescriptor.addBodyVariable(variableDescriptor.getName(),variableDescriptor);
-        }
-        else if (variableAndStatementNode.getId() == JavammTreeConstants.JJTLINESTATEMENT )
-        {
-            //TODO: Analisar statement
+        } else if (variableAndStatementNode.getId() == JavammTreeConstants.JJTLINESTATEMENT ){
             inspectLineStatement(variableAndStatementNode, functionDescriptor.getBodyTable());
-        }
-        /*else if(variableAndStatementNode.getId() == JavammTreeConstants.JJTWHILESTATEMENT || variableAndStatementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
-            inspectBlockStatement(variableAndStatementNode, functionDescriptor.getBodyTable());
+        } else if(variableAndStatementNode.getId() == JavammTreeConstants.JJTWHILESTATEMENT){
+            inspectWhileStatement(variableAndStatementNode, functionDescriptor.getBodyTable());
+        } else if(variableAndStatementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
+            
+            //TODO CHECK IF...ELSE
+            
+            //inspectBlockStatement(variableAndStatementNode, functionDescriptor.getBodyTable());
         }else{
             System.err.println("Error: Unknown symbol");
-        }*/
+        }
     }
 
     public void inspectLineStatement(SimpleNode statementNode, SymbolsTable symbolTable){
@@ -357,32 +357,41 @@ public class TableGenerator {
         }
     }
 
-    public void inspectBlockStatement(SimpleNode statementNode, SymbolsTable statementParent){
+    public void inspectWhileStatement(SimpleNode whileNode, SymbolsTable statementParentTable){
+        if(whileNode.jjtGetNumChildren() == 0){
+            System.err.println("ERROR: While needs to have an expression.");
+            return;
+        }
+        
+        SimpleNode whileExpression = (SimpleNode) whileNode.jjtGetChild(0);
+        if(whileExpression.getId() != JavammTreeConstants.JJTWHILEEXPRESSION){
+            System.err.println("ERROR: While needs to have an expression.");
+            return;
+        }
 
-        /*BlockDescriptor blockDescriptor = new BlockDescriptor(statementParent);
-        System.out.println("Cheguei ao statement");
+        String expressionType = inspectExpression(whileExpression, statementParentTable); //TODO Store this expression in the block descriptor
+        if(!expressionType.equals("boolean")){
+            System.err.println("ERROR: While expression must evaluate to a boolean");
+            return;
+        }
 
-        for (int j = 0; j < statementNode.jjtGetNumChildren() ; j++) {
+        BlockDescriptor blockDescriptor = new BlockDescriptor(statementParentTable);
+        
+        statementParentTable.addSymbol("while", blockDescriptor);
+        
+        for(int i = 1; i < whileNode.jjtGetNumChildren(); i++){
+            SimpleNode statementNode = (SimpleNode) whileNode.jjtGetChild(i);
 
-            SimpleNode child = (SimpleNode) statementNode.jjtGetChild(j);
-
-            if (child.getId() == JavammTreeConstants.JJTVARIABLEDECLARATION) {
-                VariableDescriptor variableDescriptor = inspectVariable(child);
-                blockDescriptor.addSymbol(variableDescriptor.getName(),variableDescriptor);
-                System.out.println("Var declaration \n");
-
-            } 
-            else if( child.getId() == JavammTreeConstants.JJTWHILESTATEMENT || child.getId() == JavammTreeConstants.JJTIFSTATEMENT){
-                inspectBlockStatement(child,blockDescriptor.getLocalTable());
-                System.out.println("Mais um statement\n");
-
-            }else if(child.getId() == JavammTreeConstants.JJTLINESTATEMENT){
+            if (statementNode.getId() == JavammTreeConstants.JJTLINESTATEMENT ){
                 inspectLineStatement(statementNode, blockDescriptor.getLocalTable());
+            } else if(statementNode.getId() == JavammTreeConstants.JJTWHILESTATEMENT){
+                inspectWhileStatement(statementNode, blockDescriptor.getLocalTable());
+            } else if(statementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
+                //TODO CHECK IF...ELSE
             }else{
                 System.err.println("Error: Unknown symbol");
             }
-        }*/
-
+        }
     }
 
     private String inspectArrayAccess(SimpleNode statementNode, SymbolsTable symbolsTable, int initialChild){
