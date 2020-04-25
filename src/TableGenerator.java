@@ -608,19 +608,15 @@ public class TableGenerator {
                     break;
                 }
                 case JavammTreeConstants.JJTTHIS: {
-                    /*SimpleNode nextNode = (SimpleNode) argumentNode.jjtGetChild(i+1);
-
-                    if(nextNode.getId() == JavammTreeConstants.JJTDOT){ 
-                        String functionType = inspectFunctionCall(argumentNode, symbolsTable, i);
-                        if(type == null){
-                            type = functionType;
-                        }else if(!type.equals(functionType)){
-                            System.err.println("ERROR: " + functionType + " IS INCOMPATIBLE WITH " + type);
-                            return null;
-                        }
-                        i += 3; // Jump function identifiers
-                        continue;
-                    }*/
+                 
+                    String functionType = inspectFunctionCall(argumentNode, symbolsTable, i+2);
+                    if(type == null){
+                        type = functionType;
+                    }else if(!type.equals(functionType)){
+                        System.err.println("ERROR: " + functionType + " IS INCOMPATIBLE WITH " + type);
+                        return null;
+                    }
+                    i += 3;
 
                     break;
                 } 
