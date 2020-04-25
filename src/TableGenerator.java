@@ -639,6 +639,35 @@ public class TableGenerator {
                         SimpleNode nextNode = (SimpleNode) argumentNode.jjtGetChild(i+1);
 
                         if(nextNode.getId() == JavammTreeConstants.JJTDOT){ //IF THE IDENTIFIER IS FOLLOWED BY A DOT, IT'S A FUNCTION CALL
+
+                            SimpleNode nextNextNode = (SimpleNode) argumentNode.jjtGetChild(i+2); //A DOT is always followed by something: length or a function call
+
+                            if(nextNextNode.getId() == JavammTreeConstants.JJTLENGTH){
+                                List<Descriptor> descriptors = symbolsTable.getDescriptor(node.jjtGetVal());
+                                if(descriptors == null){
+                                    System.err.println("ERROR: Undeclared variable " + node.jjtGetVal());
+                                    return null;
+                                }
+
+                                for(int j = 0; j < descriptors.size(); j++){
+                                    Descriptor descriptor = descriptors.get(j);
+                                    if(descriptor.getClass() == FunctionParameterDescriptor.class || descriptor.getClass() == VariableDescriptor.class){
+                                        TypeDescriptor typeDescriptor = (TypeDescriptor) descriptor;
+                                        if(typeDescriptor.getType() != Type.INT_ARRAY && typeDescriptor.getType() != Type.STRING_ARRAY){
+                                            System.err.println("ERROR: Property length only exists in arrays");
+                                            return null;
+                                        } 
+
+                                        i += 2;
+                                        continue;
+                                    }
+                                }
+                                
+                                System.err.println("ERROR: " + node.jjtGetVal() + " is not a variable");
+                                return null;
+                            }
+
+                            //Else function call
                             String functionType = inspectFunctionCall(argumentNode, symbolsTable, i);
                             if(type == null){
                                 type = functionType;
@@ -647,6 +676,7 @@ public class TableGenerator {
                                 return null;
                             }
                             i += 3; // Jump function identifiers
+                        
                             continue;
                         } else if(nextNode.getId() == JavammTreeConstants.JJTARRAY){    
                             String arrayType = inspectArrayAccess(argumentNode, symbolsTable, i);
@@ -742,6 +772,25 @@ public class TableGenerator {
                         return null;
                     }
                     break;
+                }
+                //TODO Check this  
+                case JavammTreeConstants.JJTLESS: {
+                    if(!type.equals("int")){
+                        System.err.println("ERROR: CAN'T COMPARE " + type + " WITH OPERATOR <");
+                        return null;
+                    }
+                    
+                    String otherType = inspectExpression(argumentNode, symbolsTable, i+1);
+                    if(!otherType.equals("int")){
+                        System.err.println("ERROR: CAN'T COMPARE " + otherType + " WITH OPERATOR <");
+                        return null;
+                    }
+
+                    return "boolean";
+                }
+                case JavammTreeConstants.JJTDOT: {
+                    System.err.println("ERROR: CAN'T ACCESS PROPERTY/METHOD OF VARIABLE OF TYPE " + type);
+                    return null;
                 }
                 default:{ //Plus, Minus, ...
                     if(!type.equals("int")){
