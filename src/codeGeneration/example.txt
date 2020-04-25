@@ -1,0 +1,22 @@
+Compiled from "Example.java"
+public class codeGeneration.Example {
+  public codeGeneration.Example();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static void main(java.lang.String[]);
+    Code:
+       0: iconst_5
+       1: istore_1
+       2: bipush        8
+       4: istore_2
+       5: iload_1
+       6: iload_2
+       7: imul
+       8: iload_1
+       9: iadd
+      10: istore_3
+      11: return
+}
