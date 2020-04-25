@@ -1,5 +1,3 @@
-import javax.management.remote.JMXConnectorServerFactory;
-
 import symbols.*;
 
 import java.util.List;
@@ -339,6 +337,9 @@ public class TableGenerator {
             }
 
             inspectAssignment(statementNode, symbolTable, typeString);
+
+            VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
+            variableDescriptor.setInitialized();
         }
         else{
             //Function call
@@ -572,6 +573,14 @@ public class TableGenerator {
                 if(type == Type.CLASS){
                     return descriptor.getClassName();
                 }
+
+                if(descriptor.getClass() == VariableDescriptor.class){
+                    VariableDescriptor variableDescriptor = (VariableDescriptor) descriptor;
+                    if(!variableDescriptor.isInitialized()){
+                        System.err.println("ERROR: Variable " + node.jjtGetVal() + " is not initialized");
+                    }
+                }
+
                 return (new StringType(type)).getString();
             }
             default: {
@@ -650,9 +659,6 @@ public class TableGenerator {
 
                             i += 1; // Jump array nodes
                             continue;
-                        } else {
-                            System.err.println("ERROR: Unknown symbol following an IDENTIFIER");
-                            return null;
                         }
                     }
 
@@ -679,6 +685,14 @@ public class TableGenerator {
                         System.err.println("ERROR: " + descType + " IS INCOMPATIBLE WITH " + type);
                         return null;
                     }
+
+                    if(descriptor.getClass() == VariableDescriptor.class){
+                        VariableDescriptor variableDescriptor = (VariableDescriptor) descriptor;
+                        if(!variableDescriptor.isInitialized()){
+                            System.err.println("ERROR: Variable " + node.jjtGetVal() + " is not initialized");
+                        }
+                    }
+
                     break;
                 }
                 case JavammTreeConstants.JJTAND:{
@@ -730,7 +744,6 @@ public class TableGenerator {
                     break;
                 }
                 default:{ //Plus, Minus, ...
-                    System.out.println(node.getId());
                     if(!type.equals("int")){
                         System.out.println("ERROR: OPERATIONS ARE INCOMPATIBLE WITH " + type);
                         return null;
