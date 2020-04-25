@@ -19,4 +19,10 @@ public class codeGeneration.Example {
        9: iadd
       10: istore_3
       11: return
+
+  public void zas();
+    Code:
+       0: bipush        10
+       2: istore_1
+       3: return
 }

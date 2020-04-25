@@ -10,4 +10,9 @@ public class Example {
         c = a * b + a;
 
     }
+
+    public void zas(){
+        int d;
+        d=10;
+    }
 }
