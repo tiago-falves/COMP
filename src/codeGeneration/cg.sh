@@ -1,2 +1,2 @@
 javac Example.java
-javap -c Example.class > example.txt
+javap -v Example.class > example.txt

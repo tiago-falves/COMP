@@ -1,5 +1,6 @@
 import symbols.SymbolsTable;
 
+
 public class Main {
 	
 	public static void main(String[] args) throws ParseException, java.io.FileNotFoundException {
@@ -13,7 +14,7 @@ public class Main {
 
         int errors = ParseException.getWhileErrors();
         if(errors > 0){
-            throw new ParseException("Errors"); 
+            throw new ParseException("Errors");
         }
 
         //root.dump(""); // prints the tree on the screen
@@ -24,5 +25,8 @@ public class Main {
         System.out.println("\n\n\nPRINTING SYMBOLS TABLE...\n");
         tb.getTable().print("");
         System.out.println();
+
+        CodeGenerator codeGenerator = new CodeGenerator(root);
+
 	}	
 }

@@ -31,6 +31,7 @@ public class TableGenerator {
                 case JavammTreeConstants.JJTIMPORTDECLARATION:
                     ImportDescriptor importDescriptor = inspectImport(currentNode);
                     symbolsTable.addSymbol(importDescriptor.getLastIdentifier(), importDescriptor);
+                    currentNode.setDescriptor(importDescriptor);
                     break;
 
                 case JavammTreeConstants.JJTCLASSDECLARATION:
@@ -38,6 +39,7 @@ public class TableGenerator {
                     ClassDescriptor classDescriptor = inspectClass(currentNode);
                     classDescriptor.setName(childNode.jjtGetVal());
                     symbolsTable.addSymbol(classDescriptor.getName(), classDescriptor, false);
+                    currentNode.setDescriptor(classDescriptor);
                     break;
             }
 
