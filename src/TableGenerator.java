@@ -557,6 +557,11 @@ public class TableGenerator {
             }
             case JavammTreeConstants.JJTIDENTIFIER: {
                 List<Descriptor> descriptors = symbolsTable.getDescriptor(node.jjtGetVal());
+                if(descriptors == null){
+                    System.err.println("Error: Undefined variable " + node.jjtGetVal());
+                    return null;
+                }
+
                 if(descriptors.size() > 1){
                     System.err.println("Error: Argument " + node.jjtGetVal() + " is defined more than once");
                     return null;
