@@ -1,0 +1,20 @@
+package llir;
+
+public enum ArithmeticOperation {
+    SUM("+"),
+    SUBTRACTION("-"),
+    MULTIPLICATION("*"),
+    DIVISION("/"),
+    LESS_THAN("<"),
+    AND("&&");
+
+    private final String operation;
+
+    public ArithmeticOperation(String operation) {
+        this.operation = operation;
+    }
+
+    public String getOperation() {
+        this.operation;
+    }
+};

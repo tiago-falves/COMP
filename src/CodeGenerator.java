@@ -1,6 +1,7 @@
 import symbols.ClassDescriptor;
 import symbols.Descriptor;
 import symbols.ImportDescriptor;
+import codeGeneration.CodeGeneratorConstants;
 
 
 public class CodeGenerator {
