@@ -7,11 +7,14 @@ public class ClassDescriptor extends Descriptor {
     private String name;
     private boolean isStatic;
     private Access access;
+    private String parentClass;
 
     public ClassDescriptor() {
         this.access = Access.DEFAULT;
+        this.parentClass="";
         this.isStatic = false;
         this.functionsTable = new SymbolsTable();
+
     }
 
     public String getName() {
@@ -20,6 +23,14 @@ public class ClassDescriptor extends Descriptor {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getParentClass() {
+        return parentClass;
+    }
+
+    public void setParentClass(String parentClass) {
+        this.parentClass = parentClass;
     }
 
     public boolean isStatic(){

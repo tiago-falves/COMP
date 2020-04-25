@@ -26,7 +26,10 @@ public class Main {
         tb.getTable().print("");
         System.out.println();
 
-        CodeGenerator codeGenerator = new CodeGenerator(root);
+        symbolsTable = tb.getTable();
+
+        CodeGenerator codeGenerator = new CodeGenerator(root,symbolsTable);
+        codeGenerator.generate();
 
 	}	
 }

@@ -35,9 +35,9 @@ public class TableGenerator {
                     break;
 
                 case JavammTreeConstants.JJTCLASSDECLARATION:
-                    SimpleNode childNode = (SimpleNode) currentNode.jjtGetChild(0);
+                    SimpleNode className = (SimpleNode) currentNode.jjtGetChild(0);
                     ClassDescriptor classDescriptor = inspectClass(currentNode);
-                    classDescriptor.setName(childNode.jjtGetVal());
+                    classDescriptor.setName(className.jjtGetVal());
                     symbolsTable.addSymbol(classDescriptor.getName(), classDescriptor, false);
                     currentNode.setDescriptor(classDescriptor);
                     break;
@@ -88,6 +88,8 @@ public class TableGenerator {
         ClassDescriptor classDescriptor = new ClassDescriptor();
         HashMap<SimpleNode, FunctionDescriptor> functions = new HashMap<SimpleNode, FunctionDescriptor>();
 
+
+
         // Collect attributes and methods access, return type and name 
         for (int i = 0; i < classNode.jjtGetNumChildren(); i++) {
             SimpleNode child = (SimpleNode) classNode.jjtGetChild(i);
@@ -101,6 +103,10 @@ public class TableGenerator {
                 classDescriptor.addFunction(functionDescriptor.getName(),functionDescriptor);
                 functions.put(child, functionDescriptor);
             }
+            else if (child.getId() == JavammTreeConstants.JJTEXTENDS) {
+                classDescriptor.setParentClass(((SimpleNode) (classNode.jjtGetChild(i+1))).jjtGetVal());
+            }
+
         }
 
         // Inspect inside each function
