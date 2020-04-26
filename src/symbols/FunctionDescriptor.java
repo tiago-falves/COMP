@@ -1,5 +1,6 @@
 package symbols;
 
+
 public class FunctionDescriptor extends TypeDescriptor {
 
     //protected FunctionBodyDescriptor bodyDescriptor;
@@ -10,6 +11,8 @@ public class FunctionDescriptor extends TypeDescriptor {
     private boolean isStatic;
     private Access access;
     private String name;
+
+
 
     public FunctionDescriptor(){
         super(null);
@@ -133,5 +136,7 @@ public class FunctionDescriptor extends TypeDescriptor {
 
         System.out.println();
     }
+
+
     
 }

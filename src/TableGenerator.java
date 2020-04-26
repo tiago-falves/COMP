@@ -11,10 +11,12 @@ import java.util.LinkedHashMap;
 public class TableGenerator {
     SimpleNode rootNode;
     SymbolsTable symbolsTable;
+    private HashMap<FunctionDescriptor,SimpleNode> funtionNodes;
 
     public TableGenerator(SimpleNode rootNode) {
         this.rootNode = rootNode;
         this.symbolsTable = new SymbolsTable();
+        this.funtionNodes = new HashMap<FunctionDescriptor, SimpleNode>();
     }
 
     public SymbolsTable getTable() {
@@ -155,6 +157,7 @@ public class TableGenerator {
     public FunctionDescriptor inspectMainHeader(SimpleNode mainNode) {
 
         FunctionDescriptor functionDescriptor = new FunctionDescriptor();
+        this.funtionNodes.put(functionDescriptor,mainNode);
 
         functionDescriptor.setAccessVal("public");
         functionDescriptor.makeStatic();
@@ -184,6 +187,7 @@ public class TableGenerator {
     public FunctionDescriptor inspectMethodHeader(SimpleNode methodNode) {
 
         FunctionDescriptor functionDescriptor = new FunctionDescriptor();
+        this.funtionNodes.put(functionDescriptor,methodNode);
 
         for (int j = 0; j < methodNode.jjtGetNumChildren(); j++) {
             SimpleNode child = (SimpleNode) methodNode.jjtGetChild(j);
