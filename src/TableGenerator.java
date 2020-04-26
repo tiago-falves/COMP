@@ -513,10 +513,9 @@ public class TableGenerator {
             return null;
         }
 
+        //TODO error on this for
         for(int i = 0; i < descriptorsList.size(); i++){
-            
             if(descriptorsList.get(i).getClass()  == ImportDescriptor.class){
-                
                 ImportDescriptor importDescriptor = (ImportDescriptor) descriptorsList.get(i);
 
                 ArrayList<String> importIdentifiers = importDescriptor.getIdentifiers();
@@ -558,10 +557,6 @@ public class TableGenerator {
                 HashMap<String, List<Descriptor>> functionParameters = parametersTable.getTable();
 
                 if(functionParameters.size() != parameters.size()) {
-                    if (i == descriptorsList.size()-1) {
-                        System.err.println("ERROR: Wrong number of arguments for function call: "+ functionDescriptor.getName());
-                        return null;
-                    }
                     continue;
                 }
 
@@ -603,8 +598,13 @@ public class TableGenerator {
                 StringType stringType = new StringType(functionType);
                 return stringType.getString();
             }
-        }
 
+            if (i == descriptorsList.size()-1) {
+                System.err.println("ERROR: Wrong number of arguments for function call");
+                return null;
+            }
+        }
+        
         return null;
     }
 
@@ -901,7 +901,7 @@ public class TableGenerator {
                 }
             }
         }
-
+        
         return type;
     }
 
