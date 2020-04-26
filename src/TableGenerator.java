@@ -38,10 +38,7 @@ public class TableGenerator {
                     break;
 
                 case JavammTreeConstants.JJTCLASSDECLARATION:
-                    SimpleNode childNode = (SimpleNode) currentNode.jjtGetChild(0);
-                    ClassDescriptor classDescriptor = inspectClass(currentNode);
-                    classDescriptor.setName(childNode.jjtGetVal());
-                    symbolsTable.addSymbol(classDescriptor.getName(), classDescriptor, false);
+                    inspectClass(currentNode);
                     break;
             }
 
@@ -92,9 +89,13 @@ public class TableGenerator {
         return importDescriptor;
     }
 
-    public ClassDescriptor inspectClass(SimpleNode classNode) throws SemanticErrorException {
+    public void inspectClass(SimpleNode classNode) throws SemanticErrorException {
         ClassDescriptor classDescriptor = new ClassDescriptor();
         
+        SimpleNode childNode = (SimpleNode) classNode.jjtGetChild(0);
+        classDescriptor.setName(childNode.jjtGetVal());
+        this.symbolsTable.addSymbol(classDescriptor.getName(), classDescriptor, false);
+
         SymbolsTable classVariablesTable = classDescriptor.getVariablesTable();
         classVariablesTable.setParent(this.symbolsTable);
 
@@ -119,8 +120,6 @@ public class TableGenerator {
         for (HashMap.Entry<SimpleNode, FunctionDescriptor> function : functions.entrySet()) {
             inspectFunctionBody(function.getKey(), function.getValue());
         } 
-
-        return classDescriptor;
     }
 
     public VariableDescriptor inspectVariable(SimpleNode variableNode) throws SemanticErrorException {
@@ -348,7 +347,56 @@ public class TableGenerator {
                 StringType strType = new StringType(type);
                 typeString = strType.getString();
             }
+
             inspectAssignment(statementNode, symbolTable, typeString);
+
+            VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
+            variableDescriptor.setInitialized();
+        }else if(secondChild.getId() == JavammTreeConstants.JJTARRAY){
+            List<Descriptor> firstDescriptorList = symbolTable.getDescriptor(firstChild.jjtGetVal());
+            if(firstDescriptorList == null){
+                System.out.println("Error: Variable "+firstChild.jjtGetVal()+" not declared");
+                return;
+            }
+
+            TypeDescriptor typeDescriptor = null;
+            if(firstDescriptorList.size() == 1){
+                typeDescriptor = (TypeDescriptor) firstDescriptorList.get(0);
+            }else{
+                for(int i = 0; i < firstDescriptorList.size(); i++){
+                    if(firstDescriptorList.get(i).getClass() == VariableDescriptor.class){
+                        typeDescriptor = (TypeDescriptor) firstDescriptorList.get(i);
+                        break;
+                    }
+                }
+                if(typeDescriptor == null){
+                    System.err.println("Error: Variable " + firstChild.jjtGetVal()+" doesn't have a type");
+                    return;
+                }
+            }
+
+            //Assignment
+            Type type = typeDescriptor.getType();
+            if(type != Type.STRING_ARRAY && type != Type.INT_ARRAY){
+                System.err.println("Error: Variable " + firstChild.jjtGetVal()+" is not an array");
+                return;   
+            }
+
+            SimpleNode arrayNode =  (SimpleNode) statementNode.jjtGetChild(1);
+            String indexType = inspectExpression(arrayNode, symbolTable);
+            if(!indexType.equals("int")){
+                System.err.println("Error: Array index must be an int");
+                return;
+            }
+           
+            String typeString;
+            if(type == Type.STRING_ARRAY){
+                typeString = "String";
+            }else{
+                typeString = "int";
+            }
+
+            inspectAssignment(statementNode, symbolTable, typeString, 3);
 
             VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
             variableDescriptor.setInitialized();
@@ -471,13 +519,19 @@ public class TableGenerator {
             return null;
         }
 
-        StringType stringType = new StringType(idDescriptor.getType());
-
-        return stringType.getString();
+        //StringType stringType = new StringType(idDescriptor.getType());
+        if(idDescriptor.getType() == Type.INT_ARRAY)
+            return "int";
+        return "String";
+        //return stringType.getString();
     }
 
     private void inspectAssignment(SimpleNode statementNode, SymbolsTable symbolsTable, String type) throws SemanticErrorException {
-        String expType = inspectExpression(statementNode, symbolsTable, 2);
+        inspectAssignment(statementNode, symbolsTable, type, 2);
+    }
+
+    private void inspectAssignment(SimpleNode statementNode, SymbolsTable symbolsTable, String type, int initialChild) throws SemanticErrorException {
+        String expType = inspectExpression(statementNode, symbolsTable, initialChild);
 
         if(expType == null){
             this.semanticError.printError((SimpleNode)statementNode.jjtGetChild(2), "Can't assign invalid type");
@@ -936,6 +990,13 @@ public class TableGenerator {
 
         List<String> parameters = inspectArguments(argumentsNode, symbolsTable);
         
+        if(parameters.size() == 0 && descriptorsList.size() == 1){
+            Descriptor descriptor = descriptorsList.get(0);
+            if(descriptor.getClass() == ClassDescriptor.class){
+                return classIdentifierNode.jjtGetVal();
+            }
+        }
+
         for(int i = 0; i < descriptorsList.size(); i++){
             Descriptor descriptor = descriptorsList.get(i);
             if(descriptor.getClass() == ImportDescriptor.class){
