@@ -342,7 +342,57 @@ public class TableGenerator {
                 StringType strType = new StringType(type);
                 typeString = strType.getString();
             }
+            System.out.println("1: " + firstChild.jjtGetVal());
             inspectAssignment(statementNode, symbolTable, typeString);
+
+            VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
+            variableDescriptor.setInitialized();
+        }else if(secondChild.getId() == JavammTreeConstants.JJTARRAY){
+            List<Descriptor> firstDescriptorList = symbolTable.getDescriptor(firstChild.jjtGetVal());
+            if(firstDescriptorList == null){
+                System.out.println("Error: Variable "+firstChild.jjtGetVal()+" not declared");
+                return;
+            }
+
+            TypeDescriptor typeDescriptor = null;
+            if(firstDescriptorList.size() == 1){
+                typeDescriptor = (TypeDescriptor) firstDescriptorList.get(0);
+            }else{
+                for(int i = 0; i < firstDescriptorList.size(); i++){
+                    if(firstDescriptorList.get(i).getClass() == VariableDescriptor.class){
+                        typeDescriptor = (TypeDescriptor) firstDescriptorList.get(i);
+                        break;
+                    }
+                }
+                if(typeDescriptor == null){
+                    System.err.println("Error: Variable " + firstChild.jjtGetVal()+" doesn't have a type");
+                    return;
+                }
+            }
+
+            //Assignment
+            Type type = typeDescriptor.getType();
+            if(type != Type.STRING_ARRAY && type != Type.INT_ARRAY){
+                System.err.println("Error: Variable " + firstChild.jjtGetVal()+" is not an array");
+                return;   
+            }
+
+            SimpleNode arrayNode =  (SimpleNode) statementNode.jjtGetChild(1);
+            String indexType = inspectExpression(arrayNode, symbolTable);
+            if(!indexType.equals("int")){
+                System.err.println("Error: Array index must be an int");
+                return;
+            }
+           
+            String typeString;
+            if(type == Type.STRING_ARRAY){
+                typeString = "String";
+            }else{
+                typeString = "int";
+            }
+
+            System.out.println("2: " + firstChild.jjtGetVal());
+            inspectAssignment(statementNode, symbolTable, typeString, 3);
 
             VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
             variableDescriptor.setInitialized();
@@ -471,7 +521,11 @@ public class TableGenerator {
     }
 
     private void inspectAssignment(SimpleNode statementNode, SymbolsTable symbolsTable, String type){
-        String expType = inspectExpression(statementNode, symbolsTable, 2);
+        inspectAssignment(statementNode, symbolsTable, type, 2);
+    }
+
+    private void inspectAssignment(SimpleNode statementNode, SymbolsTable symbolsTable, String type, int initialChild){
+        String expType = inspectExpression(statementNode, symbolsTable, initialChild);
 
         if(expType == null){
             System.err.println("ERROR: Can't assign invalid type");
