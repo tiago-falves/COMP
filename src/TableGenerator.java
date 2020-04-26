@@ -530,8 +530,13 @@ public class TableGenerator {
                 } 
                 
                 List<Type> importParameters = importDescriptor.getParameters();
-                if(importParameters.size() != parameters.size())
+                if(importParameters.size() != parameters.size()) {
+                    if (i == descriptorsList.size()-1) {
+                        System.err.println("ERROR: Wrong number of arguments for import call");
+                        return null;
+                    }
                     continue;
+                }
                 
                 for(int j = 0; j < importParameters.size(); j++){
                     StringType stringType = new StringType(importParameters.get(j));
@@ -557,6 +562,10 @@ public class TableGenerator {
                 HashMap<String, List<Descriptor>> functionParameters = parametersTable.getTable();
 
                 if(functionParameters.size() != parameters.size()) {
+                    if (i == descriptorsList.size()-1) {
+                        System.err.println("ERROR: Wrong number of arguments for function call");
+                        return null;
+                    }
                     continue;
                 }
 
@@ -597,11 +606,6 @@ public class TableGenerator {
                 
                 StringType stringType = new StringType(functionType);
                 return stringType.getString();
-            }
-
-            if (i == descriptorsList.size()-1) {
-                System.err.println("ERROR: Wrong number of arguments for function call");
-                return null;
             }
         }
         
