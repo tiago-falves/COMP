@@ -25,32 +25,27 @@ public class TableGenerator {
         return this.semanticError.getNumErrors();
     }
 
-    public void build() {
+    public void build() throws SemanticErrorException {
         int i = 0;
         // System.out.println(rootNode.jjtGetNumChildren());
-        try {
-            while(i < rootNode.jjtGetNumChildren()) {
-                SimpleNode currentNode = (SimpleNode) rootNode.jjtGetChild(i);
+        while(i < rootNode.jjtGetNumChildren()) {
+            SimpleNode currentNode = (SimpleNode) rootNode.jjtGetChild(i);
 
-                switch(currentNode.getId()) {
-                    case JavammTreeConstants.JJTIMPORTDECLARATION:
-                        ImportDescriptor importDescriptor = inspectImport(currentNode);
-                        symbolsTable.addSymbol(importDescriptor.getLastIdentifier(), importDescriptor);
-                        break;
+            switch(currentNode.getId()) {
+                case JavammTreeConstants.JJTIMPORTDECLARATION:
+                    ImportDescriptor importDescriptor = inspectImport(currentNode);
+                    symbolsTable.addSymbol(importDescriptor.getLastIdentifier(), importDescriptor);
+                    break;
 
-                    case JavammTreeConstants.JJTCLASSDECLARATION:
-                        SimpleNode childNode = (SimpleNode) currentNode.jjtGetChild(0);
-                        ClassDescriptor classDescriptor = inspectClass(currentNode);
-                        classDescriptor.setName(childNode.jjtGetVal());
-                        symbolsTable.addSymbol(classDescriptor.getName(), classDescriptor, false);
-                        break;
-                }
-
-                i++;
+                case JavammTreeConstants.JJTCLASSDECLARATION:
+                    SimpleNode childNode = (SimpleNode) currentNode.jjtGetChild(0);
+                    ClassDescriptor classDescriptor = inspectClass(currentNode);
+                    classDescriptor.setName(childNode.jjtGetVal());
+                    symbolsTable.addSymbol(classDescriptor.getName(), classDescriptor, false);
+                    break;
             }
-        }
-        catch(SemanticErrorException e) {
-            e.printStackTrace();
+
+            i++;
         }
     }
 

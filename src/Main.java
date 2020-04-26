@@ -21,10 +21,8 @@ public class Main {
 
         TableGenerator tb = new TableGenerator(root);
         tb.build();
-        if (tb.getNumErrors() > 0) {
-            System.out.println(tb.getNumErrors());
+        if (tb.getNumErrors() > 0) 
             throw new SemanticErrorException();
-        }
 
         System.out.println("\n\n\nPRINTING SYMBOLS TABLE...\n");
         tb.getTable().print("");
