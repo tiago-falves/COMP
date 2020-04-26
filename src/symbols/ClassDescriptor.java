@@ -51,9 +51,11 @@ public class ClassDescriptor extends Descriptor {
         }
         variablesTable.addSymbol(variable.getName(), variable, false);
     }
+
     public SymbolsTable getVariablesTable(){
         return this.functionsTable.getParent();
     }
+    
     public SymbolsTable getFunctionsTable(){
         return this.functionsTable;
     }
