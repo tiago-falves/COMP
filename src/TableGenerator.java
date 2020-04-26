@@ -841,7 +841,7 @@ public class TableGenerator {
                     break;
                 }
                 case JavammTreeConstants.JJTNEW: {
-                    if(i != initialChild || i + 3 < argumentNode.jjtGetNumChildren()){
+                    if(i != initialChild){
                         this.semanticError.printError(node, "CAN'T INSTANTIATE CLASS INSIDE AN EXPRESSION");
                         return null;
                     }
@@ -900,6 +900,16 @@ public class TableGenerator {
                     this.semanticError.printError(node, "CAN'T ACCESS PROPERTY/METHOD OF VARIABLE OF TYPE " + type);
                     return null;
                 }
+                case JavammTreeConstants.JJTLEFTPARENTHESES: 
+                case JavammTreeConstants.JJTRIGHTPARENTHESES: {
+                    if(type != null){
+                        if(!type.equals("int")){
+                            this.semanticError.printError(node, "THE OPERATIONS THAT INVOLVES PARENTHESIS ARE INCOMPATIBLE WITH " + type);
+                            return null;
+                        }
+                    }
+                    break;
+                }
                 default:{ //Plus, Minus, ...
                     if(!type.equals("int")){
                         this.semanticError.printError(node, "OPERATIONS ARE INCOMPATIBLE WITH " + type);
@@ -922,7 +932,6 @@ public class TableGenerator {
                         
         // Get all the Class constructors
         List<Descriptor> descriptorsList = symbolsTable.getDescriptor(classIdentifierNode.jjtGetVal());  
-        
         SimpleNode argumentsNode = (SimpleNode) node.jjtGetChild(newPosition+2);
 
         List<String> parameters = inspectArguments(argumentsNode, symbolsTable);

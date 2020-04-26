@@ -15,7 +15,7 @@ public class SemanticError {
 
     public void printError(SimpleNode node, String message) throws SemanticErrorException {
         this.numErrors++;
-        System.err.println(message);
+        System.err.println("ERROR: " + message);
         
         if(numErrors >= maxNumErrors)
             throw new SemanticErrorException();
