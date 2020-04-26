@@ -561,18 +561,17 @@ void ObjAccTail() #void : {Token t;}
     Arguments()
 }
 
-void Arguments() #Arguments : {} 
+void Arguments() #Arguments : {Token t;} 
 {
     <LEFTPARENTHESES>
     [Expression() #Argument [Argument()]]
     <RIGHTPARENTHESES> 
 }
 
-void Argument()  : {}
+void Argument() #void : {}
 {
-    <COMMA> 
-    Expression() [Argument()]
-
+    <COMMA>
+    Expression() #Argument [Argument()]
 }
 
 void NewExpr() #void : {Token i;}

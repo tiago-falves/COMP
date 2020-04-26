@@ -289,10 +289,7 @@ public class TableGenerator {
         } else if(variableAndStatementNode.getId() == JavammTreeConstants.JJTWHILESTATEMENT){
             inspectWhileStatement(variableAndStatementNode, functionDescriptor.getBodyTable());
         } else if(variableAndStatementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
-            
-            //TODO CHECK IF...ELSE
-            
-            //inspectBlockStatement(variableAndStatementNode, functionDescriptor.getBodyTable());
+            inspectIfStatement(variableAndStatementNode, functionDescriptor.getBodyTable());
         }else{
             System.err.println("Error: Unknown symbol");
         }
@@ -345,7 +342,6 @@ public class TableGenerator {
                 StringType strType = new StringType(type);
                 typeString = strType.getString();
             }
-
             inspectAssignment(statementNode, symbolTable, typeString);
 
             VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
@@ -387,9 +383,51 @@ public class TableGenerator {
             } else if(statementNode.getId() == JavammTreeConstants.JJTWHILESTATEMENT){
                 inspectWhileStatement(statementNode, blockDescriptor.getLocalTable());
             } else if(statementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
-                //TODO CHECK IF...ELSE
+                inspectIfStatement(statementNode, blockDescriptor.getLocalTable());
             }else{
                 System.err.println("Error: Unknown symbol");
+            }
+        }
+    }
+
+    public void inspectIfStatement(SimpleNode ifNode, SymbolsTable statementParentTable) {
+        //TODO CHECK this
+        if(ifNode.jjtGetNumChildren() == 0){
+            System.err.println("ERROR: If needs to have an expression.");
+            return;
+        }
+
+        SimpleNode ifExpression = (SimpleNode) ifNode.jjtGetChild(0);
+        if(ifExpression.getId() != JavammTreeConstants.JJTIFEXPRESSION){
+            System.err.println("ERROR: If needs to have an expression.");
+            return;
+        }
+
+        String expressionType = inspectExpression(ifExpression, statementParentTable); //TODO Store this expression in the block descriptor
+        if(!expressionType.equals("boolean")){
+            System.err.println("ERROR: If expression must evaluate to a boolean");
+            return;
+        }
+
+        BlockDescriptor blockDescriptor = new BlockDescriptor(statementParentTable);
+        
+        statementParentTable.addSymbol("if", blockDescriptor);
+        
+        boolean found_else = false;
+        for(int i = 1; i < ifNode.jjtGetNumChildren(); i++){
+            SimpleNode statementNode = (SimpleNode) ifNode.jjtGetChild(i);
+
+            if (statementNode.getId() == JavammTreeConstants.JJTLINESTATEMENT ){
+                inspectLineStatement(statementNode, blockDescriptor.getLocalTable());
+            } else if(statementNode.getId() == JavammTreeConstants.JJTWHILESTATEMENT){
+                inspectWhileStatement(statementNode, blockDescriptor.getLocalTable());
+            } else if(statementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
+                inspectIfStatement(statementNode, blockDescriptor.getLocalTable());
+            } else if(statementNode.getId() == JavammTreeConstants.JJTELSE && !found_else){
+                found_else = true;
+                continue;
+            } else{
+                System.err.println("Error: Unknown symbol "+statementNode.getId());
             }
         }
     }
@@ -434,7 +472,7 @@ public class TableGenerator {
 
     private void inspectAssignment(SimpleNode statementNode, SymbolsTable symbolsTable, String type){
         String expType = inspectExpression(statementNode, symbolsTable, 2);
-        
+
         if(expType == null){
             System.err.println("ERROR: Can't assign invalid type");
         } else if(!type.equals(expType)){
@@ -447,16 +485,17 @@ public class TableGenerator {
     }
 
     private String inspectFunctionCall(SimpleNode statementNode, SymbolsTable symbolsTable, int initialChild){
-
-        List<String> identifiers = new ArrayList<>();
+        
+        List<String> identifiers = new ArrayList<>(); 
         SimpleNode node = (SimpleNode) statementNode.jjtGetChild(initialChild);
-        identifiers.add(node.jjtGetVal());
+
+        identifiers.add(node.jjtGetVal()); 
 
         SimpleNode child = (SimpleNode) statementNode.jjtGetChild(initialChild+1);
         int nextChild = initialChild+1;
         if(child.getId() == JavammTreeConstants.JJTDOT){
             node = (SimpleNode) statementNode.jjtGetChild(initialChild+2);
-            identifiers.add(node.jjtGetVal());
+            identifiers.add(node.jjtGetVal()); 
             nextChild = initialChild+3;
         }
 
@@ -467,19 +506,29 @@ public class TableGenerator {
         }
 
         List<String> parameters = inspectArguments(argumentsNode, symbolsTable);
-        List<Descriptor> descriptorsList = symbolsTable.getDescriptor(((SimpleNode)statementNode.jjtGetChild(2)).jjtGetVal());
+        List<Descriptor> descriptorsList = symbolsTable.getDescriptor(((SimpleNode)statementNode.jjtGetChild(nextChild-1)).jjtGetVal());
 
         if (descriptorsList == null) {
-            System.err.println("ERROR: Function "+((SimpleNode)statementNode.jjtGetChild(2)).jjtGetVal()+" not declared.");
+            System.err.println("ERROR: Function "+((SimpleNode)statementNode.jjtGetChild(nextChild-1)).jjtGetVal()+" not declared.");
             return null;
         }
 
         for(int i = 0; i < descriptorsList.size(); i++){
-
+            
             if(descriptorsList.get(i).getClass()  == ImportDescriptor.class){
+                
                 ImportDescriptor importDescriptor = (ImportDescriptor) descriptorsList.get(i);
-                if(importDescriptor.getIdentifiers().size() != 1)
+
+                ArrayList<String> importIdentifiers = importDescriptor.getIdentifiers();
+                if(importIdentifiers.size() != identifiers.size()) 
                     continue;
+
+                for(int j = 0; j < importIdentifiers.size(); j++){
+                    if(!identifiers.get(j).equals(importIdentifiers.get(j))){
+                        System.err.println("ERROR: INCOMPATIBLE TYPE");
+                        return null;
+                    }
+                } 
                 
                 List<Type> importParameters = importDescriptor.getParameters();
                 if(importParameters.size() != parameters.size())
@@ -492,6 +541,15 @@ public class TableGenerator {
                         return null;
                     }
                 } 
+                
+                // If the import was found, the import type is returned
+                Type importType = importDescriptor.getType();
+                if(importType == Type.CLASS)
+                    return importDescriptor.getClassName();
+                
+                StringType stringType = new StringType(importType);
+                
+                return stringType.getString();
                 
             }else if(descriptorsList.get(i).getClass() == FunctionDescriptor.class){
 
@@ -573,7 +631,6 @@ public class TableGenerator {
         return inspectExpression(expressionNode, symbolsTable, 0);
     }
     
-    
     private String inspectExpression(SimpleNode expressionNode, SymbolsTable symbolsTable, int initialChild){
         /**
          * Must return the argument type after check if it's valid
@@ -637,7 +694,7 @@ public class TableGenerator {
 
         for(int i = initialChild; i < argumentNode.jjtGetNumChildren(); i++){
             SimpleNode node = (SimpleNode) argumentNode.jjtGetChild(i);
-
+            
             switch(node.getId()){
                 case JavammTreeConstants.JJTINTEGERLITERAL: {
                     if(type == null){
@@ -661,7 +718,6 @@ public class TableGenerator {
                     break;
                 }
                 case JavammTreeConstants.JJTTHIS: {
-                 
                     String functionType = inspectFunctionCall(argumentNode, symbolsTable, i+2);
                     if(type == null){
                         type = functionType;
@@ -687,21 +743,26 @@ public class TableGenerator {
                                     System.err.println("ERROR: Undeclared variable " + node.jjtGetVal());
                                     return null;
                                 }
-
+                                boolean foundDescriptor = false;
                                 for(int j = 0; j < descriptors.size(); j++){
                                     Descriptor descriptor = descriptors.get(j);
                                     if(descriptor.getClass() == FunctionParameterDescriptor.class || descriptor.getClass() == VariableDescriptor.class){
+                                        
                                         TypeDescriptor typeDescriptor = (TypeDescriptor) descriptor;
                                         if(typeDescriptor.getType() != Type.INT_ARRAY && typeDescriptor.getType() != Type.STRING_ARRAY){
                                             System.err.println("ERROR: Property length only exists in arrays");
                                             return null;
                                         } 
-
+                                        
                                         i += 2;
-                                        continue;
+                                        foundDescriptor = true;
+                                        type = "int";
+                                        break;
                                     }
                                 }
                                 
+                                if (foundDescriptor)
+                                    continue;
                                 System.err.println("ERROR: " + node.jjtGetVal() + " is not a variable");
                                 return null;
                             }
