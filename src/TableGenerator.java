@@ -32,10 +32,7 @@ public class TableGenerator {
                     break;
 
                 case JavammTreeConstants.JJTCLASSDECLARATION:
-                    SimpleNode childNode = (SimpleNode) currentNode.jjtGetChild(0);
-                    ClassDescriptor classDescriptor = inspectClass(currentNode);
-                    classDescriptor.setName(childNode.jjtGetVal());
-                    symbolsTable.addSymbol(classDescriptor.getName(), classDescriptor, false);
+                    inspectClass(currentNode);
                     break;
             }
 
@@ -86,9 +83,13 @@ public class TableGenerator {
         return importDescriptor;
     }
 
-    public ClassDescriptor inspectClass(SimpleNode classNode) {
+    public void inspectClass(SimpleNode classNode){
         ClassDescriptor classDescriptor = new ClassDescriptor();
         
+        SimpleNode childNode = (SimpleNode) classNode.jjtGetChild(0);
+        classDescriptor.setName(childNode.jjtGetVal());
+        this.symbolsTable.addSymbol(classDescriptor.getName(), classDescriptor, false);
+
         SymbolsTable classVariablesTable = classDescriptor.getVariablesTable();
         classVariablesTable.setParent(this.symbolsTable);
 
@@ -113,8 +114,6 @@ public class TableGenerator {
         for (HashMap.Entry<SimpleNode, FunctionDescriptor> function : functions.entrySet()) {
             inspectFunctionBody(function.getKey(), function.getValue());
         } 
-
-        return classDescriptor;
     }
 
     public VariableDescriptor inspectVariable(SimpleNode variableNode) {
@@ -342,7 +341,7 @@ public class TableGenerator {
                 StringType strType = new StringType(type);
                 typeString = strType.getString();
             }
-            System.out.println("1: " + firstChild.jjtGetVal());
+
             inspectAssignment(statementNode, symbolTable, typeString);
 
             VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
@@ -391,7 +390,6 @@ public class TableGenerator {
                 typeString = "int";
             }
 
-            System.out.println("2: " + firstChild.jjtGetVal());
             inspectAssignment(statementNode, symbolTable, typeString, 3);
 
             VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
@@ -515,9 +513,11 @@ public class TableGenerator {
             return null;
         }
 
-        StringType stringType = new StringType(idDescriptor.getType());
-
-        return stringType.getString();
+        //StringType stringType = new StringType(idDescriptor.getType());
+        if(idDescriptor.getType() == Type.INT_ARRAY)
+            return "int";
+        return "String";
+        //return stringType.getString();
     }
 
     private void inspectAssignment(SimpleNode statementNode, SymbolsTable symbolsTable, String type){
@@ -975,6 +975,13 @@ public class TableGenerator {
 
         List<String> parameters = inspectArguments(argumentsNode, symbolsTable);
         
+        if(parameters.size() == 0 && descriptorsList.size() == 1){
+            Descriptor descriptor = descriptorsList.get(0);
+            if(descriptor.getClass() == ClassDescriptor.class){
+                return classIdentifierNode.jjtGetVal();
+            }
+        }
+
         for(int i = 0; i < descriptorsList.size(); i++){
             Descriptor descriptor = descriptorsList.get(i);
             if(descriptor.getClass() == ImportDescriptor.class){
