@@ -7,7 +7,7 @@ public class CodeGeneratorConstants {
     public static HashMap<String, String> load;
     public static HashMap<String, String> arithmeticOperators;
 
-    public CodeGeneratorConstants(){
+    static {
         types = new HashMap<>();
         store = new HashMap<>();
         load = new HashMap<>();
@@ -17,6 +17,12 @@ public class CodeGeneratorConstants {
         arithmeticOperators.put("-", "\tisub");
         arithmeticOperators.put("*", "\timul");
         arithmeticOperators.put("/", "\tidiv");
+
+        types.put("int", "I");
+        types.put("boolean", "Z");
+        types.put("int[]", "[I");
+        types.put("void", "V");
+        types.put("String[]", "[Ljava/lang/String;"); //TODO Quase certo que isto nao esta bem
 
         store.put("int", "\tistore ?");
         store.put("boolean", "\tistore ?");

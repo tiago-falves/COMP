@@ -3,4 +3,9 @@ class HelloWorld {
 	public static void main(String[] args) {
 		ioPlus.printHelloWorld();
 	}
+
+	//So para Testar
+	public int square(int a){
+	    return a*a;
+	}
 }
