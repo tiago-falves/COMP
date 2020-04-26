@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 public class TableGenerator {
     SimpleNode rootNode;
     SymbolsTable symbolsTable;
+
     private HashMap<FunctionDescriptor,SimpleNode> funtionNodes;
 
     public TableGenerator(SimpleNode rootNode) {
@@ -187,7 +188,7 @@ public class TableGenerator {
     public FunctionDescriptor inspectMethodHeader(SimpleNode methodNode) {
 
         FunctionDescriptor functionDescriptor = new FunctionDescriptor();
-        this.funtionNodes.put(functionDescriptor,methodNode);
+        this.funtionNodes.put(functionDescriptor,(SimpleNode) methodNode.jjtGetParent());
 
         for (int j = 0; j < methodNode.jjtGetNumChildren(); j++) {
             SimpleNode child = (SimpleNode) methodNode.jjtGetChild(j);
@@ -348,6 +349,10 @@ public class TableGenerator {
             //Function call
             inspectFunctionCall(statementNode, symbolTable);
         }
+    }
+
+    public HashMap<FunctionDescriptor, SimpleNode> getFuntionNodes() {
+        return funtionNodes;
     }
 
     public void inspectBlockStatement(SimpleNode statementNode, SymbolsTable statementParent){

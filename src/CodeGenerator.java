@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
@@ -14,11 +15,13 @@ public class CodeGenerator {
     private PrintWriter out;
     private StringBuilder builder;
     private ClassDescriptor classDescriptor;
+    private HashMap<FunctionDescriptor,SimpleNode> funtionNodes;
 
 
-    public CodeGenerator(SimpleNode root, SymbolsTable symbolsTable) {
+    public CodeGenerator(ClassDescriptor classDescriptor, HashMap<FunctionDescriptor,SimpleNode> funtionNodes) {
         this.builder = new StringBuilder();
-        this.classDescriptor = getClass(root,symbolsTable);
+        this.classDescriptor = classDescriptor;
+        this.funtionNodes = funtionNodes;
         try {
             FileWriter file = new FileWriter("src/codeGeneration/generatorFile.txt", false);
             BufferedWriter bufferedWriter = new BufferedWriter(file);
@@ -79,6 +82,8 @@ public class CodeGenerator {
     }
 
     private void generateFunctionBody(FunctionDescriptor functionDescriptor) {
+        SimpleNode functionNode = this.funtionNodes.get(functionDescriptor);
+        MethodBody methodBody = new MethodBody(functionNode,functionDescriptor);
         generateVariableDeclarations(functionDescriptor);
         generateStatements(functionDescriptor);
 
@@ -211,7 +216,7 @@ public class CodeGenerator {
         this.builder.append(content);
     }
 
-    public String searchClass(SimpleNode rootNode) {
+    public static String searchClass(SimpleNode rootNode) {
         int i = 0;
         // System.out.println(rootNode.jjtGetNumChildren());
         while(i < rootNode.jjtGetNumChildren()) {
@@ -226,7 +231,7 @@ public class CodeGenerator {
         return "";
     }
 
-    public ClassDescriptor getClass(SimpleNode root,SymbolsTable symbolsTable){
+    public static ClassDescriptor getClass(SimpleNode root,SymbolsTable symbolsTable){
         String classIdentifier = searchClass(root);
         List<Descriptor> classes =  symbolsTable.getDescriptor(classIdentifier);
         return (ClassDescriptor) classes.get(0);

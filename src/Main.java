@@ -1,3 +1,4 @@
+import symbols.ClassDescriptor;
 import symbols.SymbolsTable;
 
 
@@ -27,9 +28,13 @@ public class Main {
         System.out.println();
 
         symbolsTable = tb.getTable();
+         ClassDescriptor classDescriptor = CodeGenerator.getClass(root,symbolsTable);
 
-        CodeGenerator codeGenerator = new CodeGenerator(root,symbolsTable);
+
+
+        CodeGenerator codeGenerator = new CodeGenerator(classDescriptor,tb.getFuntionNodes());
         codeGenerator.generate();
 
-	}	
+	}
+
 }

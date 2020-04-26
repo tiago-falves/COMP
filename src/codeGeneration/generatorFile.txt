@@ -14,7 +14,7 @@
 
 .end method.method public square(I)I
 	.limit stack 1
-	.limit locals 0
+	.limit locals 2
 
 
 .end method

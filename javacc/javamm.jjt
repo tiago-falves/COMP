@@ -338,9 +338,9 @@ void LineStatement() : {Token i;}
         LiteralExpr4() ExpressionTail()
         |
         (
-            i=<IDENTIFIER>{jjtThis.jjtSetVal(i.image);} #Identifier{} 
+            i=<IDENTIFIER>{jjtThis.jjtSetVal(i.image);} #Identifier{}
             (
-                <EQUAL> #Equal 
+                <EQUAL> #Equal
                 Expression()
                 |
                 (ArrAcc() [<EQUAL> #Equal Expression()])
@@ -353,6 +353,7 @@ void LineStatement() : {Token i;}
     )
     <SEMICOLON>
 }
+
 
 void LiteralLineStatement() #LineStatement : {}
 {
