@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.function.Function;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 
 public class TableGenerator {
     SimpleNode rootNode;
@@ -99,9 +101,9 @@ public class TableGenerator {
         SymbolsTable classVariablesTable = classDescriptor.getVariablesTable();
         classVariablesTable.setParent(this.symbolsTable);
 
-        HashMap<SimpleNode, FunctionDescriptor> functions = new HashMap<SimpleNode, FunctionDescriptor>();
-
-        // Collect attributes and methods access, return type and name 
+        List<SimpleNode> simpleNodes = new ArrayList<>();
+        List<FunctionDescriptor> functions = new ArrayList<>(); 
+        
         for (int i = 0; i < classNode.jjtGetNumChildren(); i++) {
             SimpleNode child = (SimpleNode) classNode.jjtGetChild(i);
             if (child.getId() == JavammTreeConstants.JJTVARIABLEDECLARATION) {
@@ -112,13 +114,14 @@ public class TableGenerator {
                 FunctionDescriptor functionDescriptor = inspectFunctionHeader(child);
                 functionDescriptor.getParametersTable().setParent(classDescriptor.getFunctionsTable());
                 classDescriptor.addFunction(functionDescriptor.getName(),functionDescriptor);
-                functions.put(child, functionDescriptor);
+                simpleNodes.add(child);
+                functions.add(functionDescriptor);
             }
         }
 
-        // Inspect inside each function
-        for (HashMap.Entry<SimpleNode, FunctionDescriptor> function : functions.entrySet()) {
-            inspectFunctionBody(function.getKey(), function.getValue());
+        for(int i = 0; i < simpleNodes.size(); i++){
+            System.out.println(functions.get(i).getName());
+            inspectFunctionBody(simpleNodes.get(i), functions.get(i));
         } 
     }
 
