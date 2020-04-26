@@ -507,13 +507,11 @@ public class TableGenerator {
 
         List<String> parameters = inspectArguments(argumentsNode, symbolsTable);
         List<Descriptor> descriptorsList = symbolsTable.getDescriptor(((SimpleNode)statementNode.jjtGetChild(nextChild-1)).jjtGetVal());
-
         if (descriptorsList == null) {
             System.err.println("ERROR: Function "+((SimpleNode)statementNode.jjtGetChild(nextChild-1)).jjtGetVal()+" not declared.");
             return null;
         }
 
-        //TODO error on this for
         for(int i = 0; i < descriptorsList.size(); i++){
             if(descriptorsList.get(i).getClass()  == ImportDescriptor.class){
                 ImportDescriptor importDescriptor = (ImportDescriptor) descriptorsList.get(i);

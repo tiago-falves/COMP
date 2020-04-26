@@ -47,15 +47,25 @@ public class SymbolsTable {
     }
 
     public List<Descriptor> getDescriptor(String identifier){
+        List<Descriptor> descriptors = null;
         if(table.containsKey(identifier)){
-            return table.get(identifier);
+            descriptors = new LinkedList<Descriptor>(table.get(identifier));
         }
         
         if(parent != null){
-            return parent.getDescriptor(identifier);
+            List<Descriptor> parentDescriptors = parent.getDescriptor(identifier);
+            if(parentDescriptors != null){
+                if(descriptors == null){
+                    descriptors = parentDescriptors;
+                }else{
+                    for(int i = 0; i < parentDescriptors.size(); i++){
+                        descriptors.add(parentDescriptors.get(i));
+                    }
+                }
+            }
         }
 
-        return null;
+        return descriptors;
     }
 
     public LinkedHashMap<String, List<Descriptor>> getTable(){
