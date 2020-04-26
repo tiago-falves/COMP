@@ -20,4 +20,8 @@ public class SemanticError {
         if(numErrors >= maxNumErrors)
             throw new SemanticErrorException();
     }
+
+    public int getNumErrors() {
+        return numErrors;
+    }
 }
