@@ -1,30 +1,33 @@
-import javax.management.remote.JMXConnectorServerFactory;
-
 import symbols.*;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.function.Function;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 
 public class TableGenerator {
     SimpleNode rootNode;
     SymbolsTable symbolsTable;
-
-    private HashMap<FunctionDescriptor,SimpleNode> funtionNodes;
+    SemanticError semanticError;
 
     public TableGenerator(SimpleNode rootNode) {
         this.rootNode = rootNode;
         this.symbolsTable = new SymbolsTable();
-        this.funtionNodes = new HashMap<FunctionDescriptor, SimpleNode>();
+        this.semanticError = new SemanticError();
     }
 
     public SymbolsTable getTable() {
         return this.symbolsTable;
     }
 
-    public void build() {
+    public int getNumErrors() {
+        return this.semanticError.getNumErrors();
+    }
+
+    public void build() throws SemanticErrorException {
         int i = 0;
         // System.out.println(rootNode.jjtGetNumChildren());
         while(i < rootNode.jjtGetNumChildren()) {
@@ -38,11 +41,7 @@ public class TableGenerator {
                     break;
 
                 case JavammTreeConstants.JJTCLASSDECLARATION:
-                    SimpleNode className = (SimpleNode) currentNode.jjtGetChild(0);
-                    ClassDescriptor classDescriptor = inspectClass(currentNode);
-                    classDescriptor.setName(className.jjtGetVal());
-                    symbolsTable.addSymbol(classDescriptor.getName(), classDescriptor, false);
-                    currentNode.setDescriptor(classDescriptor);
+                    inspectClass(currentNode);
                     break;
             }
 
@@ -50,7 +49,7 @@ public class TableGenerator {
         }
     }
 
-    public ImportDescriptor inspectImport(SimpleNode importNode) {
+    public ImportDescriptor inspectImport(SimpleNode importNode) throws SemanticErrorException {
         ImportDescriptor importDescriptor = new ImportDescriptor();
 
         // check if static
@@ -69,6 +68,8 @@ public class TableGenerator {
                 
                 for(int j = 0; j < child.jjtGetNumChildren(); j++) {
                     SimpleNode grandChild = (SimpleNode) child.jjtGetChild(j);
+                    if(grandChild.jjtGetVal().equals("void"))
+                        continue;
                     TypeString typeString = new TypeString(grandChild.jjtGetVal());
                     importDescriptor.addParameter(typeString.parseType());
                 }
@@ -81,15 +82,28 @@ public class TableGenerator {
                 SimpleNode grandChild = (SimpleNode) child.jjtGetChild(0);
                 TypeString typeString = new TypeString(grandChild.jjtGetVal());
                 importDescriptor.setType(typeString.parseType());
+
+                if(typeString.parseType() == Type.CLASS){
+                    importDescriptor.setClassName(grandChild.jjtGetVal());
+                }
             }
         }
 
         return importDescriptor;
     }
 
-    public ClassDescriptor inspectClass(SimpleNode classNode) {
+    public void inspectClass(SimpleNode classNode) throws SemanticErrorException {
         ClassDescriptor classDescriptor = new ClassDescriptor();
-        HashMap<SimpleNode, FunctionDescriptor> functions = new HashMap<SimpleNode, FunctionDescriptor>();
+        
+        SimpleNode childNode = (SimpleNode) classNode.jjtGetChild(0);
+        classDescriptor.setName(childNode.jjtGetVal());
+        this.symbolsTable.addSymbol(classDescriptor.getName(), classDescriptor, false);
+
+        SymbolsTable classVariablesTable = classDescriptor.getVariablesTable();
+        classVariablesTable.setParent(this.symbolsTable);
+
+        List<SimpleNode> simpleNodes = new ArrayList<>();
+        List<FunctionDescriptor> functions = new ArrayList<>(); 
 
 
 
@@ -104,7 +118,8 @@ public class TableGenerator {
                 FunctionDescriptor functionDescriptor = inspectFunctionHeader(child);
                 functionDescriptor.getParametersTable().setParent(classDescriptor.getFunctionsTable());
                 classDescriptor.addFunction(functionDescriptor.getName(),functionDescriptor);
-                functions.put(child, functionDescriptor);
+                simpleNodes.add(child);
+                functions.add(functionDescriptor);
             }
             else if (child.getId() == JavammTreeConstants.JJTEXTENDS) {
                 classDescriptor.setParentClass(((SimpleNode) (classNode.jjtGetChild(i+1))).jjtGetVal());
@@ -112,15 +127,12 @@ public class TableGenerator {
 
         }
 
-        // Inspect inside each function
-        for (HashMap.Entry<SimpleNode, FunctionDescriptor> function : functions.entrySet()) {
-            inspectFunctionBody(function.getKey(), function.getValue());
+        for(int i = 0; i < simpleNodes.size(); i++){
+            inspectFunctionBody(simpleNodes.get(i), functions.get(i));
         } 
-
-        return classDescriptor;
     }
 
-    public VariableDescriptor inspectVariable(SimpleNode variableNode) {
+    public VariableDescriptor inspectVariable(SimpleNode variableNode) throws SemanticErrorException {
         VariableDescriptor variableDescriptor = new VariableDescriptor();
 
         for (int i = 0; i < variableNode.jjtGetNumChildren(); i++) {
@@ -141,7 +153,7 @@ public class TableGenerator {
         return variableDescriptor;
     }
 
-    public FunctionDescriptor inspectFunctionHeader(SimpleNode functionNode) {
+    public FunctionDescriptor inspectFunctionHeader(SimpleNode functionNode) throws SemanticErrorException {
         SimpleNode child = (SimpleNode) functionNode.jjtGetChild(0);
 
         //check if is main or usual method
@@ -155,11 +167,9 @@ public class TableGenerator {
         return null;
     }
 
-    public FunctionDescriptor inspectMainHeader(SimpleNode mainNode) {
+    public FunctionDescriptor inspectMainHeader(SimpleNode mainNode) throws SemanticErrorException {
 
         FunctionDescriptor functionDescriptor = new FunctionDescriptor();
-        this.funtionNodes.put(functionDescriptor,mainNode);
-
         functionDescriptor.setAccessVal("public");
         functionDescriptor.makeStatic();
         functionDescriptor.setReturnValue("void");
@@ -185,10 +195,9 @@ public class TableGenerator {
         return functionDescriptor;
     }
 
-    public FunctionDescriptor inspectMethodHeader(SimpleNode methodNode) {
+    public FunctionDescriptor inspectMethodHeader(SimpleNode methodNode) throws SemanticErrorException {
 
         FunctionDescriptor functionDescriptor = new FunctionDescriptor();
-        this.funtionNodes.put(functionDescriptor,(SimpleNode) methodNode.jjtGetParent());
 
         for (int j = 0; j < methodNode.jjtGetNumChildren(); j++) {
             SimpleNode child = (SimpleNode) methodNode.jjtGetChild(j);
@@ -219,7 +228,7 @@ public class TableGenerator {
         return functionDescriptor;
     }
 
-    public void inspectMethodArguments(SimpleNode methodArgumentsNode,SymbolsTable parametersTable) {
+    public void inspectMethodArguments(SimpleNode methodArgumentsNode,SymbolsTable parametersTable) throws SemanticErrorException {
 
         for (int i = 0; i < methodArgumentsNode.jjtGetNumChildren(); i++) {
             SimpleNode child = (SimpleNode) methodArgumentsNode.jjtGetChild(i);
@@ -247,7 +256,7 @@ public class TableGenerator {
 
     }
 
-    public void inspectFunctionBody(SimpleNode functionNode, FunctionDescriptor functionDescriptor) {
+    public void inspectFunctionBody(SimpleNode functionNode, FunctionDescriptor functionDescriptor) throws SemanticErrorException {
         SimpleNode child = (SimpleNode) functionNode.jjtGetChild(0);
 
         //check if is main or usual method
@@ -259,7 +268,7 @@ public class TableGenerator {
         }
     }
 
-    public void inspectMainBody(SimpleNode mainNode, FunctionDescriptor functionDescriptor) {
+    public void inspectMainBody(SimpleNode mainNode, FunctionDescriptor functionDescriptor) throws SemanticErrorException {
 
         //Main Body Parser
         for (int i = 1; i < mainNode.jjtGetNumChildren(); i++) {
@@ -269,7 +278,7 @@ public class TableGenerator {
     }
 
     //Inspects all the methods except main
-    public void inspectMethodBody(SimpleNode methodNode, FunctionDescriptor functionDescriptor) {
+    public void inspectMethodBody(SimpleNode methodNode, FunctionDescriptor functionDescriptor) throws SemanticErrorException {
 
         //Cycle can have MethodHeader, LineStatement return IntegralLiteral
         for (int i = 1; i < methodNode.jjtGetNumChildren(); i++) {
@@ -285,40 +294,76 @@ public class TableGenerator {
 
     }
 
-    public void inspectVariableAndStatement(SimpleNode variableAndStatementNode, FunctionDescriptor functionDescriptor) {
-        if (variableAndStatementNode.getId() == JavammTreeConstants.JJTVARIABLEDECLARATION) 
-        {
+    public void inspectVariableAndStatement(SimpleNode variableAndStatementNode, FunctionDescriptor functionDescriptor) throws SemanticErrorException {
+        if (variableAndStatementNode.getId() == JavammTreeConstants.JJTVARIABLEDECLARATION) {
             VariableDescriptor variableDescriptor = inspectVariable(variableAndStatementNode);
             functionDescriptor.addBodyVariable(variableDescriptor.getName(),variableDescriptor);
-        }
-        else if (variableAndStatementNode.getId() == JavammTreeConstants.JJTLINESTATEMENT )
-        {
-            //TODO: Analizar statement
+        } else if (variableAndStatementNode.getId() == JavammTreeConstants.JJTLINESTATEMENT ){
             inspectLineStatement(variableAndStatementNode, functionDescriptor.getBodyTable());
-        }
-        /*else if(variableAndStatementNode.getId() == JavammTreeConstants.JJTWHILESTATEMENT || variableAndStatementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
-            inspectBlockStatement(variableAndStatementNode, functionDescriptor.getBodyTable());
+        } else if(variableAndStatementNode.getId() == JavammTreeConstants.JJTWHILESTATEMENT){
+            inspectWhileStatement(variableAndStatementNode, functionDescriptor.getBodyTable());
+        } else if(variableAndStatementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
+            inspectIfStatement(variableAndStatementNode, functionDescriptor.getBodyTable());
         }else{
-            System.err.println("Error: Unknown symbol");
-        }*/
+            this.semanticError.printError(variableAndStatementNode, "Unknown symbol");
+        }
     }
 
-    public void inspectLineStatement(SimpleNode statementNode, SymbolsTable symbolTable){
+    public void inspectLineStatement(SimpleNode statementNode, SymbolsTable symbolTable) throws SemanticErrorException {
         if(statementNode.jjtGetNumChildren() < 3){
-            System.err.println("Error: Invalid Line Statement");
+            this.semanticError.printError(statementNode, "Invalid Line Statement");
             return;
         }
 
         SimpleNode firstChild = (SimpleNode) statementNode.jjtGetChild(0);
         
         if(firstChild.getId() != JavammTreeConstants.JJTIDENTIFIER && firstChild.getId() != JavammTreeConstants.JJTTHIS){
-            System.err.println("Error: First Node of Line Statement must be an Identifier");
+            this.semanticError.printError(firstChild, "First Node of Line Statement must be an Identifier");
             return;
         }
 
         SimpleNode secondChild = (SimpleNode) statementNode.jjtGetChild(1);
 
         if(secondChild.getId() == JavammTreeConstants.JJTEQUAL){
+            List<Descriptor> firstDescriptorList = symbolTable.getDescriptor(firstChild.jjtGetVal());
+            if(firstDescriptorList == null){
+                this.semanticError.printError(firstChild, "Variable "+firstChild.jjtGetVal()+" not declared");
+                return;
+            }
+
+            TypeDescriptor typeDescriptor = null;
+            if(firstDescriptorList.size() == 1){
+                typeDescriptor = (TypeDescriptor) firstDescriptorList.get(0);
+            }else{
+                for(int i = 0; i < firstDescriptorList.size(); i++){
+                    if(firstDescriptorList.get(i).getClass() == VariableDescriptor.class){
+                        typeDescriptor = (TypeDescriptor) firstDescriptorList.get(i);
+                        break;
+                    }
+                }
+                if(typeDescriptor == null){
+                    this.semanticError.printError(firstChild, "Variable " + firstChild.jjtGetVal()+" doesn't have a type");
+                    return;
+                }
+            }
+
+            //Assignment
+            Type type = typeDescriptor.getType();
+            String typeString;
+            if(type == Type.CLASS){
+                typeString = typeDescriptor.getClassName();
+            }else{
+                StringType strType = new StringType(type);
+                typeString = strType.getString();
+            }
+
+            inspectAssignment(statementNode, symbolTable, typeString);
+
+            if(typeDescriptor.getClass() == VariableDescriptor.class){
+                VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
+                variableDescriptor.setInitialized();
+            }
+        }else if(secondChild.getId() == JavammTreeConstants.JJTARRAY){
             List<Descriptor> firstDescriptorList = symbolTable.getDescriptor(firstChild.jjtGetVal());
             if(firstDescriptorList == null){
                 System.out.println("Error: Variable "+firstChild.jjtGetVal()+" not declared");
@@ -343,7 +388,32 @@ public class TableGenerator {
 
             //Assignment
             Type type = typeDescriptor.getType();
-            inspectAssignment(statementNode, symbolTable, type);
+            if(type != Type.STRING_ARRAY && type != Type.INT_ARRAY){
+                System.err.println("Error: Variable " + firstChild.jjtGetVal()+" is not an array");
+                return;   
+            }
+
+            SimpleNode arrayNode =  (SimpleNode) statementNode.jjtGetChild(1);
+            String indexType = inspectExpression(arrayNode, symbolTable);
+            if(!indexType.equals("int")){
+                System.err.println("Error: Array index must be an int");
+                return;
+            }
+           
+            String typeString;
+            if(type == Type.STRING_ARRAY){
+                typeString = "String";
+            }else{
+                typeString = "int";
+            }
+
+            inspectAssignment(statementNode, symbolTable, typeString, 3);
+
+            if(typeDescriptor.getClass() == VariableDescriptor.class){
+                VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
+                variableDescriptor.setInitialized();
+            }
+            //TODO Add case where variable is a FunctionParameterDescriptor -> useful in the code generation
         }
         else{
             //Function call
@@ -351,123 +421,275 @@ public class TableGenerator {
         }
     }
 
-    public HashMap<FunctionDescriptor, SimpleNode> getFuntionNodes() {
-        return funtionNodes;
-    }
+    public void inspectWhileStatement(SimpleNode whileNode, SymbolsTable statementParentTable) throws SemanticErrorException {
+        if(whileNode.jjtGetNumChildren() == 0){
+            this.semanticError.printError(whileNode, "While needs to have an expression.");
+            return;
+        }
+        
+        SimpleNode whileExpression = (SimpleNode) whileNode.jjtGetChild(0);
+        if(whileExpression.getId() != JavammTreeConstants.JJTWHILEEXPRESSION){
+            this.semanticError.printError(whileExpression, "While needs to have an expression.");
+            return;
+        }
 
-    public void inspectBlockStatement(SimpleNode statementNode, SymbolsTable statementParent){
+        String expressionType = inspectExpression(whileExpression, statementParentTable); //TODO Store this expression in the block descriptor
+        if(!expressionType.equals("boolean")){
+            this.semanticError.printError(whileExpression, "While expression must evaluate to a boolean");
+            return;
+        }
 
-        /*BlockDescriptor blockDescriptor = new BlockDescriptor(statementParent);
-        System.out.println("Cheguei ao statement");
+        BlockDescriptor blockDescriptor = new BlockDescriptor(statementParentTable);
+        
+        statementParentTable.addSymbol("while", blockDescriptor);
+        
+        for(int i = 1; i < whileNode.jjtGetNumChildren(); i++){
+            SimpleNode statementNode = (SimpleNode) whileNode.jjtGetChild(i);
 
-        for (int j = 0; j < statementNode.jjtGetNumChildren() ; j++) {
-
-            SimpleNode child = (SimpleNode) statementNode.jjtGetChild(j);
-
-            if (child.getId() == JavammTreeConstants.JJTVARIABLEDECLARATION) {
-                VariableDescriptor variableDescriptor = inspectVariable(child);
-                blockDescriptor.addSymbol(variableDescriptor.getName(),variableDescriptor);
-                System.out.println("Var declaration \n");
-
-            } 
-            else if( child.getId() == JavammTreeConstants.JJTWHILESTATEMENT || child.getId() == JavammTreeConstants.JJTIFSTATEMENT){
-                inspectBlockStatement(child,blockDescriptor.getLocalTable());
-                System.out.println("Mais um statement\n");
-
-            }else if(child.getId() == JavammTreeConstants.JJTLINESTATEMENT){
+            if (statementNode.getId() == JavammTreeConstants.JJTLINESTATEMENT ){
                 inspectLineStatement(statementNode, blockDescriptor.getLocalTable());
+            } else if(statementNode.getId() == JavammTreeConstants.JJTWHILESTATEMENT){
+                inspectWhileStatement(statementNode, blockDescriptor.getLocalTable());
+            } else if(statementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
+                inspectIfStatement(statementNode, blockDescriptor.getLocalTable());
             }else{
-                System.err.println("Error: Unknown symbol");
+                this.semanticError.printError(statementNode, "Unknown symbol");
             }
-        }*/
-
+        }
     }
 
-    private void inspectAssignment(SimpleNode statementNode, SymbolsTable symbolsTable, Type type){
+    public void inspectIfStatement(SimpleNode ifNode, SymbolsTable statementParentTable) throws SemanticErrorException {
+        //TODO CHECK this
+        if(ifNode.jjtGetNumChildren() == 0){
+            this.semanticError.printError(ifNode, "If needs to have an expression.");
+            return;
+        }
+
+        SimpleNode ifExpression = (SimpleNode) ifNode.jjtGetChild(0);
+        if(ifExpression.getId() != JavammTreeConstants.JJTIFEXPRESSION){
+            this.semanticError.printError(ifExpression, "If needs to have an expression.");
+            return;
+        }
+
+        String expressionType = inspectExpression(ifExpression, statementParentTable); //TODO Store this expression in the block descriptor
+        if(!expressionType.equals("boolean")){
+            this.semanticError.printError(ifExpression, "If expression must evaluate to a boolean");
+            return;
+        }
+
+        BlockDescriptor blockDescriptor = new BlockDescriptor(statementParentTable);
+        
+        statementParentTable.addSymbol("if", blockDescriptor);
+        
+        boolean found_else = false;
+        for(int i = 1; i < ifNode.jjtGetNumChildren(); i++){
+            SimpleNode statementNode = (SimpleNode) ifNode.jjtGetChild(i);
+
+            if (statementNode.getId() == JavammTreeConstants.JJTLINESTATEMENT ){
+                inspectLineStatement(statementNode, blockDescriptor.getLocalTable());
+            } else if(statementNode.getId() == JavammTreeConstants.JJTWHILESTATEMENT){
+                inspectWhileStatement(statementNode, blockDescriptor.getLocalTable());
+            } else if(statementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
+                inspectIfStatement(statementNode, blockDescriptor.getLocalTable());
+            } else if(statementNode.getId() == JavammTreeConstants.JJTELSE && !found_else){
+                found_else = true;
+                continue;
+            } else{
+                this.semanticError.printError(statementNode, "Unknown symbol "+statementNode.getId());
+            }
+        }
+    }
+
+    private String inspectArrayAccess(SimpleNode statementNode, SymbolsTable symbolsTable, int initialChild) throws SemanticErrorException {
+        SimpleNode idNode = (SimpleNode) statementNode.jjtGetChild(initialChild);
+
+        List<Descriptor> descriptors = symbolsTable.getDescriptor(idNode.jjtGetVal());
+
+        TypeDescriptor idDescriptor = null;
+        for(int i = 0; i < descriptors.size(); i++){
+            Descriptor d = descriptors.get(i);
+            if(d.getClass() == FunctionParameterDescriptor.class || d.getClass() == VariableDescriptor.class){
+                idDescriptor = (TypeDescriptor) d;
+                if(idDescriptor.getType() != Type.INT_ARRAY && idDescriptor.getType() != Type.STRING_ARRAY){
+                    this.semanticError.printError(idNode, "CAN ONLY ACCESS ARRAYS OF INT OR STRING");
+                    return null;
+                }
+                break;
+            }
+        }
+
+        if(idDescriptor == null)
+            return null;
+
+        SimpleNode arrayNode = (SimpleNode) statementNode.jjtGetChild(initialChild+1);
+       
+        String indexType = inspectExpression(arrayNode, symbolsTable);
+
+        if(indexType == null){
+            this.semanticError.printError(arrayNode, "Array index must be an int");
+            return null;
+        } else if(!indexType.equals("int")){
+            this.semanticError.printError(arrayNode, "Array index must be an int");
+            return null;
+        }
+
+        //StringType stringType = new StringType(idDescriptor.getType());
+        if(idDescriptor.getType() == Type.INT_ARRAY)
+            return "int";
+        return "String";
+        //return stringType.getString();
+    }
+
+    private void inspectAssignment(SimpleNode statementNode, SymbolsTable symbolsTable, String type) throws SemanticErrorException {
+        inspectAssignment(statementNode, symbolsTable, type, 2);
+    }
+
+    private void inspectAssignment(SimpleNode statementNode, SymbolsTable symbolsTable, String type, int initialChild) throws SemanticErrorException {
+        String expType = inspectExpression(statementNode, symbolsTable, initialChild);
+
+        if(expType == null){
+            this.semanticError.printError((SimpleNode)statementNode.jjtGetChild(2), "Can't assign invalid type");
+        } else if(!type.equals(expType)){
+            this.semanticError.printError((SimpleNode)statementNode.jjtGetChild(2), "Can't assign " + expType + " to variable of type " + type);
+        }
     }
     
-    private String inspectFunctionCall(SimpleNode statementNode, SymbolsTable symbolsTable){
+    private String inspectFunctionCall(SimpleNode statementNode, SymbolsTable symbolsTable) throws SemanticErrorException {
         return inspectFunctionCall(statementNode, symbolsTable, 0);
     }
 
-    private String inspectFunctionCall(SimpleNode statementNode, SymbolsTable symbolsTable, int initialChild){
-
-        List<String> identifiers = new ArrayList<>();
+    private String inspectFunctionCall(SimpleNode statementNode, SymbolsTable symbolsTable, int initialChild) throws SemanticErrorException {
+        
+        List<String> identifiers = new ArrayList<>(); 
         SimpleNode node = (SimpleNode) statementNode.jjtGetChild(initialChild);
-        identifiers.add(node.jjtGetVal());
+
+        identifiers.add(node.jjtGetVal()); 
 
         SimpleNode child = (SimpleNode) statementNode.jjtGetChild(initialChild+1);
         int nextChild = initialChild+1;
         if(child.getId() == JavammTreeConstants.JJTDOT){
             node = (SimpleNode) statementNode.jjtGetChild(initialChild+2);
-            identifiers.add(node.jjtGetVal());
+            identifiers.add(node.jjtGetVal()); 
             nextChild = initialChild+3;
         }
 
         SimpleNode argumentsNode = (SimpleNode) statementNode.jjtGetChild(nextChild);
         if(argumentsNode.getId() != JavammTreeConstants.JJTARGUMENTS){
-            System.err.println("ERROR: Unexpected node with id=" + argumentsNode.getId());
+            this.semanticError.printError(argumentsNode, "Unexpected node with id=" + argumentsNode.getId());
             return null;
         }
 
         List<String> parameters = inspectArguments(argumentsNode, symbolsTable);
-        List<Descriptor> descriptorsList = symbolsTable.getDescriptor(((SimpleNode)statementNode.jjtGetChild(2)).jjtGetVal());
-
+        List<Descriptor> descriptorsList = symbolsTable.getDescriptor(((SimpleNode)statementNode.jjtGetChild(nextChild-1)).jjtGetVal());
         if (descriptorsList == null) {
-            System.err.println("ERROR: Function "+((SimpleNode)statementNode.jjtGetChild(2)).jjtGetVal()+" not declared.");
+            this.semanticError.printError((SimpleNode)statementNode.jjtGetChild(nextChild-1), "Function "+((SimpleNode)statementNode.jjtGetChild(nextChild-1)).jjtGetVal()+" not declared.");
             return null;
         }
 
         for(int i = 0; i < descriptorsList.size(); i++){
+            if(descriptorsList.get(i).getClass()  == ImportDescriptor.class){
+                ImportDescriptor importDescriptor = (ImportDescriptor) descriptorsList.get(i);
 
-            FunctionDescriptor functionDescriptor = (FunctionDescriptor) descriptorsList.get(i);
-            SymbolsTable parametersTable = functionDescriptor.getParametersTable();
-            HashMap<String, List<Descriptor>> functionParameters = parametersTable.getTable();
+                ArrayList<String> importIdentifiers = importDescriptor.getIdentifiers();
+                if(importIdentifiers.size() != identifiers.size()) 
+                    continue;
 
-            if(functionParameters.size() != parameters.size()) {
-                if (i == descriptorsList.size()-1) {
-                    System.err.println("ERROR: Wrong number of arguments for function call: "+ functionDescriptor.getName());
-                    return null;
+                for(int j = 0; j < importIdentifiers.size(); j++){
+                    if(!identifiers.get(j).equals(importIdentifiers.get(j))){
+                        this.semanticError.printError((SimpleNode)statementNode.jjtGetChild(nextChild-1), "INCOMPATIBLE TYPE");
+                        return null;
+                    }
+                } 
+                
+                List<Type> importParameters = importDescriptor.getParameters();
+                if(importParameters.size() != parameters.size()) {
+                    if (i == descriptorsList.size()-1) {
+                        this.semanticError.printError((SimpleNode)statementNode.jjtGetChild(nextChild-1), "Wrong number of arguments for import call");
+                        return null;
+                    }
+                    continue;
                 }
-                continue;
-            }
+                
+                for(int j = 0; j < importParameters.size(); j++){
+                    StringType stringType = new StringType(importParameters.get(j));
+                    if(!parameters.get(j).equals(stringType.getString())){
+                        this.semanticError.printError((SimpleNode)statementNode.jjtGetChild(nextChild-1), "INCOMPATIBLE TYPE");
+                        return null;
+                    }
+                } 
+                
+                // If the import was found, the import type is returned
+                Type importType = importDescriptor.getType();
+                if(importType == Type.CLASS)
+                    return importDescriptor.getClassName();
+                
+                StringType stringType = new StringType(importType);
+                
+                return stringType.getString();
+                
+            }else if(descriptorsList.get(i).getClass() == FunctionDescriptor.class){
 
-            int j = 0;
-            for(HashMap.Entry<String, List<Descriptor>> functionParametersEntry : functionParameters.entrySet()){
-                List<Descriptor> descList = functionParametersEntry.getValue();
-                for (int k = 0; k < descList.size(); k++) {
-                    FunctionParameterDescriptor parameterDescriptor = (FunctionParameterDescriptor) descList.get(k);
+                FunctionDescriptor functionDescriptor = (FunctionDescriptor) descriptorsList.get(i);
+                SymbolsTable parametersTable = functionDescriptor.getParametersTable();
+                HashMap<String, List<Descriptor>> functionParameters = parametersTable.getTable();
+
+                if(functionParameters.size() != parameters.size()) {
+                    if (i == descriptorsList.size()-1) {
+                        this.semanticError.printError((SimpleNode)statementNode.jjtGetChild(nextChild-1), "Wrong number of arguments for function call");
+                        return null;
+                    }
+                    continue;
+                }
+
+                int j = 0;
+                for(HashMap.Entry<String, List<Descriptor>> functionParametersEntry : functionParameters.entrySet()){
+                    List<Descriptor> descList = functionParametersEntry.getValue();
+                    
+                    if(descList.size() != 1){
+                        this.semanticError.printError((SimpleNode)statementNode.jjtGetChild(nextChild-1), "Function can't have more than 1 parameter with the same identifier");
+                        return null;
+                    }
+                    
+                    FunctionParameterDescriptor parameterDescriptor = (FunctionParameterDescriptor) descList.get(0);
                 
                     Type parameterType = parameterDescriptor.getType();
                     
                     if(parameterType == Type.CLASS){
                         String className = parameterDescriptor.getClassName();
                         if(!className.equals(parameters.get(j))){
-                            System.err.println("ERROR: Incompatible type for argument in function "+functionDescriptor.getName());
+                            this.semanticError.printError((SimpleNode)statementNode.jjtGetChild(nextChild-1), "Incompatible type for argument in function "+functionDescriptor.getName());
                             return null;
                         }
                     }else{
                         StringType type = new StringType(parameterType);
                         if(!type.getString().equals(parameters.get(j))){
-                            System.err.println("ERROR: Incompatible type for argument in function "+functionDescriptor.getName());
+                            this.semanticError.printError((SimpleNode)statementNode.jjtGetChild(nextChild-1), "Incompatible type for argument in function "+functionDescriptor.getName());
                             return null;
                         }
                     }
+                    j++;
                 }
-                j++;
+
+
+                // If the function was found, the function type is returned
+                Type functionType = functionDescriptor.getType();
+                if(functionType == Type.CLASS)
+                    return functionDescriptor.getClassName();
+                
+                StringType stringType = new StringType(functionType);
+                return stringType.getString();
             }
         }
-        //TODO Verificar se a função existe e o seu retorno
-
+        
         return null;
     }
 
-    private List<String> inspectArguments(SimpleNode argumentsNode, SymbolsTable symbolsTable){
+    private List<String> inspectArguments(SimpleNode argumentsNode, SymbolsTable symbolsTable) throws SemanticErrorException {
         List<String> parameters = new ArrayList<>();
         for(int i = 0; i < argumentsNode.jjtGetNumChildren(); i++){
             SimpleNode argumentNode = (SimpleNode) argumentsNode.jjtGetChild(i);
             if(argumentNode.getId() != JavammTreeConstants.JJTARGUMENT){
-                System.err.println("Error: Unexpected argument node with id=" + argumentNode.getId());
+                this.semanticError.printError(argumentNode, "Unexpected argument node with id=" + argumentNode.getId());
                 return null;
             }
             String parameterType = inspectArgument(argumentNode, symbolsTable);
@@ -477,18 +699,26 @@ public class TableGenerator {
         return parameters;
     }
 
-    private String inspectArgument(SimpleNode argumentNode, SymbolsTable symbolsTable){ 
+    private String inspectArgument(SimpleNode argumentNode, SymbolsTable symbolsTable) throws SemanticErrorException { 
+        return inspectExpression(argumentNode, symbolsTable);
+    }
+
+    private String inspectExpression(SimpleNode expressionNode, SymbolsTable symbolsTable) throws SemanticErrorException {
+        return inspectExpression(expressionNode, symbolsTable, 0);
+    }
+    
+    private String inspectExpression(SimpleNode expressionNode, SymbolsTable symbolsTable, int initialChild) throws SemanticErrorException {
         /**
          * Must return the argument type after check if it's valid
         */
-        if(argumentNode.jjtGetNumChildren() == 1) {
-            return inspectArgumentSimple(argumentNode, symbolsTable);
+        if(expressionNode.jjtGetNumChildren() - initialChild == 1) {
+            return inspectExpressionSimple(expressionNode, symbolsTable, initialChild);
         }
-        else return inspectArgumentComplex(argumentNode, symbolsTable);
+        return inspectExpressionComplex(expressionNode, symbolsTable, initialChild);
     }
 
-    private String inspectArgumentSimple(SimpleNode argumentNode, SymbolsTable symbolsTable) {
-        SimpleNode node = (SimpleNode) argumentNode.jjtGetChild(0);
+    private String inspectExpressionSimple(SimpleNode argumentNode, SymbolsTable symbolsTable, int initialChild) throws SemanticErrorException {
+        SimpleNode node = (SimpleNode) argumentNode.jjtGetChild(initialChild);
 
         switch(node.getId()){
             case JavammTreeConstants.JJTINTEGERLITERAL: {
@@ -500,8 +730,13 @@ public class TableGenerator {
             }
             case JavammTreeConstants.JJTIDENTIFIER: {
                 List<Descriptor> descriptors = symbolsTable.getDescriptor(node.jjtGetVal());
+                if(descriptors == null){
+                    this.semanticError.printError(node, "Undefined variable " + node.jjtGetVal());
+                    return null;
+                }
+
                 if(descriptors.size() > 1){
-                    System.err.println("Error: Argument " + node.jjtGetVal() + " is defined more than once");
+                    this.semanticError.printError(node, "Argument " + node.jjtGetVal() + " is defined more than once");
                     return null;
                 }
                 TypeDescriptor descriptor = (TypeDescriptor) descriptors.get(0);
@@ -510,32 +745,39 @@ public class TableGenerator {
                 if(type == Type.CLASS){
                     return descriptor.getClassName();
                 }
+
+                if(descriptor.getClass() == VariableDescriptor.class){
+                    VariableDescriptor variableDescriptor = (VariableDescriptor) descriptor;
+                    if(!variableDescriptor.isInitialized()){
+                        this.semanticError.printError(node, "Variable " + node.jjtGetVal() + " is not initialized");
+                    }
+                }
+
                 return (new StringType(type)).getString();
             }
             default: {
                 //TODO Adicionar mais casos
-                System.out.println("Argument Node ID: " + node.getId()); //Para detetar novos casos 
+                this.semanticError.printError(node,"Argument Node ID: " + node.getId()); //Para detetar novos casos 
             }
         }
 
-        System.err.println("Error: Invalid Argument: " + node.jjtGetVal());
+        this.semanticError.printError(node, "Invalid Argument: " + node.jjtGetVal());
         return null;
     }
 
-    private String inspectArgumentComplex(SimpleNode argumentNode, SymbolsTable symbolsTable) {
-        //TODO Se tiver mais do que 1 children pode ser: chamada a função; operação
+    private String inspectExpressionComplex(SimpleNode argumentNode, SymbolsTable symbolsTable, int initialChild) throws SemanticErrorException {
         String type = null;
 
-        for(int i = 0; i < argumentNode.jjtGetNumChildren(); i++){
+        for(int i = initialChild; i < argumentNode.jjtGetNumChildren(); i++){
             SimpleNode node = (SimpleNode) argumentNode.jjtGetChild(i);
-
+            
             switch(node.getId()){
                 case JavammTreeConstants.JJTINTEGERLITERAL: {
                     if(type == null){
                         type = "int";
                     }
                     else if(!type.equals("int")){
-                        System.err.println("ERROR: INT IS INCOMPATIBLE WITH " + type);
+                        this.semanticError.printError(node, "INT IS INCOMPATIBLE WITH " + type);
                         return null;
                     }
                     break;
@@ -545,42 +787,100 @@ public class TableGenerator {
                     if(type == null){
                         type = "boolean";
                     } else if(!type.equals("boolean")){
-                        System.err.println("ERROR: BOOLEAN IS INCOMPATIBLE WITH " + type);
+                        this.semanticError.printError(node, "BOOLEAN IS INCOMPATIBLE WITH " + type);
                         return null;
                     }
 
                     break;
                 }
-                case JavammTreeConstants.JJTTHIS: 
+                case JavammTreeConstants.JJTTHIS: {
+                    String functionType = inspectFunctionCall(argumentNode, symbolsTable, i+2);
+                    if(type == null){
+                        type = functionType;
+                    }else if(!type.equals(functionType)){
+                        this.semanticError.printError(node, functionType + " IS INCOMPATIBLE WITH " + type);
+                        return null;
+                    }
+                    i += 3;
+
+                    break;
+                } 
                 case JavammTreeConstants.JJTIDENTIFIER: {
-                    if(i+1 < argumentNode.jjtGetNumChildren()){
+                    if(i+1 < argumentNode.jjtGetNumChildren()){ //CHECK IF THE IDENTIFIER BELONGS TO A FUNCTION OR ARRAY
                         SimpleNode nextNode = (SimpleNode) argumentNode.jjtGetChild(i+1);
-                        if(nextNode.getId() == JavammTreeConstants.JJTDOT){
+
+                        if(nextNode.getId() == JavammTreeConstants.JJTDOT){ //IF THE IDENTIFIER IS FOLLOWED BY A DOT, IT'S A FUNCTION CALL
+
+                            SimpleNode nextNextNode = (SimpleNode) argumentNode.jjtGetChild(i+2); //A DOT is always followed by something: length or a function call
+
+                            if(nextNextNode.getId() == JavammTreeConstants.JJTLENGTH){
+                                List<Descriptor> descriptors = symbolsTable.getDescriptor(node.jjtGetVal());
+                                if(descriptors == null){
+                                    this.semanticError.printError(nextNextNode, "Undeclared variable " + node.jjtGetVal());
+                                    return null;
+                                }
+                                boolean foundDescriptor = false;
+                                for(int j = 0; j < descriptors.size(); j++){
+                                    Descriptor descriptor = descriptors.get(j);
+                                    if(descriptor.getClass() == FunctionParameterDescriptor.class || descriptor.getClass() == VariableDescriptor.class){
+                                        
+                                        TypeDescriptor typeDescriptor = (TypeDescriptor) descriptor;
+                                        if(typeDescriptor.getType() != Type.INT_ARRAY && typeDescriptor.getType() != Type.STRING_ARRAY){
+                                            this.semanticError.printError(nextNextNode, "Property length only exists in arrays");
+                                            return null;
+                                        } 
+                                        
+                                        i += 2;
+                                        foundDescriptor = true;
+                                        type = "int";
+                                        break;
+                                    }
+                                }
+                                
+                                if (foundDescriptor)
+                                    continue;
+                                this.semanticError.printError(node, node.jjtGetVal() + " is not a variable");
+                                return null;
+                            }
+
+                            //Else function call
                             String functionType = inspectFunctionCall(argumentNode, symbolsTable, i);
                             if(type == null){
                                 type = functionType;
                             }else if(!type.equals(functionType)){
-                                System.err.println("ERROR: " + functionType + " IS INCOMPATIBLE WITH " + type);
+                                this.semanticError.printError(nextNextNode, functionType + " IS INCOMPATIBLE WITH " + type);
                                 return null;
                             }
                             i += 3; // Jump function identifiers
+                        
+                            continue;
+                        } else if(nextNode.getId() == JavammTreeConstants.JJTARRAY){    
+                            String arrayType = inspectArrayAccess(argumentNode, symbolsTable, i);
+                            if(type == null){
+                                type = arrayType;
+                            }else if(!type.equals(arrayType)){
+                                this.semanticError.printError(nextNode, arrayType + " IS INCOMPATIBLE WITH " + type);
+                                return null;
+                            }
+
+                            i += 1; // Jump array nodes
                             continue;
                         }
                     }
 
                     List<Descriptor> descriptors = symbolsTable.getDescriptor(node.jjtGetVal());
                     if(descriptors == null ){
-                        System.err.println("Error: Argument " + node.jjtGetVal() + " is not defined");
+                        this.semanticError.printError(node, "Argument " + node.jjtGetVal() + " is not defined");
                         return null;
                     }else if(descriptors.size() > 1){
-                        System.err.println("Error: Argument " + node.jjtGetVal() + " is defined more than once");
+                        this.semanticError.printError(node, "Argument " + node.jjtGetVal() + " is defined more than once");
                         return null;
                     }
                     TypeDescriptor descriptor = (TypeDescriptor) descriptors.get(0);
                     
                     Type descriptorType = descriptor.getType();
                     if(descriptorType == Type.CLASS){
-                        System.err.println("ERROR: OPERATION CAN'T INVOLVE A CLASS TYPE");
+                        this.semanticError.printError(node, "OPERATION CAN'T INVOLVE A CLASS TYPE");
                         return null;
                     }
 
@@ -588,54 +888,128 @@ public class TableGenerator {
                     if(type == null){
                         type = descType;
                     }else if(!type.equals(descType)){
-                        System.err.println("ERROR: " + descType + " IS INCOMPATIBLE WITH " + type);
+                        this.semanticError.printError(node, descType + " IS INCOMPATIBLE WITH " + type);
                         return null;
                     }
+
+                    if(descriptor.getClass() == VariableDescriptor.class){
+                        VariableDescriptor variableDescriptor = (VariableDescriptor) descriptor;
+                        if(!variableDescriptor.isInitialized()){
+                            this.semanticError.printError(node, "Variable " + node.jjtGetVal() + " is not initialized");
+                        }
+                    }
+
                     break;
                 }
                 case JavammTreeConstants.JJTAND:{
                     if(!type.equals("boolean")){
-                        System.err.println("ERROR: OPERATION && IS INCOMPATIBLE WITH " + type);
+                        this.semanticError.printError(node, "OPERATION && IS INCOMPATIBLE WITH " + type);
                         return null;
                     }
                     break;
                 }
                 case JavammTreeConstants.JJTNEW: {
-                    if(i != 0 || i + 3 < argumentNode.jjtGetNumChildren()){
-                        System.err.println("ERROR: CAN'T INSTANTIATE CLASS INSIDE AN EXPRESSION");
+                    if(i != initialChild){
+                        this.semanticError.printError(node, "CAN'T INSTANTIATE CLASS INSIDE AN EXPRESSION");
+                        return null;
+                    }
+                    
+                    SimpleNode nextNode = (SimpleNode) argumentNode.jjtGetChild(initialChild+2);
+
+                    if(nextNode.getId() == JavammTreeConstants.JJTARRAY){
+                        SimpleNode idNode = (SimpleNode) argumentNode.jjtGetChild(initialChild+1);
+                        if(idNode.jjtGetVal() != "int"){
+                            this.semanticError.printError(idNode, "CAN ONLY INSTANTIATE ARRAY OF INT");
+                            return null;
+                        }
+                        
+                        SimpleNode arrayNode = (SimpleNode) argumentNode.jjtGetChild(initialChild+2);
+                    
+                        String indexType = inspectExpression(arrayNode, symbolsTable);
+
+                        if(indexType == null){
+                            this.semanticError.printError(arrayNode, "Array index must be an int");
+                            return null;
+                        } else if(!indexType.equals("int")){
+                            this.semanticError.printError(arrayNode, "Array index must be an int");
+                            return null;
+                        }
+
+                        return "int[]";
+                    }
+                    return inspectClassInstantiation(argumentNode, symbolsTable, initialChild);
+                }
+                //TODO Check this  
+                case JavammTreeConstants.JJTNEGATION: {
+                    if(type == null){
+                        type = "boolean";
+                    }else if(!type.equals("boolean")){
+                        this.semanticError.printError(node, "OPERATION ! IS INCOMPATIBLE WITH " + type);
+                        return null;
+                    }
+                    break;
+                }
+                //TODO Check this  
+                case JavammTreeConstants.JJTLESS: {
+                    if(!type.equals("int")){
+                        this.semanticError.printError(node, "CAN'T COMPARE " + type + " WITH OPERATOR <");
+                        return null;
+                    }
+                    
+                    String otherType = inspectExpression(argumentNode, symbolsTable, i+1);
+                    if(!otherType.equals("int")){
+                        this.semanticError.printError(node, "CAN'T COMPARE " + otherType + " WITH OPERATOR <");
                         return null;
                     }
 
-                    return inspectClassInstantiation(argumentNode, symbolsTable);
+                    return "boolean";
+                }
+                case JavammTreeConstants.JJTDOT: {
+                    this.semanticError.printError(node, "CAN'T ACCESS PROPERTY/METHOD OF VARIABLE OF TYPE " + type);
+                    return null;
+                }
+                case JavammTreeConstants.JJTPARENTHESESEXPRESSION: {
+                    String expressionType = inspectExpression(node, symbolsTable);
+                    if(type == null){
+                        type = expressionType;
+                    }else if(!type.equals(expressionType)){
+                        this.semanticError.printError(node, ""); //TODO Add print message
+                    }
+                    break;
                 }
                 default:{ //Plus, Minus, ...
-                    System.out.println(node.getId());
                     if(!type.equals("int")){
-                        System.out.println("ERROR: OPERATIONS ARE INCOMPATIBLE WITH " + type);
+                        this.semanticError.printError(node, "OPERATIONS ARE INCOMPATIBLE WITH " + type);
                         return null;
                     }
                     break;
                 }
             }
         }
-
+        
         return type;
     }
 
-    private String inspectClassInstantiation(SimpleNode node, SymbolsTable symbolsTable){
+    private String inspectClassInstantiation(SimpleNode node, SymbolsTable symbolsTable) throws SemanticErrorException {
         return inspectClassInstantiation(node, symbolsTable, 0);
     }
 
-    private String inspectClassInstantiation(SimpleNode node, SymbolsTable symbolsTable, int newPosition){
+    private String inspectClassInstantiation(SimpleNode node, SymbolsTable symbolsTable, int newPosition) throws SemanticErrorException {
         SimpleNode classIdentifierNode = (SimpleNode) node.jjtGetChild(newPosition+1);
                         
         // Get all the Class constructors
         List<Descriptor> descriptorsList = symbolsTable.getDescriptor(classIdentifierNode.jjtGetVal());  
-        
         SimpleNode argumentsNode = (SimpleNode) node.jjtGetChild(newPosition+2);
 
         List<String> parameters = inspectArguments(argumentsNode, symbolsTable);
         
+        if(parameters.size() == 0 && descriptorsList.size() == 1){
+            Descriptor descriptor = descriptorsList.get(0);
+            if(descriptor.getClass() == ClassDescriptor.class){
+                return classIdentifierNode.jjtGetVal();
+            }
+        }
+
         for(int i = 0; i < descriptorsList.size(); i++){
             Descriptor descriptor = descriptorsList.get(i);
             if(descriptor.getClass() == ImportDescriptor.class){
@@ -647,7 +1021,13 @@ public class TableGenerator {
                 if(importParameters.size() != parameters.size())
                     continue;
                 
-                //TODO Change ImportDescriptor: instead of returning a list of types, returns a list of Strings with the types 
+                for(int j = 0; j < importParameters.size(); j++){
+                    StringType stringType = new StringType(importParameters.get(j));
+                    if(!parameters.get(j).equals(stringType.getString())){
+                        this.semanticError.printError(argumentsNode, "INCOMPATIBLE TYPE");
+                        return null;
+                    }
+                } 
                 
             }else if(descriptor.getClass() == FunctionDescriptor.class){
                 FunctionDescriptor functionDescriptor = (FunctionDescriptor) descriptor;
@@ -665,13 +1045,13 @@ public class TableGenerator {
                     if(parameterType == Type.CLASS){
                         String className = parameterDescriptor.getClassName();
                         if(!className.equals(parameters.get(j))){
-                            System.err.println("ERROR: INCOMPATIBLE TYPE");
+                            this.semanticError.printError(argumentsNode, "INCOMPATIBLE TYPE");
                             return null;
                         }
                     }else{
                         StringType type = new StringType(parameterType);
                         if(!type.getString().equals(parameters.get(j))){
-                            System.err.println("ERROR: INCOMPATIBLE TYPE");
+                            this.semanticError.printError(argumentsNode, "INCOMPATIBLE TYPE");
                             return null;
                         }
                     }
@@ -681,6 +1061,7 @@ public class TableGenerator {
             }
         }
 
+        this.semanticError.printError(classIdentifierNode, "Class " + classIdentifierNode.jjtGetVal() + " doesn't exist");
         return null;
     }
 }

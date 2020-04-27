@@ -101,7 +101,7 @@ void ImportDeclaration() : {Token t;}
 
 void ImportIdentifier() #void : {Token i;}
 {
-    <LENGTH> #Length
+    <LENGTH> #IDENTIFIER
     |
     i=<IDENTIFIER>{jjtThis.jjtSetVal(i.image);} #Identifier       
 }
@@ -515,12 +515,18 @@ void LiteralExpr4() #void : {Token t;}
         (ExprTail())*) |
     (<NEW> #New
         NewExpr()) |
-    (<LEFTPARENTHESES> #LeftParentheses
-        Expression() 
-        <RIGHTPARENTHESES> #RightParentheses{}
+    (
+        LiteralExpr4Parentheses()
         (ExprTail())*) |
     (<NEG> #Negation 
         Expr4()) 
+}
+
+void LiteralExpr4Parentheses() #ParenthesesExpression : {}
+{
+    <LEFTPARENTHESES>
+    Expression() 
+    <RIGHTPARENTHESES>
 }
 
 void IdentifierExpr4() #void : {Token t;}
@@ -548,11 +554,20 @@ void ObjAcc() #void : {}
         [
             Expression()
         ]
-        <RIGHTPARENTHESES> #RightParentheses
+        <RIGHTPARENTHESES> #RightParentheses {}
     ]
     <DOT> #Dot
     ObjAccTail()
 }
+
+/*void ObjAccParentheses() #ParenthesesExpression : {}
+{
+    <LEFTPARENTHESES>
+    [
+        Expression()
+    ]
+    <RIGHTPARENTHESES>
+}*/
 
 void ObjAccTail() #void : {Token t;}
 {
@@ -562,18 +577,17 @@ void ObjAccTail() #void : {Token t;}
     Arguments()
 }
 
-void Arguments() #Arguments : {} 
+void Arguments() #Arguments : {Token t;} 
 {
     <LEFTPARENTHESES>
     [Expression() #Argument [Argument()]]
     <RIGHTPARENTHESES> 
 }
 
-void Argument()  : {}
+void Argument() #void : {}
 {
-    <COMMA> 
-    Expression() [Argument()]
-
+    <COMMA>
+    Expression() #Argument [Argument()]
 }
 
 void NewExpr() #void : {Token i;}

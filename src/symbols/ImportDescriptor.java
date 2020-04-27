@@ -6,14 +6,12 @@ public class ImportDescriptor extends TypeDescriptor {
     boolean isStatic;
     ArrayList<String> identifiers;
     ArrayList<Type> parameters;
-    Type returnType;
 
     public ImportDescriptor() {
         super(null);
         this.isStatic = false;
         this.identifiers = new ArrayList();
         this.parameters = new ArrayList();
-        this.returnType = null;
 
     }
 
@@ -69,11 +67,11 @@ public class ImportDescriptor extends TypeDescriptor {
     }
 
     public Type getReturn() {
-        return this.returnType;
+        return this.type;
     }
 
     public void setReturn(Type returnType) {
-        this.returnType = returnType;
+        this.type = returnType;
     }
 
     public void print(String prefix) {
@@ -92,7 +90,7 @@ public class ImportDescriptor extends TypeDescriptor {
         System.out.println(prefix + "IMPORT " + identifierBuilder.toString() + " (" + staticString + ")");
 
         // printing return value
-        System.out.println(newPrefix + "Return:\n" + newPrefix + "   " + this.returnType);
+        System.out.println(newPrefix + "Return:\n" + newPrefix + "   " + this.type);
 
         // printing parameters
         if(parameters.size() > 0) {
