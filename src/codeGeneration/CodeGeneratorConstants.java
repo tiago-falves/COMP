@@ -1,4 +1,8 @@
 package codeGeneration;
+import symbols.StringType;
+import symbols.Type;
+import symbols.TypeDescriptor;
+
 import java.util.HashMap;
 
 public class CodeGeneratorConstants {
@@ -30,6 +34,21 @@ public class CodeGeneratorConstants {
         load.put("int", "\tiload ?");
         load.put("boolean", "\tiload ?");
 
+
+    }
+
+    public static String getJvmType(TypeDescriptor typeDescriptor){
+        Type type = typeDescriptor.getType();
+        String className = typeDescriptor.getClassName();
+        StringType stringType = new StringType(type);
+        String typeString = stringType.getString();
+
+        String jvmType = CodeGeneratorConstants.types.get(typeString);
+        if(jvmType != null){
+            return jvmType;
+        }else{
+            return className;
+        }
 
     }
 }
