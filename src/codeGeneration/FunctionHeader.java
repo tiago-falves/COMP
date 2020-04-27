@@ -18,7 +18,7 @@ public class FunctionHeader {
         this.functionParameters = new FunctionParameters(function);
         this.methodName = function.getName();
         this.methodDescriptor = functionParameters.generate();
-        this.returnType = CodeGeneratorConstants.getJvmType(function);
+        this.returnType = CGConst.getJvmType(function);
 
     }
 

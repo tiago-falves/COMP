@@ -16,7 +16,6 @@ public class FunctionGenerator {
         FunctionBody functionBody = new FunctionBody(functionDescriptor, functionHeader.getParameters());
         FunctionFooter footer = new FunctionFooter();
 
-
         return functionHeader.generate() + functionBody.generate() + footer.generate();
     }
 

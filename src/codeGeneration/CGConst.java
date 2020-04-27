@@ -1,11 +1,10 @@
 package codeGeneration;
-import symbols.StringType;
 import symbols.Type;
 import symbols.TypeDescriptor;
 
 import java.util.HashMap;
 
-public class CodeGeneratorConstants {
+public class CGConst {
     public static HashMap<Type, String> types;
     public static HashMap<Type, String> store;
     public static HashMap<Type, String> load;
@@ -29,7 +28,7 @@ public class CodeGeneratorConstants {
         types.put(Type.STRING_ARRAY, "[Ljava/lang/String;"); //TODO Quase certo que isto nao esta bem
 
         store.put(Type.INT, "\tistore_");
-        store.put(Type.BOOLEAN, "\tistore_");
+        store.put(Type.BOOLEAN, "\tistore\t");
 
         load.put(Type.INT, "\tiload_");
         load.put(Type.BOOLEAN, "\tiload_");
@@ -39,11 +38,15 @@ public class CodeGeneratorConstants {
 
     }
 
+    public static String TRUE_VALUE = "\ticonst_1";
+    public static String FALSE_VALUE = "\ticonst_0";
+
+
     public static String getJvmType(TypeDescriptor typeDescriptor){
         Type type = typeDescriptor.getType();
         String className = typeDescriptor.getClassName();
 
-        String jvmType = CodeGeneratorConstants.types.get(type);
+        String jvmType = CGConst.types.get(type);
         if(jvmType != null){
             return jvmType;
         }else{

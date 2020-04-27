@@ -754,15 +754,24 @@ public class TableGenerator {
 
                 return "int";
             }
-            case JavammTreeConstants.JJTTRUE: 
-            case JavammTreeConstants.JJTFALSE: {
 
+            case JavammTreeConstants.JJTTRUE:
+            {
                 // Adding boolean to the LLIR Assignment node, if applicable
-                if(this.currentLLIRNode instanceof LLIRAssignment) {
+                if (this.currentLLIRNode instanceof LLIRAssignment) {
                     LLIRAssignment llir = (LLIRAssignment) this.currentLLIRNode;
-                    llir.setExpression(new llir.LLIRBoolean(Boolean.parseBoolean( node.jjtGetVal() )));
+                    llir.setExpression(new llir.LLIRBoolean(true));
                 }
+                return "boolean";
 
+            }
+            case JavammTreeConstants.JJTFALSE: {
+                // Adding boolean to the LLIR Assignment node, if applicable
+                if (this.currentLLIRNode instanceof LLIRAssignment) {
+                    LLIRAssignment llir = (LLIRAssignment) this.currentLLIRNode;
+
+                    llir.setExpression(new llir.LLIRBoolean(false));
+                }
                 return "boolean";
             }
             case JavammTreeConstants.JJTIDENTIFIER: {

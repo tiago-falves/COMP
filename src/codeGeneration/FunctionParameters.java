@@ -53,7 +53,7 @@ public class FunctionParameters {
     }
 
     private String generateMethodParameter(FunctionParameterDescriptor parameterDescriptor) {
-        return  CodeGeneratorConstants.getJvmType(parameterDescriptor);
+        return  CGConst.getJvmType(parameterDescriptor);
     }
 
 
