@@ -17,13 +17,13 @@ public class StringType {
                 return "void";
             case BOOLEAN:
                 return "boolean";
-            case CLASS: 
-                return "class";
+            case STRING:
+                return "String";            
             case STRING_ARRAY: 
                 return "String[]";
-            //TODO: VER ISTO
+            case CLASS: 
             default:
-                return "void";
+                return "class";
         }
     }
 }

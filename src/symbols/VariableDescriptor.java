@@ -6,14 +6,16 @@ public class VariableDescriptor extends TypeDescriptor{
 
     public VariableDescriptor(Type type) {
         super(type);
+        
+        this.isInitialized = false;
     }
 
     public VariableDescriptor() {
         super(Type.VOID);
     }
 
-    public void setInitialized(boolean isInitialized) {
-        this.isInitialized = isInitialized;
+    public void setInitialized() {
+        this.isInitialized = true;
     }
 
     public boolean isInitialized(){
