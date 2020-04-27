@@ -103,7 +103,7 @@ public class TableGenerator {
 
         List<SimpleNode> simpleNodes = new ArrayList<>();
         List<FunctionDescriptor> functions = new ArrayList<>(); 
-        
+
         for (int i = 0; i < classNode.jjtGetNumChildren(); i++) {
             SimpleNode child = (SimpleNode) classNode.jjtGetChild(i);
             if (child.getId() == JavammTreeConstants.JJTVARIABLEDECLARATION) {
@@ -120,7 +120,6 @@ public class TableGenerator {
         }
 
         for(int i = 0; i < simpleNodes.size(); i++){
-            System.out.println(functions.get(i).getName());
             inspectFunctionBody(simpleNodes.get(i), functions.get(i));
         } 
     }
@@ -353,8 +352,10 @@ public class TableGenerator {
 
             inspectAssignment(statementNode, symbolTable, typeString);
 
-            VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
-            variableDescriptor.setInitialized();
+            if(typeDescriptor.getClass() == VariableDescriptor.class){
+                VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
+                variableDescriptor.setInitialized();
+            }
         }else if(secondChild.getId() == JavammTreeConstants.JJTARRAY){
             List<Descriptor> firstDescriptorList = symbolTable.getDescriptor(firstChild.jjtGetVal());
             if(firstDescriptorList == null){
@@ -401,8 +402,11 @@ public class TableGenerator {
 
             inspectAssignment(statementNode, symbolTable, typeString, 3);
 
-            VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
-            variableDescriptor.setInitialized();
+            if(typeDescriptor.getClass() == VariableDescriptor.class){
+                VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
+                variableDescriptor.setInitialized();
+            }
+            //TODO Add case where variable is a FunctionParameterDescriptor -> useful in the code generation
         }
         else{
             //Function call
@@ -957,13 +961,12 @@ public class TableGenerator {
                     this.semanticError.printError(node, "CAN'T ACCESS PROPERTY/METHOD OF VARIABLE OF TYPE " + type);
                     return null;
                 }
-                case JavammTreeConstants.JJTLEFTPARENTHESES: 
-                case JavammTreeConstants.JJTRIGHTPARENTHESES: {
-                    if(type != null){
-                        if(!type.equals("int")){
-                            this.semanticError.printError(node, "THE OPERATIONS THAT INVOLVES PARENTHESIS ARE INCOMPATIBLE WITH " + type);
-                            return null;
-                        }
+                case JavammTreeConstants.JJTPARENTHESESEXPRESSION: {
+                    String expressionType = inspectExpression(node, symbolsTable);
+                    if(type == null){
+                        type = expressionType;
+                    }else if(!type.equals(expressionType)){
+                        this.semanticError.printError(node, ""); //TODO Add print message
                     }
                     break;
                 }
