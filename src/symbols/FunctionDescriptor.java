@@ -46,6 +46,18 @@ public class FunctionDescriptor extends TypeDescriptor {
         this.bodyTable = bodyTable;
     }
 
+    public Type getVariableType(String name) {
+        List<Descriptor> descriptors;
+        
+        descriptors = this.bodyTable.getDescriptor(name);
+        if(descriptors != null) {
+            TypeDescriptor variable = (TypeDescriptor) descriptors.get(0);
+            return variable.getType();
+        }
+
+        return null;
+    }
+
     public SymbolsTable getParametersTable() {
         return parametersTable;
     }

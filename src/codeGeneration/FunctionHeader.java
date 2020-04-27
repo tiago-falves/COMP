@@ -1,5 +1,7 @@
 package codeGeneration;
 
+import java.util.LinkedHashMap;
+
 import symbols.FunctionDescriptor;
 
 public class FunctionHeader {
@@ -9,21 +11,19 @@ public class FunctionHeader {
     private String returnType;
     private String STACK_LIMIT = "\t.limit stack ";
     private String LOCALS_LIMIT = "\t.limit locals ";
+    private FunctionParameters functionParameters;
 
-    // Receives the name of a class
-    public FunctionHeader(String methodName, String methodDescriptor, String returnType) {
-        this.methodName = methodName;
-        this.methodDescriptor = methodDescriptor;
-        this.returnType = returnType;
-    }
 
     public FunctionHeader(FunctionDescriptor function){
-        FunctionParameters functionParameters = new FunctionParameters(function);
-
+        this.functionParameters = new FunctionParameters(function);
         this.methodName = function.getName();
-        this.methodDescriptor = functionParameters.generate();;
+        this.methodDescriptor = functionParameters.generate();
         this.returnType = CodeGeneratorConstants.getJvmType(function);
 
+    }
+
+    public LinkedHashMap<String, Integer> getParameters() {
+        return this.functionParameters.getParameters();
     }
 
     public String generate() {

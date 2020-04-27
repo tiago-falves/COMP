@@ -46,10 +46,9 @@ public class LLIRMethodCall extends LLIRExpression {
      */
     public List<Type> getParameterTypes() {
         List<Type> parameterTypes = new ArrayList<>();
-        SymbolsTable parameters = this.descriptor.getParametersTable();
 
-        if(parameters != null) {
-            for (HashMap.Entry<String, List<Descriptor>> tableEntry : parameters.getTable().entrySet()) {
+        if(this.parametersTable != null) {
+            for (HashMap.Entry<String, List<Descriptor>> tableEntry : this.parametersTable.getTable().entrySet()) {
                 if(tableEntry.getValue().size() > 0) {
                     VariableDescriptor parameter = (VariableDescriptor) tableEntry.getValue().get(0);
                     parameterTypes.add(parameter.getType());

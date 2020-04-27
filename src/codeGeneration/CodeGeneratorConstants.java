@@ -6,9 +6,9 @@ import symbols.TypeDescriptor;
 import java.util.HashMap;
 
 public class CodeGeneratorConstants {
-    public static HashMap<String, String> types;
-    public static HashMap<String, String> store;
-    public static HashMap<String, String> load;
+    public static HashMap<Type, String> types;
+    public static HashMap<Type, String> store;
+    public static HashMap<Type, String> load;
     public static HashMap<String, String> arithmeticOperators;
 
     static {
@@ -22,17 +22,17 @@ public class CodeGeneratorConstants {
         arithmeticOperators.put("*", "\timul");
         arithmeticOperators.put("/", "\tidiv");
 
-        types.put("int", "I");
-        types.put("boolean", "Z");
-        types.put("int[]", "[I");
-        types.put("void", "V");
-        types.put("String[]", "[Ljava/lang/String;"); //TODO Quase certo que isto nao esta bem
+        types.put(Type.INT, "I");
+        types.put(Type.BOOLEAN, "Z");
+        types.put(Type.INT, "[I");
+        types.put(Type.VOID, "V");
+        types.put(Type.STRING_ARRAY, "[Ljava/lang/String;"); //TODO Quase certo que isto nao esta bem
 
-        store.put("int", "\tistore ?");
-        store.put("boolean", "\tistore ?");
+        store.put(Type.INT, "\tistore_");
+        store.put(Type.BOOLEAN, "\tistore_");
 
-        load.put("int", "\tiload ?");
-        load.put("boolean", "\tiload ?");
+        load.put(Type.INT, "\tiload_");
+        load.put(Type.BOOLEAN, "\tiload_");
 
 
     }
@@ -40,10 +40,8 @@ public class CodeGeneratorConstants {
     public static String getJvmType(TypeDescriptor typeDescriptor){
         Type type = typeDescriptor.getType();
         String className = typeDescriptor.getClassName();
-        StringType stringType = new StringType(type);
-        String typeString = stringType.getString();
 
-        String jvmType = CodeGeneratorConstants.types.get(typeString);
+        String jvmType = CodeGeneratorConstants.types.get(type);
         if(jvmType != null){
             return jvmType;
         }else{
