@@ -27,7 +27,7 @@ public class FunctionHeader {
     }
 
     public String generate() {
-        String generatedCode = INSTRUCTION + "\n";
+        String generatedCode = INSTRUCTION;
         generatedCode += methodName + "(" + methodDescriptor + ")" + returnType + "\n";
         generatedCode += STACK_LIMIT + "\n" + LOCALS_LIMIT + "\n";
         return generatedCode;

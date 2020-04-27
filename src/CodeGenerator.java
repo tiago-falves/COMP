@@ -15,13 +15,10 @@ public class CodeGenerator {
     private PrintWriter out;
     private StringBuilder builder;
     private ClassDescriptor classDescriptor;
-    private HashMap<FunctionDescriptor,SimpleNode> funtionNodes;
 
-
-    public CodeGenerator(ClassDescriptor classDescriptor, HashMap<FunctionDescriptor,SimpleNode> funtionNodes) {
+    public CodeGenerator(ClassDescriptor classDescriptor) {
         this.builder = new StringBuilder();
         this.classDescriptor = classDescriptor;
-        this.funtionNodes = funtionNodes;
         try {
             FileWriter file = new FileWriter("src/codeGeneration/generatorFile.txt", false);
             BufferedWriter bufferedWriter = new BufferedWriter(file);
@@ -33,7 +30,6 @@ public class CodeGenerator {
     }
 
     public void generate(){
-
         ClassHeader classHeader = new ClassHeader(this.classDescriptor.getName());
         SuperHeader superHeader = new SuperHeader(this.classDescriptor.getParentClass());
         Initializer initializer = new Initializer(this.classDescriptor.getParentClass());
@@ -57,7 +53,7 @@ public class CodeGenerator {
             for (Descriptor descriptor : functionDescriptors){
                 FunctionDescriptor functionDescriptor= (FunctionDescriptor) descriptor;
                 generateFunction(functionDescriptor);
-
+                nl();
             }
         }
 
@@ -67,16 +63,11 @@ public class CodeGenerator {
         FunctionGenerator functionGenerator = new FunctionGenerator(functionDescriptor);
         write(functionGenerator.generate());
 
-        generateFunctionBody(functionDescriptor);
+        //generateFunctionBody(functionDescriptor);
 
     }
 
-
-
-
     private void generateFunctionBody(FunctionDescriptor functionDescriptor) {
-        //SimpleNode functionNode = this.funtionNodes.get(functionDescriptor);
-        //MethodBody methodBody = new MethodBody(functionNode,functionDescriptor);
         VarDeclarations varDeclarations = new VarDeclarations(functionDescriptor);
         write(varDeclarations.generate());
         generateStatements(functionDescriptor);
@@ -84,35 +75,24 @@ public class CodeGenerator {
     }
 
     private void generateStatements(FunctionDescriptor functionDescriptor) {
+        // add
     }
-
-
-
-
-
 
     private void generateMainHeader(FunctionDescriptor function) {
         write(".method public static main([Ljava/lang/String;)V");
-
     }
-
-
-    
 
     private void nl(){
         this.builder.append("\n");
     }
+
     private void tab(){
         this.builder.append("\t");
     }
 
     private void generateClassHeader() {
-
-
-
+        // add
     }
-
-
 
     private void write(String content){
         this.builder.append(content);
@@ -138,6 +118,4 @@ public class CodeGenerator {
         List<Descriptor> classes =  symbolsTable.getDescriptor(classIdentifier);
         return (ClassDescriptor) classes.get(0);
     }
-
-
 }

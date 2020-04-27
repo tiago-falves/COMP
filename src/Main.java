@@ -31,7 +31,9 @@ public class Main {
         System.out.println();
 
         symbolsTable = tb.getTable();
-         ClassDescriptor classDescriptor = CodeGenerator.getClass(root,symbolsTable);
+        ClassDescriptor classDescriptor = CodeGenerator.getClass(root, symbolsTable);
+        CodeGenerator codeGenerator = new CodeGenerator(classDescriptor);
+        codeGenerator.generate();
 	}
 
 }

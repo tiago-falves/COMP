@@ -156,13 +156,20 @@ public class FunctionDescriptor extends TypeDescriptor {
     }
 
 
-     public void addLLIRNode(LLIRNode node){
+    public void addLLIRNode(LLIRNode node){
         functionBody.add(node);
-     }
+    }
+
+    public LLIRNode getLastLLIRNode() {
+        if(functionBody.size() > 0) {
+            return functionBody.get(functionBody.size() - 1);
+        }
+
+        return null;
+    }
+
     public List<LLIRNode> getFunctionBody() {
         return functionBody;
     }
-
-
     
 }

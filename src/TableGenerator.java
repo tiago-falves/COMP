@@ -5,6 +5,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.function.Function;
+
+import llir.LLIRArithmetic;
+import llir.LLIRAssignment;
+import llir.LLIRInteger;
+import llir.LLIRNode;
+import llir.LLIRVariable;
+
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
@@ -12,6 +19,8 @@ public class TableGenerator {
     SimpleNode rootNode;
     SymbolsTable symbolsTable;
     SemanticError semanticError;
+    FunctionDescriptor currentFunctionDescriptor;
+    LLIRNode currentLLIRNode;
 
     public TableGenerator(SimpleNode rootNode) {
         this.rootNode = rootNode;
@@ -170,6 +179,7 @@ public class TableGenerator {
     public FunctionDescriptor inspectMainHeader(SimpleNode mainNode) throws SemanticErrorException {
 
         FunctionDescriptor functionDescriptor = new FunctionDescriptor();
+        this.currentFunctionDescriptor = functionDescriptor;
         functionDescriptor.setAccessVal("public");
         functionDescriptor.makeStatic();
         functionDescriptor.setReturnValue("void");
@@ -198,6 +208,7 @@ public class TableGenerator {
     public FunctionDescriptor inspectMethodHeader(SimpleNode methodNode) throws SemanticErrorException {
 
         FunctionDescriptor functionDescriptor = new FunctionDescriptor();
+        this.currentFunctionDescriptor = functionDescriptor;
 
         for (int j = 0; j < methodNode.jjtGetNumChildren(); j++) {
             SimpleNode child = (SimpleNode) methodNode.jjtGetChild(j);
@@ -357,13 +368,25 @@ public class TableGenerator {
                 typeString = strType.getString();
             }
 
+            // Add a new LLIR Node (Assignment) to the function
+            this.currentLLIRNode = new LLIRAssignment();
+
             inspectAssignment(statementNode, symbolTable, typeString);
 
             if(typeDescriptor.getClass() == VariableDescriptor.class){
                 VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
                 variableDescriptor.setInitialized();
+
+                // Sets the variable of the assignment
+                LLIRAssignment llir = (LLIRAssignment) this.currentLLIRNode;
+                LLIRVariable variable = new LLIRVariable(variableDescriptor);
+                llir.setVariable(variable);
             }
-        }else if(secondChild.getId() == JavammTreeConstants.JJTARRAY){
+
+            this.currentFunctionDescriptor.addLLIRNode(this.currentLLIRNode);
+
+        }
+        else if(secondChild.getId() == JavammTreeConstants.JJTARRAY) {
             List<Descriptor> firstDescriptorList = symbolTable.getDescriptor(firstChild.jjtGetVal());
             if(firstDescriptorList == null){
                 System.out.println("Error: Variable "+firstChild.jjtGetVal()+" not declared");
@@ -722,10 +745,24 @@ public class TableGenerator {
 
         switch(node.getId()){
             case JavammTreeConstants.JJTINTEGERLITERAL: {
+
+                // Adding integer to the LLIR Assignment node, if applicable
+                if(this.currentLLIRNode instanceof LLIRAssignment) {
+                    LLIRAssignment llir = (LLIRAssignment) this.currentLLIRNode;
+                    llir.setExpression(new llir.LLIRInteger(Integer.parseInt( node.jjtGetVal() )));
+                }
+
                 return "int";
             }
             case JavammTreeConstants.JJTTRUE: 
             case JavammTreeConstants.JJTFALSE: {
+
+                // Adding boolean to the LLIR Assignment node, if applicable
+                if(this.currentLLIRNode instanceof LLIRAssignment) {
+                    LLIRAssignment llir = (LLIRAssignment) this.currentLLIRNode;
+                    llir.setExpression(new llir.LLIRBoolean(Boolean.parseBoolean( node.jjtGetVal() )));
+                }
+
                 return "boolean";
             }
             case JavammTreeConstants.JJTIDENTIFIER: {
@@ -831,7 +868,7 @@ public class TableGenerator {
                                         } 
                                         
                                         i += 2;
-                                        foundDescriptor = true;
+                                        foundDescriptor = true; // found the function we're looking for
                                         type = "int";
                                         break;
                                     }
