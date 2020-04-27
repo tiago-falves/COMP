@@ -5,8 +5,8 @@ public class Initializer {
     private static String INSTRUCTION_ALOAD = "\taload_0\n";
     private static String INSTRUCTION_INVOKE = "\tinvokenonvirtual ";
     private static String INSTRUCTION_INIT = "<init>()V\n";
-    private static String INSTRUCTION_RETURN = "return\n";
-    private static String INSTRUCTION_END = ".end method";
+    private static String INSTRUCTION_RETURN = "\treturn\n";
+    private static String INSTRUCTION_END = ".end method\n";
     private static String DEFAULT = "java/lang/Object";
 
     private String superName;
@@ -34,4 +34,5 @@ public class Initializer {
 
         return generatedCode.toString();
     }
+
 }
