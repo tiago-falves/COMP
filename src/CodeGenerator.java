@@ -64,26 +64,14 @@ public class CodeGenerator {
     }
 
     private void generateFunction(FunctionDescriptor functionDescriptor) {
+        FunctionGenerator functionGenerator = new FunctionGenerator(functionDescriptor);
+        write(functionGenerator.generate());
 
-        FunctionHeader functionHeader = generateFunctionHeader(functionDescriptor);
-        FunctionFooter footer = new FunctionFooter();
-
-        write(functionHeader.generate());
         generateFunctionBody(functionDescriptor);
-        write(footer.generate());
-
 
     }
 
-    private FunctionHeader generateFunctionHeader(FunctionDescriptor function){
 
-        FunctionParameters functionParameters = new FunctionParameters(function);
-        String methodDescriptor = functionParameters.generate();
-        String returnType = CodeGeneratorConstants.getJvmType(function);
-
-        return new FunctionHeader(function.getName(),methodDescriptor,returnType);
-
-    }
 
 
     private void generateFunctionBody(FunctionDescriptor functionDescriptor) {

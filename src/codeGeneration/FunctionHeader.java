@@ -1,5 +1,7 @@
 package codeGeneration;
 
+import symbols.FunctionDescriptor;
+
 public class FunctionHeader {
     private static String INSTRUCTION = ".method public ";
     private String methodName;
@@ -13,6 +15,15 @@ public class FunctionHeader {
         this.methodName = methodName;
         this.methodDescriptor = methodDescriptor;
         this.returnType = returnType;
+    }
+
+    public FunctionHeader(FunctionDescriptor function){
+        FunctionParameters functionParameters = new FunctionParameters(function);
+
+        this.methodName = function.getName();
+        this.methodDescriptor = functionParameters.generate();;
+        this.returnType = CodeGeneratorConstants.getJvmType(function);
+
     }
 
     public String generate() {
