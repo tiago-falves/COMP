@@ -4,9 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import llir.LLIRArithmetic;
-import llir.LLIRAssignment;
-import llir.LLIRNode;
+import llir.*;
 import symbols.FunctionDescriptor;
 import symbols.Type;
 
@@ -40,10 +38,7 @@ public class FunctionBody {
         /*
         for(LLIRNode node : this.functionDescriptor.getFunctionBody()) {
             if (node instanceof LLIRAssignment) {
-
-            }
-            else if (node instanceof LLIRArithmetic) {
-
+                
             }
             else if (node instanceof LLIRMethodCall) {
 
