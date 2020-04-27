@@ -73,42 +73,6 @@ public class CodeGenerator {
         write(footer.generate());
 
 
-
-    }
-
-
-    private void generateFunctionBody(FunctionDescriptor functionDescriptor) {
-        SimpleNode functionNode = this.funtionNodes.get(functionDescriptor);
-        MethodBody methodBody = new MethodBody(functionNode,functionDescriptor);
-        generateVariableDeclarations(functionDescriptor);
-        generateStatements(functionDescriptor);
-
-    }
-
-    private void generateStatements(FunctionDescriptor functionDescriptor) {
-    }
-
-    private void generateVariableDeclarations(FunctionDescriptor functionDescriptor) {
-        String variables = new String();
-
-        SymbolsTable bodyTable  = functionDescriptor.getBodyTable();
-        LinkedHashMap<String, List<Descriptor>> table = bodyTable.getTable();
-        Set<String> keys = table.keySet();
-
-        for(String k:keys){
-            List<Descriptor> functionDescriptors = table.get(k);
-            for (Descriptor descriptor : functionDescriptors){
-                VariableDescriptor variableDescriptor= (VariableDescriptor) descriptor;
-                String variable = generateVariableDeclaration(variableDescriptor);
-                variables=  variables.concat(variable);
-
-            }
-        }
-
-    }
-
-    private String generateVariableDeclaration(VariableDescriptor variableDescriptor) {
-        return "";
     }
 
     private FunctionHeader generateFunctionHeader(FunctionDescriptor function){
@@ -120,6 +84,23 @@ public class CodeGenerator {
         return new FunctionHeader(function.getName(),methodDescriptor,returnType);
 
     }
+
+
+    private void generateFunctionBody(FunctionDescriptor functionDescriptor) {
+        //SimpleNode functionNode = this.funtionNodes.get(functionDescriptor);
+        //MethodBody methodBody = new MethodBody(functionNode,functionDescriptor);
+        VarDeclarations varDeclarations = new VarDeclarations(functionDescriptor);
+        write(varDeclarations.generate());
+        generateStatements(functionDescriptor);
+
+    }
+
+    private void generateStatements(FunctionDescriptor functionDescriptor) {
+    }
+
+
+
+
 
 
     private void generateMainHeader(FunctionDescriptor function) {

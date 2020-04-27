@@ -1,6 +1,11 @@
 package symbols;
 
 
+import llir.LLIRNode;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class FunctionDescriptor extends TypeDescriptor {
 
     //protected FunctionBodyDescriptor bodyDescriptor;
@@ -11,7 +16,7 @@ public class FunctionDescriptor extends TypeDescriptor {
     private boolean isStatic;
     private Access access;
     private String name;
-
+    private List<LLIRNode> functionBody;
 
 
     public FunctionDescriptor(){
@@ -21,6 +26,7 @@ public class FunctionDescriptor extends TypeDescriptor {
         this.bodyTable = new SymbolsTable();
         this.parametersTable = new SymbolsTable();
         this.bodyTable.setParent(this.parametersTable);
+        this.functionBody = new ArrayList<>();
     }
 
     public void addParameter(FunctionParameterDescriptor parameterDescriptor) {
@@ -135,6 +141,14 @@ public class FunctionDescriptor extends TypeDescriptor {
         }
 
         System.out.println();
+    }
+
+
+     public void addLLIRNode(LLIRNode node){
+        functionBody.add(node);
+     }
+    public List<LLIRNode> getFunctionBody() {
+        return functionBody;
     }
 
 
