@@ -1,3 +1,4 @@
+import llir.*;
 import symbols.*;
 
 import java.util.List;
@@ -5,12 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.function.Function;
-
-import llir.LLIRArithmetic;
-import llir.LLIRAssignment;
-import llir.LLIRInteger;
-import llir.LLIRNode;
-import llir.LLIRVariable;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -835,18 +830,16 @@ public class TableGenerator {
                         return null;
                     }
 
-                    if(this.currentLLIRNode instanceof LLIRArithmetic) {
+                    arithmetic.setExpression(new llir.LLIRInteger(Integer.parseInt(node.jjtGetVal())));
 
-                       arithmetic.setExpression(new llir.LLIRInteger(Integer.parseInt(node.jjtGetVal())),foundOperator);
-                    }
 
                     break;
                 }
                 case JavammTreeConstants.JJTTRUE: {
                     // Adding boolean to the LLIR Assignment node, if applicable
-                    if (this.currentLLIRNode instanceof LLIRAssignment) {
-                        arithmetic.setExpression(new llir.LLIRBoolean(true),foundOperator);
-                    }
+
+                    arithmetic.setExpression(new llir.LLIRBoolean(true));
+
 
                 }
                 case JavammTreeConstants.JJTFALSE: {
@@ -857,9 +850,9 @@ public class TableGenerator {
                         return null;
                     }
 
-                    if (this.currentLLIRNode instanceof LLIRAssignment) {
-                        arithmetic.setExpression(new llir.LLIRBoolean(false),foundOperator);
-                    }
+
+                    arithmetic.setExpression(new llir.LLIRBoolean(false));
+
 
                     break;
                 }
@@ -1047,20 +1040,45 @@ public class TableGenerator {
                     }
                     break;
                 }
+
+
                 default:{ //Plus, Minus, ...
                     if(!type.equals("int")){
                         this.semanticError.printError(node, "OPERATIONS ARE INCOMPATIBLE WITH " + type);
                         return null;
                     }
-                    if (this.currentLLIRNode instanceof LLIRAssignment) {
-                        arithmetic.setExpression(new llir.LLIRBoolean(true),foundOperator);
-                    }
+                    handleOperation(node.getId(),arithmetic);
+
                     break;
                 }
             }
         }
         
         return type;
+    }
+
+    //Sets Operator accordingly to operator
+    public void handleOperation(int nodeId,LLIRArithmetic arithmetic){
+        switch (nodeId){
+            case JavammTreeConstants.JJTMULT:{
+                arithmetic.setOperation(ArithmeticOperation.MULTIPLICATION);
+                break;
+            }
+            case JavammTreeConstants.JJTDIV:{
+                arithmetic.setOperation(ArithmeticOperation.DIVISION);
+
+                break;
+            }
+            case JavammTreeConstants.JJTPLUS:{
+                arithmetic.setOperation(ArithmeticOperation.SUM);
+                break;
+            }
+            case JavammTreeConstants.JJTMINUS:{
+                arithmetic.setOperation(ArithmeticOperation.SUBTRACTION);
+                break;
+            }
+        }
+
     }
 
     private String inspectClassInstantiation(SimpleNode node, SymbolsTable symbolsTable) throws SemanticErrorException {

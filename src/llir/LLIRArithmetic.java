@@ -4,6 +4,7 @@ public class LLIRArithmetic extends LLIRExpression {
     private ArithmeticOperation operation;
     private LLIRExpression leftExpression;
     private LLIRExpression rightExpression;
+    private boolean foundOperator;
 
 
     public LLIRArithmetic(ArithmeticOperation op, LLIRExpression left, LLIRExpression right) {
@@ -13,6 +14,7 @@ public class LLIRArithmetic extends LLIRExpression {
     }
 
     public LLIRArithmetic(){
+        this.foundOperator = false;
 
     }
 
@@ -49,9 +51,15 @@ public class LLIRArithmetic extends LLIRExpression {
         this.rightExpression = rightExpression;
     }
 
-    public void setExpression(LLIRExpression expression,boolean foundOperator){
-        if (foundOperator) setRightExpression(expression);
-        else setLeftExpression(expression);
+    public void setExpression(LLIRExpression expression){
+        if (foundOperator) {
+            setRightExpression(expression);
+            this.foundOperator = false;
+        }
+        else {
+            setLeftExpression(expression);
+            this.foundOperator = true;
+        }
 
     }
     
