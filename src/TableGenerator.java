@@ -105,10 +105,10 @@ public class TableGenerator {
         SymbolsTable classVariablesTable = classDescriptor.getVariablesTable();
         classVariablesTable.setParent(this.symbolsTable);
 
-        List<SimpleNode> simpleNodes = new ArrayList<>();
+        List<SimpleNode> functionsNodes = new ArrayList<>();
+        List<SimpleNode> variablesNodes = new ArrayList<>();
         List<FunctionDescriptor> functions = new ArrayList<>(); 
-
-
+        List<VariableDescriptor> variables = new ArrayList<>();
 
         // Collect attributes and methods access, return type and name 
         for (int i = 0; i < classNode.jjtGetNumChildren(); i++) {
@@ -116,12 +116,14 @@ public class TableGenerator {
             if (child.getId() == JavammTreeConstants.JJTVARIABLEDECLARATION) {
                 VariableDescriptor variableDescriptor = inspectVariable(child);
                 classDescriptor.addVariable(variableDescriptor);
+                variables.add(variableDescriptor);
+                variablesNodes.add(child);
             }
             else if (child.getId() == JavammTreeConstants.JJTMETHODDECLARATION) {
                 FunctionDescriptor functionDescriptor = inspectFunctionHeader(child);
                 functionDescriptor.getParametersTable().setParent(classDescriptor.getFunctionsTable());
                 classDescriptor.addFunction(functionDescriptor.getName(),functionDescriptor);
-                simpleNodes.add(child);
+                functionsNodes.add(child);
                 functions.add(functionDescriptor);
             }
             else if (child.getId() == JavammTreeConstants.JJTEXTENDS) {
@@ -132,8 +134,13 @@ public class TableGenerator {
 
         }
 
-        for(int i = 0; i < simpleNodes.size(); i++){
-            inspectFunctionBody(simpleNodes.get(i), functions.get(i));
+        SymbolsTable symbolsTable = classDescriptor.getVariablesTable();
+        for(int i = 0; i < variablesNodes.size(); i++){
+            inspectVariableType(variablesNodes.get(i), symbolsTable, variables.get(i));
+        } 
+
+        for(int i = 0; i < functionsNodes.size(); i++){
+            inspectFunctionBody(functionsNodes.get(i), functions.get(i));
         } 
     }
 
@@ -188,6 +195,8 @@ public class TableGenerator {
             if (child.getId() == JavammTreeConstants.JJTTYPE) {
                 TypeString typeString = new TypeString(child.jjtGetVal());
                 variableDescriptor.setType(typeString.parseType());
+                if (typeString.parseType() == Type.CLASS)
+                    variableDescriptor.setClassName(child.jjtGetVal());
             }else if(child.getId() == JavammTreeConstants.JJTCLASSTYPE){
                 variableDescriptor.setType(Type.CLASS);
                 variableDescriptor.setClassName(child.jjtGetVal());
@@ -198,6 +207,17 @@ public class TableGenerator {
         }
 
         return variableDescriptor;
+    }
+
+    public void inspectVariableType(SimpleNode varNode, SymbolsTable symbolsTable, VariableDescriptor variableDescriptor) throws SemanticErrorException {
+        if (variableDescriptor.getType() == Type.CLASS) {
+            String className = variableDescriptor.getClassName();
+
+            List<Descriptor> descriptors = symbolsTable.getDescriptor(className);
+            if (descriptors == null) {
+                this.semanticError.printError(varNode, "Wrong type in variable declaration.");
+            }
+        }
     }
 
     public FunctionDescriptor inspectFunctionHeader(SimpleNode functionNode) throws SemanticErrorException {
@@ -345,6 +365,7 @@ public class TableGenerator {
         if (variableAndStatementNode.getId() == JavammTreeConstants.JJTVARIABLEDECLARATION) {
             VariableDescriptor variableDescriptor = inspectVariable(variableAndStatementNode);
             functionDescriptor.addBodyVariable(variableDescriptor.getName(),variableDescriptor);
+            inspectVariableType(variableAndStatementNode, functionDescriptor.getBodyTable(), variableDescriptor);
         } else if (variableAndStatementNode.getId() == JavammTreeConstants.JJTLINESTATEMENT ){
             inspectLineStatement(variableAndStatementNode, functionDescriptor.getBodyTable());
         } else if(variableAndStatementNode.getId() == JavammTreeConstants.JJTWHILESTATEMENT){
@@ -1082,7 +1103,7 @@ public class TableGenerator {
 
     private String inspectClassInstantiation(SimpleNode node, SymbolsTable symbolsTable, int newPosition) throws SemanticErrorException {
         SimpleNode classIdentifierNode = (SimpleNode) node.jjtGetChild(newPosition+1);
-                        
+                      
         // Get all the Class constructors
         List<Descriptor> descriptorsList = symbolsTable.getDescriptor(classIdentifierNode.jjtGetVal());  
         SimpleNode argumentsNode = (SimpleNode) node.jjtGetChild(newPosition+2);
@@ -1099,12 +1120,13 @@ public class TableGenerator {
         for(int i = 0; i < descriptorsList.size(); i++){
             Descriptor descriptor = descriptorsList.get(i);
             if(descriptor.getClass() == ImportDescriptor.class){
+
                 ImportDescriptor importDescriptor = (ImportDescriptor) descriptor;
                 if(importDescriptor.getIdentifiers().size() != 1)
                     continue;
                 
                 List<Type> importParameters = importDescriptor.getParameters();
-                if(importParameters.size() != parameters.size())
+                if(importParameters.size() != parameters.size()) 
                     continue;
                 
                 for(int j = 0; j < importParameters.size(); j++){
@@ -1114,6 +1136,8 @@ public class TableGenerator {
                         return null;
                     }
                 } 
+                
+                return classIdentifierNode.jjtGetVal();
                 
             }else if(descriptor.getClass() == FunctionDescriptor.class){
                 FunctionDescriptor functionDescriptor = (FunctionDescriptor) descriptor;
