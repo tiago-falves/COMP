@@ -16,10 +16,10 @@
 	.limit locals 
 	iconst_5
 	istore_2
-	iconst_1
-	istore	4
-	iconst_0
-	istore	5
+	iload_2
+	istore_3
+	iconst_5
+	istore_3
 .end method
 
 

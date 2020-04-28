@@ -19,11 +19,7 @@ public class IntegerWriter {
         }
         FunctionBody.currentOperationIndex++;
 
-        generatedCode += CGConst.store.get(Type.INT);
-        FunctionBody.currentOperationIndex = 0;
-
-        int variableIndex = FunctionBody.getVariableIndex(name);
-        this.code = generatedCode + variableIndex + "\n";
+        this.code = generatedCode;
     }
 
     public String getCode(){

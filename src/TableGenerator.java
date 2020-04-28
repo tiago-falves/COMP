@@ -791,7 +791,13 @@ public class TableGenerator {
                     if(!variableDescriptor.isInitialized()){
                         this.semanticError.printError(node, "Variable " + node.jjtGetVal() + " is not initialized");
                     }
+                    //Variable is defined here?
+                    if (this.currentLLIRNode instanceof LLIRAssignment) {
+                        LLIRAssignment llir = (LLIRAssignment) this.currentLLIRNode;
+                        llir.setExpression(new llir.LLIRVariable(variableDescriptor));
+                    }
                 }
+
 
                 return (new StringType(type)).getString();
             }

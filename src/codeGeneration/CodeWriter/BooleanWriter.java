@@ -23,13 +23,6 @@ public class BooleanWriter {
         }
         currentOperationIndex++;
 
-        this.code += CGConst.store.get(Type.BOOLEAN);
-
-        currentOperationIndex = 0;
-
-        int variableIndex = getVariableIndex(name);
-
-        this.code = this.code + variableIndex + "\n";
     }
 
     public String getCode(){

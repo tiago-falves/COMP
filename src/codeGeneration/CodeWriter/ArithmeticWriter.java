@@ -16,7 +16,7 @@ public class ArithmeticWriter {
 
 
     }
-    public String generateCode(LLIRExpression expression,String name){
+    private String generateCode(LLIRExpression expression,String name){
 
         String result = new String();
         if(expression instanceof LLIRInteger) {
@@ -24,8 +24,8 @@ public class ArithmeticWriter {
             result += integerWriter.getCode();
         }
         else if(expression instanceof LLIRVariable) {
-            //IntegerWriter integerWriter = new IntegerWriter((LLIRInteger) expression,name);
-            //result += integerWriter.getCode();
+            VariableWriter variableWriter = new VariableWriter((LLIRVariable) expression);
+            result += variableWriter.getCode();
         }
         else if (expression instanceof LLIRArithmetic) {
             ArithmeticWriter arithmeticWriter = new ArithmeticWriter((LLIRArithmetic) expression,name);
