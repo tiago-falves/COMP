@@ -654,8 +654,6 @@ public class TableGenerator {
             return null;
         }
 
-        System.out.println("Descriptors: " + descriptorsList.size());
-
         for(int i = 0; i < descriptorsList.size(); i++){
             if(descriptorsList.get(i).getClass()  == ImportDescriptor.class){
                 ImportDescriptor importDescriptor = (ImportDescriptor) descriptorsList.get(i);
@@ -698,12 +696,10 @@ public class TableGenerator {
                 return stringType.getString();
                 
             }else if(descriptorsList.get(i).getClass() == FunctionDescriptor.class){
-                System.out.println("Function");
                 FunctionDescriptor functionDescriptor = (FunctionDescriptor) descriptorsList.get(i);
                 SymbolsTable parametersTable = functionDescriptor.getParametersTable();
                 HashMap<String, List<Descriptor>> functionParameters = parametersTable.getTable();
 
-                System.out.println("Parameters size: " + functionParameters.size() + " - " + parameters.size());
                 if(functionParameters.size() != parameters.size()) {
                     if (i == descriptorsList.size()-1) {
                         this.semanticError.printError((SimpleNode)statementNode.jjtGetChild(nextChild-1), "Wrong number of arguments for function call");
@@ -714,7 +710,6 @@ public class TableGenerator {
 
                 int j = 0;
 
-                System.out.println("Parameters");
                 for(HashMap.Entry<String, List<Descriptor>> functionParametersEntry : functionParameters.entrySet()){
                     List<Descriptor> descList = functionParametersEntry.getValue();
                     
@@ -753,13 +748,7 @@ public class TableGenerator {
                 return stringType.getString();
             }
         }
-
-        //TODO DELETE THIS
-        for(int i = initialChild; i < statementNode.jjtGetNumChildren(); i++){
-            SimpleNode new_node = (SimpleNode) statementNode.jjtGetChild(i);
-            System.out.println(new_node.getId() + " - " + new_node.jjtGetVal() + " - " + new_node.jjtGetNumChildren());
-        }
-        System.out.println("fds");
+        
         return null;
     }
 
