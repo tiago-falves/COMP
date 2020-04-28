@@ -18,8 +18,10 @@
 	istore_2
 	bipush	7
 	istore_3
-	iconst_5
-	iload_3
+	iload_2
+	iconst_1
+	iconst_2
+	iconst_3
 	imul
 	istore_3
 .end method

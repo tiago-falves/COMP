@@ -1,14 +1,9 @@
 import llir.*;
 import symbols.*;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Function;
-
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 
 public class TableGenerator {
     SimpleNode rootNode;
@@ -817,14 +812,24 @@ public class TableGenerator {
 
         String type = null;
 
+        //Lista de Arithmetics
+        //Sempre que adicionar um a esquerda cria um arithmetic e adiciona a lista
+        //Começa a adicionar ao ultimo
+        //5* a * b
 
-        LLIRArithmetic arithmetic = new LLIRArithmetic();
+        List<LLIRArithmetic> arithmetics = new ArrayList<>();
+        arithmetics.add(new LLIRArithmetic());
 
-        boolean foundOperator = false;
+
 
 
         for(int i = initialChild; i < argumentNode.jjtGetNumChildren(); i++){
             SimpleNode node = (SimpleNode) argumentNode.jjtGetChild(i);
+
+            if(arithmetics.get(arithmetics.size()-1).foundOperator() && i < argumentNode.jjtGetNumChildren()-2) {
+                arithmetics.add(new LLIRArithmetic());
+
+            }
             
             switch(node.getId()){
                 case JavammTreeConstants.JJTINTEGERLITERAL: {
@@ -836,7 +841,7 @@ public class TableGenerator {
                         return null;
                     }
 
-                    arithmetic.setExpression(new llir.LLIRInteger(Integer.parseInt(node.jjtGetVal())));
+                    arithmetics.get(arithmetics.size()-1).setExpression(new llir.LLIRInteger(Integer.parseInt(node.jjtGetVal())));
 
 
                     break;
@@ -844,7 +849,7 @@ public class TableGenerator {
                 case JavammTreeConstants.JJTTRUE: {
                     // Adding boolean to the LLIR Assignment node, if applicable
 
-                    arithmetic.setExpression(new llir.LLIRBoolean(true));
+                    arithmetics.get(arithmetics.size()-1).setExpression(new llir.LLIRBoolean(true));
 
 
                 }
@@ -857,7 +862,7 @@ public class TableGenerator {
                     }
 
 
-                    arithmetic.setExpression(new llir.LLIRBoolean(false));
+                    arithmetics.get(arithmetics.size()-1).setExpression(new llir.LLIRBoolean(false));
 
 
                     break;
@@ -969,7 +974,7 @@ public class TableGenerator {
                         }
 
                         //Sets variable in arithmetic Expression LLIR
-                        arithmetic.setExpression(new llir.LLIRVariable(variableDescriptor));
+                        arithmetics.get(arithmetics.size()-1).setExpression(new llir.LLIRVariable(variableDescriptor));
 
 
                     }
@@ -1059,16 +1064,31 @@ public class TableGenerator {
                         this.semanticError.printError(node, "OPERATIONS ARE INCOMPATIBLE WITH " + type);
                         return null;
                     }
-                    handleOperation(node.getId(),arithmetic);
+                    handleOperation(node.getId(),arithmetics.get(arithmetics.size()-1));
 
                     break;
                 }
             }
         }
 
+        for (int i = 0; i < arithmetics.size()-1; i++) {
+            arithmetics.get(i).setRightExpression(arithmetics.get(i+1));
+        }
+
+
+
+        /*for (int i = 1; i < arithmetics.size(); i++) {
+            LLIRArithmetic arithmetic = new LLIRArithmetic();
+            arithmetics.get(i).setLeftExpression(arithmetics.get(i-1));
+            arithmetics.get(i).setRightExpression(arithmetics.get(i).getLeftExpression());
+            arithmetics.get(i).setOperation(arithmetics.get(i-1).getOperation());
+
+        }*/
+
+
         if(this.currentLLIRNode instanceof LLIRAssignment) {
             LLIRAssignment llir = (LLIRAssignment) this.currentLLIRNode;
-            llir.setExpression(arithmetic);
+            llir.setExpression(arithmetics.get(0));
         }
         
         return type;

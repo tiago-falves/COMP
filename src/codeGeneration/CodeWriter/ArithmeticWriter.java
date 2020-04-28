@@ -7,16 +7,20 @@ import symbols.Type;
 
 public class ArithmeticWriter {
     private String code;
+    private LLIRArithmetic arithmetic;
 
     public ArithmeticWriter(LLIRArithmetic arithmetic, String name){
         this.code  = "";
-
-        this.code += generateCode(arithmetic.getLeftExpression(),name);
-        this.code += generateCode(arithmetic.getRightExpression(),name);
-        this.code += CGConst.arithmeticOperators.get(arithmetic.getOperation()) + "\n";
+        this.arithmetic = arithmetic;
+        this.code += generateLeftCode(arithmetic.getLeftExpression(),name);
+        this.code += generateRightCode(arithmetic.getRightExpression(),name);
 
     }
-    private String generateCode(LLIRExpression expression,String name){
+
+
+
+
+    private String generateLeftCode(LLIRExpression expression,String name){
 
         String result = new String();
         if(expression instanceof LLIRInteger) {
@@ -26,6 +30,26 @@ public class ArithmeticWriter {
         else if(expression instanceof LLIRVariable) {
             VariableWriter variableWriter = new VariableWriter((LLIRVariable) expression);
             result += variableWriter.getCode();
+        }
+
+        return result;
+
+    }
+
+    private String generateRightCode(LLIRExpression expression,String name){
+
+        String result = new String();
+        if(expression instanceof LLIRInteger) {
+            IntegerWriter integerWriter = new IntegerWriter((LLIRInteger) expression,name);
+            result += integerWriter.getCode();
+            result+= CGConst.arithmeticOperators.get(arithmetic.getOperation()) + "\n";
+
+        }
+        else if(expression instanceof LLIRVariable) {
+            VariableWriter variableWriter = new VariableWriter((LLIRVariable) expression);
+            result += variableWriter.getCode();
+            result += CGConst.arithmeticOperators.get(arithmetic.getOperation()) + "\n";
+
         }
         else if (expression instanceof LLIRArithmetic) {
             ArithmeticWriter arithmeticWriter = new ArithmeticWriter((LLIRArithmetic) expression,name);
