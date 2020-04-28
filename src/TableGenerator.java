@@ -961,11 +961,17 @@ public class TableGenerator {
                         return null;
                     }
 
+                    //Is Variable
                     if(descriptor.getClass() == VariableDescriptor.class){
                         VariableDescriptor variableDescriptor = (VariableDescriptor) descriptor;
                         if(!variableDescriptor.isInitialized()){
                             this.semanticError.printError(node, "Variable " + node.jjtGetVal() + " is not initialized");
                         }
+
+                        //Sets variable in arithmetic Expression LLIR
+                        arithmetic.setExpression(new llir.LLIRVariable(variableDescriptor));
+
+
                     }
 
                     break;

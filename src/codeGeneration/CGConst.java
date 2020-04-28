@@ -1,14 +1,17 @@
 package codeGeneration;
+import llir.ArithmeticOperation;
 import symbols.Type;
 import symbols.TypeDescriptor;
 
 import java.util.HashMap;
 
+import static llir.ArithmeticOperation.*;
+
 public class CGConst {
     public static HashMap<Type, String> types;
     public static HashMap<Type, String> store;
     public static HashMap<Type, String> load;
-    public static HashMap<String, String> arithmeticOperators;
+    public static HashMap<ArithmeticOperation, String> arithmeticOperators;
 
     static {
         types = new HashMap<>();
@@ -16,10 +19,11 @@ public class CGConst {
         load = new HashMap<>();
         arithmeticOperators = new HashMap<>();
 
-        arithmeticOperators.put("+", "\tiadd");
-        arithmeticOperators.put("-", "\tisub");
-        arithmeticOperators.put("*", "\timul");
-        arithmeticOperators.put("/", "\tidiv");
+        arithmeticOperators.put(SUM, "\tiadd");
+        arithmeticOperators.put(SUBTRACTION, "\tisub");
+        arithmeticOperators.put(MULTIPLICATION, "\timul");
+        arithmeticOperators.put(DIVISION, "\tidiv");
+
 
         types.put(Type.INT, "I");
         types.put(Type.BOOLEAN, "Z");

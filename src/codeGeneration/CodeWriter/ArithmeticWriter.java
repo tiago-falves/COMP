@@ -13,7 +13,7 @@ public class ArithmeticWriter {
 
         this.code += generateCode(arithmetic.getLeftExpression(),name);
         this.code += generateCode(arithmetic.getRightExpression(),name);
-
+        this.code += CGConst.arithmeticOperators.get(arithmetic.getOperation()) + "\n";
 
     }
     private String generateCode(LLIRExpression expression,String name){

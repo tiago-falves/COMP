@@ -16,9 +16,11 @@
 	.limit locals 
 	iconst_5
 	istore_2
-	iload_2
+	bipush	7
 	istore_3
 	iconst_5
+	iload_3
+	imul
 	istore_3
 .end method
 
