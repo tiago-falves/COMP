@@ -459,7 +459,6 @@ public class TableGenerator {
     }
 
     public void inspectIfStatement(SimpleNode ifNode, SymbolsTable statementParentTable) throws SemanticErrorException {
-        //TODO CHECK this
         if(ifNode.jjtGetNumChildren() == 0){
             this.semanticError.printError(ifNode, "If needs to have an expression.");
             return;
@@ -937,6 +936,26 @@ public class TableGenerator {
 
                         return "int[]";
                     }
+                    else if (initialChild+3 < argumentNode.jjtGetNumChildren()) {
+                        if (argumentNode.jjtGetChild(initialChild+3).getId() == JavammTreeConstants.JJTDOT) {
+                            String classType = inspectClassInstantiation(argumentNode, symbolsTable, initialChild);
+                            if (classType == null) {
+                                this.semanticError.printError(nextNode,"Undefined class type");
+                                return null;
+                            }
+
+                            //TODO verify if function is declared on the class or in imports
+                            /*Descriptor descriptor = symbolsTable.getDescriptor(classType).get(0);
+                            SimpleNode functionNode = (SimpleNode)argumentNode.jjtGetChild(initialChild+4);
+                            
+                            if (inspectFunctionOnClass(functionNode, descriptor))*/
+                                return inspectFunctionCall(argumentNode, symbolsTable, initialChild+4);
+                            
+                            
+                            /*this.semanticError.printError(nextNode,"Function not declared on class.");
+                            return null;*/
+                        }
+                    }
                     return inspectClassInstantiation(argumentNode, symbolsTable, initialChild);
                 }
                 //TODO Check this  
@@ -1064,4 +1083,28 @@ public class TableGenerator {
         this.semanticError.printError(classIdentifierNode, "Class " + classIdentifierNode.jjtGetVal() + " doesn't exist");
         return null;
     }
+
+    /*private boolean inspectFunctionOnClass(SimpleNode functionNode, Descriptor descriptor) {
+        if (descriptor.getClass() == ClassDescriptor.class) {
+            return isInClass(functionNode, (ClassDescriptor)descriptor);
+        }
+        if (descriptor.getClass() == ImportDescriptor.class) {
+
+        }
+        return false;
+    }
+
+    private boolean isInClass(SimpleNode functionNode, ClassDescriptor classDescriptor) {
+        SymbolsTable functionsTable = classDescriptor.getFunctionsTable();
+        if (functionsTable.getDescriptor(functionNode.jjtGetVal()) == null)
+            return false;
+
+        return true;
+    }
+
+    private boolean isInImport(SimpleNode functionNode, ImportDescriptor importDescriptor) {
+        
+
+        return true;
+    }*/
 }
