@@ -14,8 +14,10 @@ class HelloWorld {
     //So para Testar
     public int square(int a){
         int b;
-        b = this.zas(5);
-        b = this.zos();
+        int c;
+        b =5;
+
+        c = b*15 + 30;
 
         return 5;
     }

@@ -33,6 +33,11 @@ public class ArithmeticWriter {
             VariableWriter variableWriter = new VariableWriter((LLIRVariable) expression);
             result += variableWriter.getCode();
         }
+        else if (expression instanceof LLIRMethodCall) {
+            MethodCallWriter methodCallWriter = new MethodCallWriter((LLIRMethodCall) expression);
+            result += methodCallWriter.getCode();
+
+        }
 
         return result;
 
