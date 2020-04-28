@@ -1,9 +1,6 @@
 package codeGeneration.CodeWriter;
 
-import llir.LLIRAssignment;
-import llir.LLIRBoolean;
-import llir.LLIRExpression;
-import llir.LLIRInteger;
+import llir.*;
 
 public class AssignmentWriter {
 
@@ -24,6 +21,9 @@ public class AssignmentWriter {
 
             BooleanWriter booleanWriter = new BooleanWriter((LLIRBoolean) expression,name);
             this.code += booleanWriter.getCode();
+        }
+        else if (expression instanceof LLIRArithmetic) {
+
         }
 
     }

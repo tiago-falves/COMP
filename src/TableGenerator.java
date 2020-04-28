@@ -1053,6 +1053,11 @@ public class TableGenerator {
                 }
             }
         }
+
+        if(this.currentLLIRNode instanceof LLIRAssignment) {
+            LLIRAssignment llir = (LLIRAssignment) this.currentLLIRNode;
+            llir.setExpression(arithmetic);
+        }
         
         return type;
     }
@@ -1078,6 +1083,8 @@ public class TableGenerator {
                 break;
             }
         }
+
+
 
     }
 
