@@ -12,7 +12,7 @@ public class ImportDescriptor extends TypeDescriptor {
         this.isStatic = false;
         this.identifiers = new ArrayList();
         this.parameters = new ArrayList();
-
+        this.type = Type.VOID;
     }
 
     // Identifiers

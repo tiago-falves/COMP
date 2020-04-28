@@ -12,11 +12,13 @@ public class TableGenerator {
     SimpleNode rootNode;
     SymbolsTable symbolsTable;
     SemanticError semanticError;
+    private String className;
 
     public TableGenerator(SimpleNode rootNode) {
         this.rootNode = rootNode;
         this.symbolsTable = new SymbolsTable();
         this.semanticError = new SemanticError();
+        this.className = null;
     }
 
     public SymbolsTable getTable() {
@@ -96,7 +98,8 @@ public class TableGenerator {
         ClassDescriptor classDescriptor = new ClassDescriptor();
         
         SimpleNode childNode = (SimpleNode) classNode.jjtGetChild(0);
-        classDescriptor.setName(childNode.jjtGetVal());
+        this.className = childNode.jjtGetVal();
+        classDescriptor.setName(this.className);
         this.symbolsTable.addSymbol(classDescriptor.getName(), classDescriptor, false);
 
         SymbolsTable classVariablesTable = classDescriptor.getVariablesTable();
@@ -122,7 +125,9 @@ public class TableGenerator {
                 functions.add(functionDescriptor);
             }
             else if (child.getId() == JavammTreeConstants.JJTEXTENDS) {
-                classDescriptor.setParentClass(((SimpleNode) (classNode.jjtGetChild(i+1))).jjtGetVal());
+                String parentClassName = ((SimpleNode) (classNode.jjtGetChild(i+1))).jjtGetVal();
+                classDescriptor.setParentClass(parentClassName);
+                extendClass(classDescriptor);
             }
 
         }
@@ -130,6 +135,48 @@ public class TableGenerator {
         for(int i = 0; i < simpleNodes.size(); i++){
             inspectFunctionBody(simpleNodes.get(i), functions.get(i));
         } 
+    }
+
+    private void extendClass(ClassDescriptor classDescriptor){
+        // Get imported methods from the extedended class
+        LinkedHashMap<String, List<Descriptor>> importsTable = this.symbolsTable.getTable();
+        for(HashMap.Entry<String, List<Descriptor>> imports : importsTable.entrySet()){
+            for(int j = 0; j < imports.getValue().size(); j++){
+                Descriptor descriptor = imports.getValue().get(j);
+                
+                // Found an import descriptor
+                if(descriptor.getClass() == ImportDescriptor.class){
+                    ImportDescriptor importDescriptor = (ImportDescriptor) descriptor;
+                    ArrayList<String> identifiers = importDescriptor.getIdentifiers();
+                    
+                    // Found method from the extended class
+                    if(identifiers.size() > 1 && identifiers.get(0).equals(classDescriptor.getParentClass())){
+                        FunctionDescriptor functionDescriptor = new FunctionDescriptor();
+
+                        // Set function name
+                        functionDescriptor.setName(identifiers.get(identifiers.size()-1));
+                        
+                        // Make function static
+                        if(importDescriptor.isStatic()){
+                            functionDescriptor.makeStatic();
+                        }
+
+
+                        // Add function return
+                        StringType returnType = new StringType(importDescriptor.getReturn());
+                        functionDescriptor.setReturnValue(returnType.getString());
+
+                        // Add function parameters
+                        ArrayList<Type> parameters = importDescriptor.getParameters();
+                        for(int k = 0; k < parameters.size(); k++){
+                            functionDescriptor.addParameter(new FunctionParameterDescriptor(new String(new char[1]).replace('\0', (char)('a'+k)), parameters.get(k)));
+                        }
+
+                        classDescriptor.addFunction(functionDescriptor.getName(), functionDescriptor);
+                    }
+                }
+            }
+        }
     }
 
     public VariableDescriptor inspectVariable(SimpleNode variableNode) throws SemanticErrorException {
@@ -553,6 +600,23 @@ public class TableGenerator {
         }
     }
     
+    private String checkFunctionCallVariableType(String identifierName, SimpleNode statementNode, SymbolsTable symbolsTable, int initialChild)  throws SemanticErrorException {
+        List<Descriptor> nodeDescriptors = symbolsTable.getDescriptor(identifierName);
+        if(nodeDescriptors != null){
+            for(int i = initialChild; i < nodeDescriptors.size(); i++){
+                if(nodeDescriptors.get(i).getClass() == VariableDescriptor.class || nodeDescriptors.get(i).getClass() == FunctionParameterDescriptor.class){
+                    TypeDescriptor typeDescriptor = (TypeDescriptor) nodeDescriptors.get(i);
+                    if(typeDescriptor.getType() != Type.CLASS){
+                        this.semanticError.printError(statementNode, "Can only call functions from classes");
+                        return null;
+                    }
+                    return typeDescriptor.getClassName();
+                }
+            }
+        }
+        return identifierName;
+    }
+
     private String inspectFunctionCall(SimpleNode statementNode, SymbolsTable symbolsTable) throws SemanticErrorException {
         return inspectFunctionCall(statementNode, symbolsTable, 0);
     }
@@ -562,14 +626,19 @@ public class TableGenerator {
         List<String> identifiers = new ArrayList<>(); 
         SimpleNode node = (SimpleNode) statementNode.jjtGetChild(initialChild);
 
-        identifiers.add(node.jjtGetVal()); 
-
         SimpleNode child = (SimpleNode) statementNode.jjtGetChild(initialChild+1);
         int nextChild = initialChild+1;
         if(child.getId() == JavammTreeConstants.JJTDOT){
+            String identifierName = checkFunctionCallVariableType(node.jjtGetVal(), statementNode, symbolsTable, initialChild);
+            
+            if(!this.className.equals(identifierName)){
+                identifiers.add(identifierName); 
+            }
             node = (SimpleNode) statementNode.jjtGetChild(initialChild+2);
             identifiers.add(node.jjtGetVal()); 
             nextChild = initialChild+3;
+        }else{
+            identifiers.add(node.jjtGetVal());
         }
 
         SimpleNode argumentsNode = (SimpleNode) statementNode.jjtGetChild(nextChild);
@@ -584,6 +653,8 @@ public class TableGenerator {
             this.semanticError.printError((SimpleNode)statementNode.jjtGetChild(nextChild-1), "Function "+((SimpleNode)statementNode.jjtGetChild(nextChild-1)).jjtGetVal()+" not declared.");
             return null;
         }
+
+        System.out.println("Descriptors: " + descriptorsList.size());
 
         for(int i = 0; i < descriptorsList.size(); i++){
             if(descriptorsList.get(i).getClass()  == ImportDescriptor.class){
@@ -627,11 +698,12 @@ public class TableGenerator {
                 return stringType.getString();
                 
             }else if(descriptorsList.get(i).getClass() == FunctionDescriptor.class){
-
+                System.out.println("Function");
                 FunctionDescriptor functionDescriptor = (FunctionDescriptor) descriptorsList.get(i);
                 SymbolsTable parametersTable = functionDescriptor.getParametersTable();
                 HashMap<String, List<Descriptor>> functionParameters = parametersTable.getTable();
 
+                System.out.println("Parameters size: " + functionParameters.size() + " - " + parameters.size());
                 if(functionParameters.size() != parameters.size()) {
                     if (i == descriptorsList.size()-1) {
                         this.semanticError.printError((SimpleNode)statementNode.jjtGetChild(nextChild-1), "Wrong number of arguments for function call");
@@ -641,6 +713,8 @@ public class TableGenerator {
                 }
 
                 int j = 0;
+
+                System.out.println("Parameters");
                 for(HashMap.Entry<String, List<Descriptor>> functionParametersEntry : functionParameters.entrySet()){
                     List<Descriptor> descList = functionParametersEntry.getValue();
                     
@@ -679,7 +753,13 @@ public class TableGenerator {
                 return stringType.getString();
             }
         }
-        
+
+        //TODO DELETE THIS
+        for(int i = initialChild; i < statementNode.jjtGetNumChildren(); i++){
+            SimpleNode new_node = (SimpleNode) statementNode.jjtGetChild(i);
+            System.out.println(new_node.getId() + " - " + new_node.jjtGetVal() + " - " + new_node.jjtGetNumChildren());
+        }
+        System.out.println("fds");
         return null;
     }
 
