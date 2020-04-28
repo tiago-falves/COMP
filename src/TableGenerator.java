@@ -11,12 +11,13 @@ public class TableGenerator {
     SemanticError semanticError;
     FunctionDescriptor currentFunctionDescriptor;
     LLIRNode currentLLIRNode;
-    List<LLIRExpression> arguments;
+    LLIRMethodCall currentMethodCall;
 
     public TableGenerator(SimpleNode rootNode) {
         this.rootNode = rootNode;
         this.symbolsTable = new SymbolsTable();
         this.semanticError = new SemanticError();
+        this.currentMethodCall= new LLIRMethodCall();
 
     }
 
@@ -601,7 +602,7 @@ public class TableGenerator {
 
         List<String> parameters = inspectArguments(argumentsNode, symbolsTable);
 
-        System.out.println("ZAAAAAAS\n\n\n\n" +this.arguments.size());
+        System.out.println("ZAAAAAAS\n\n\n\n" +this.currentMethodCall.getParametersExpressions().size());
 
 
 
@@ -658,7 +659,7 @@ public class TableGenerator {
                 //Define MethodCall
                 LLIRMethodCall llirMethodCall = new LLIRMethodCall();
 
-                llirMethodCall.setParametersExpressions(this.arguments);
+                llirMethodCall.setParametersExpressions(this.currentMethodCall.getParametersExpressions());
 
 
 
@@ -779,9 +780,9 @@ public class TableGenerator {
                     LLIRAssignment llir = (LLIRAssignment) this.currentLLIRNode;
                     llir.setExpression(new llir.LLIRInteger(Integer.parseInt( node.jjtGetVal() )));
 
-                    if (this.arguments != null){
+                    if (this.currentMethodCall.getParametersExpressions() != null){
                         System.out.println(node.val + "ZAAAAAAAAAAS\n\n\n");
-                        this.arguments.add(new llir.LLIRInteger(Integer.parseInt(node.jjtGetVal())));
+                        this.currentMethodCall.getParametersExpressions().add(new llir.LLIRInteger(Integer.parseInt(node.jjtGetVal())));
                     }
                 }
 
@@ -795,8 +796,8 @@ public class TableGenerator {
                     LLIRAssignment llir = (LLIRAssignment) this.currentLLIRNode;
                     llir.setExpression(new llir.LLIRBoolean(true));
 
-                    if (this.arguments != null){
-                        this.arguments.add(new llir.LLIRBoolean(true));
+                    if (this.currentMethodCall.getParametersExpressions() != null){
+                        this.currentMethodCall.getParametersExpressions().add(new llir.LLIRBoolean(true));
                     }
                 }
                 return "boolean";
@@ -808,8 +809,8 @@ public class TableGenerator {
                     LLIRAssignment llir = (LLIRAssignment) this.currentLLIRNode;
                     llir.setExpression(new llir.LLIRBoolean(false));
 
-                    if (this.arguments != null){
-                        this.arguments.add(new llir.LLIRBoolean(false));
+                    if (this.currentMethodCall.getParametersExpressions() != null){
+                        this.currentMethodCall.getParametersExpressions().add(new llir.LLIRBoolean(false));
                     }
                 }
                 return "boolean";
@@ -842,8 +843,8 @@ public class TableGenerator {
                         LLIRAssignment llir = (LLIRAssignment) this.currentLLIRNode;
                         llir.setExpression(new llir.LLIRVariable(variableDescriptor));
 
-                        if (this.arguments != null){
-                            this.arguments.add(new llir.LLIRVariable(variableDescriptor));
+                        if (this.currentMethodCall.getParametersExpressions() != null){
+                            this.currentMethodCall.getParametersExpressions().add(new llir.LLIRVariable(variableDescriptor));
                         }
                     }
                 }
@@ -924,7 +925,7 @@ public class TableGenerator {
                     break;
                 }
                 case JavammTreeConstants.JJTTHIS: {
-                    this.arguments = new ArrayList<>();
+                    this.currentMethodCall.initializeParametersExpression();
                     String functionType = inspectFunctionCall(argumentNode, symbolsTable, i+2);
                     if(type == null){
                         type = functionType;
@@ -933,7 +934,7 @@ public class TableGenerator {
                         return null;
                     }
                     i += 3;
-                    this.arguments = null;
+                    this.currentMethodCall.setParametersExpressions(null);
 
                     break;
                 } 

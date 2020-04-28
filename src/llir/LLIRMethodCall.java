@@ -93,6 +93,10 @@ public class LLIRMethodCall extends LLIRExpression {
         this.parametersExpressions = parametersExpressions;
     }
 
+    public void initializeParametersExpression(){
+        this.parametersExpressions = new ArrayList<>();
+    }
+
     public void setMethodName(String methodName) {
         this.methodName = methodName;
     }
