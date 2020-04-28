@@ -12,18 +12,23 @@ import symbols.VariableDescriptor;
 
 public class LLIRMethodCall extends LLIRExpression {
 
-    private final List<LLIRExpression> parametersExpressions; 
-    private final String methodName;
-    private final SymbolsTable parametersTable;
-    private final Type returnType;
-    private final boolean isStatic;
 
-    public LLIRMethodCall(List<LLIRExpression> parameters, String name, SymbolsTable table, Type returnType, boolean isStatic) {
+
+    private  List<LLIRExpression> parametersExpressions;
+    private  String methodName;
+    private  SymbolsTable parametersTable;
+    private  Type returnType;
+    private  boolean isStatic;
+
+    public LLIRMethodCall(List<LLIRExpression> parameters, String name, SymbolsTable parametersTable, Type returnType, boolean isStatic) {
         this.parametersExpressions = parameters;
         this.methodName = name;
-        this.parametersTable = table;
+        this.parametersTable = parametersTable;
         this.returnType = returnType;
         this.isStatic = isStatic;
+    }
+    public LLIRMethodCall(){
+
     }
 
     /**
@@ -79,8 +84,26 @@ public class LLIRMethodCall extends LLIRExpression {
      *
      * @return if it's static
      */
+
     public boolean isStatic() {
         return this.isStatic;
     }
+
+    public void setParametersExpressions(List<LLIRExpression> parametersExpressions) {
+        this.parametersExpressions = parametersExpressions;
+    }
+
+    public void setMethodName(String methodName) {
+        this.methodName = methodName;
+    }
+
+    public void setParametersTable(SymbolsTable parametersTable) {
+        this.parametersTable = parametersTable;
+    }
+
+    public void setReturnType(Type returnType) {
+        this.returnType = returnType;
+    }
+
 
 }

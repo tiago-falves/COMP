@@ -1,32 +1,25 @@
 package codeGeneration.CodeWriter;
 
-import codeGeneration.CGConst;
-import codeGeneration.FunctionBody;
 import llir.*;
 import symbols.Type;
 
-public class AssignmentWriter {
+import java.util.List;
+
+public class ExpressionWriter {
 
     private String code;
-
-    public AssignmentWriter(LLIRAssignment assignment) {
-
+    public ExpressionWriter(LLIRExpression expression,String name){
         this.code  = "";
 
-        String name = assignment.getVariable().getVariable().getName();
-        LLIRExpression expression = assignment.getExpression();
-        Type type = Type.INT;
 
         if(expression instanceof LLIRInteger) {
             IntegerWriter integerWriter = new IntegerWriter((LLIRInteger) expression,name);
             this.code += integerWriter.getCode();
-            type = Type.INT;
         }
         else if (expression instanceof LLIRBoolean) {
-
             BooleanWriter booleanWriter = new BooleanWriter((LLIRBoolean) expression,name);
             this.code += booleanWriter.getCode();
-            type = Type.BOOLEAN;
+
 
         }
         else if(expression instanceof LLIRVariable) {
@@ -44,17 +37,8 @@ public class AssignmentWriter {
             this.code += methodCallWriter.getCode();
 
         }
-
-
-        this.code += CGConst.store.get(type);
-        FunctionBody.currentOperationIndex = 0;
-
-        int variableIndex = FunctionBody.getVariableIndex(name);
-        this.code = this.code + variableIndex + "\n";
-
-
-
     }
+
     public String getCode(){
         return this.code;
     }

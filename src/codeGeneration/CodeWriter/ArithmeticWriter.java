@@ -14,6 +14,8 @@ public class ArithmeticWriter {
         this.arithmetic = arithmetic;
         this.code += generateLeftCode(arithmetic.getLeftExpression(),name);
         this.code += generateRightCode(arithmetic.getRightExpression(),name);
+        this.code += CGConst.arithmeticOperators.get(arithmetic.getOperation()) + "\n";
+
 
     }
 
@@ -42,13 +44,11 @@ public class ArithmeticWriter {
         if(expression instanceof LLIRInteger) {
             IntegerWriter integerWriter = new IntegerWriter((LLIRInteger) expression,name);
             result += integerWriter.getCode();
-            result+= CGConst.arithmeticOperators.get(arithmetic.getOperation()) + "\n";
 
         }
         else if(expression instanceof LLIRVariable) {
             VariableWriter variableWriter = new VariableWriter((LLIRVariable) expression);
             result += variableWriter.getCode();
-            result += CGConst.arithmeticOperators.get(arithmetic.getOperation()) + "\n";
 
         }
         else if (expression instanceof LLIRArithmetic) {

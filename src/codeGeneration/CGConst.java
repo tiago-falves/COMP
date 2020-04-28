@@ -27,7 +27,7 @@ public class CGConst {
 
         types.put(Type.INT, "I");
         types.put(Type.BOOLEAN, "Z");
-        types.put(Type.INT, "[I");
+        types.put(Type.INT_ARRAY, "[I");
         types.put(Type.VOID, "V");
         types.put(Type.STRING_ARRAY, "[Ljava/lang/String;"); //TODO Quase certo que isto nao esta bem
 

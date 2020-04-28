@@ -11,19 +11,26 @@
 	.limit locals 
 .end method
 
-.method public square([I)[I
+.method public zas(I)I
 	.limit stack 
 	.limit locals 
+.end method
+
+.method public zos()I
+	.limit stack 
+	.limit locals 
+.end method
+
+.method public square(I)I
+	.limit stack 
+	.limit locals 
+	aload_0
 	iconst_5
+	invokevirtual	//Method zas:(I)I
 	istore_2
-	bipush	7
-	istore_3
-	iload_2
-	iconst_1
-	iconst_2
-	iconst_3
-	imul
-	istore_3
+	aload_0
+	invokevirtual	//Method zos:()I
+	istore_2
 .end method
 
 

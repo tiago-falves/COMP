@@ -34,6 +34,23 @@ public class FunctionParameters {
         return parameters;
     }
 
+    public static String getParametersTypes(SymbolsTable parametersTable){
+
+        String parameters = new String();
+
+        if(parametersTable != null) {
+            for (HashMap.Entry<String, List<Descriptor>> tableEntry : parametersTable.getTable().entrySet()) {
+                if(tableEntry.getValue().size() > 0) {
+                    FunctionParameterDescriptor paramDescriptor = (FunctionParameterDescriptor) tableEntry.getValue().get(0);
+                    String parameter = generateMethodParameter(paramDescriptor);
+                    parameters = parameters.concat(parameter);
+                }
+            }
+        }
+        return parameters;
+
+    }
+
     public LinkedHashMap<String, Integer> getParameters() {
         int currentIndex = 1;
         LinkedHashMap<String, Integer> variableToIndex = new LinkedHashMap<>();
@@ -52,7 +69,7 @@ public class FunctionParameters {
         return variableToIndex;
     }
 
-    private String generateMethodParameter(FunctionParameterDescriptor parameterDescriptor) {
+    private static String generateMethodParameter(FunctionParameterDescriptor parameterDescriptor) {
         return  CGConst.getJvmType(parameterDescriptor);
     }
 
