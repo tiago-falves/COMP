@@ -946,11 +946,9 @@ public class TableGenerator {
 
                             //TODO verify if function is declared on the class or in imports
                             /*Descriptor descriptor = symbolsTable.getDescriptor(classType).get(0);
-                            SimpleNode functionNode = (SimpleNode)argumentNode.jjtGetChild(initialChild+4);
                             
-                            if (inspectFunctionOnClass(functionNode, descriptor))*/
+                            if (inspectFunctionOnClass(argumentNode, descriptor, symbolsTable, initialChild+4))*/
                                 return inspectFunctionCall(argumentNode, symbolsTable, initialChild+4);
-                            
                             
                             /*this.semanticError.printError(nextNode,"Function not declared on class.");
                             return null;*/
@@ -1084,27 +1082,54 @@ public class TableGenerator {
         return null;
     }
 
-    /*private boolean inspectFunctionOnClass(SimpleNode functionNode, Descriptor descriptor) {
+    /*private boolean inspectFunctionOnClass(SimpleNode node, Descriptor descriptor, SymbolsTable symbolsTable, int initialChild) {
         if (descriptor.getClass() == ClassDescriptor.class) {
-            return isInClass(functionNode, (ClassDescriptor)descriptor);
+            return isInClass(node, (ClassDescriptor)descriptor, initialChild);
         }
         if (descriptor.getClass() == ImportDescriptor.class) {
-
+            return isInImport(node, (ImportDescriptor)descriptor, initialChild);
         }
         return false;
     }
 
-    private boolean isInClass(SimpleNode functionNode, ClassDescriptor classDescriptor) {
+    private boolean isInClass(SimpleNode node, ClassDescriptor classDescriptor, SymbolsTable symbolsTable, int initialChild) {
         SymbolsTable functionsTable = classDescriptor.getFunctionsTable();
-        if (functionsTable.getDescriptor(functionNode.jjtGetVal()) == null)
+
+        SimpleNode functionNode = (SimpleNode)node.jjtGetChild(initialChild);
+        List<Descriptor> functionDescriptors = functionsTable.getDescriptor(functionNode.jjtGetVal());
+        if (functionDescriptors == null)
             return false;
+
+        List<String> parametersTypes = new ArrayList<>();
+        for (int i = initialChild; i < node.jjtGetNumChildren(); i++) {
+            SimpleNode child = node.jjtGetChild(i);
+            if (child.getId() == JavammTreeConstants.JJTARGUMENTS) {
+                parametersTypes = inspectArguments(child, symbolsTable);
+                break;
+            }
+        }
+        
+        for (int i = 0; i < functionDescriptors.size(); i++) {
+            FunctionDescriptor functionDescriptor = (FunctionDescriptor) functionDescriptors.get(i);
+            SymbolsTable parametersTable = functionDescriptor.getParametersTable().getTable();
+            //TODO comparar com os tipos necessarios
+        }
 
         return true;
     }
 
-    private boolean isInImport(SimpleNode functionNode, ImportDescriptor importDescriptor) {
-        
+    private boolean isInImport(SimpleNode node, ImportDescriptor importDescriptor, int initialChild) {
+        ArrayList<String> identifiers = importDescriptor.getIdentifiers();
+        SimpleNode functionNode = (SimpleNode)node.jjtGetChild(initialChild);
 
-        return true;
+        for (int i = 0; i < identifiers.size(); i++) {
+            if (identifiers.get(i) == functionNode.jjtGetVal())
+                return true;
+        }
+
+        //TODO fazer o mesmo aqui mas para import
+
+        return false;
     }*/
+
 }
