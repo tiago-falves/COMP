@@ -769,7 +769,6 @@ public class TableGenerator {
                 // Adding boolean to the LLIR Assignment node, if applicable
                 if (this.currentLLIRNode instanceof LLIRAssignment) {
                     LLIRAssignment llir = (LLIRAssignment) this.currentLLIRNode;
-
                     llir.setExpression(new llir.LLIRBoolean(false));
                 }
                 return "boolean";
@@ -811,8 +810,17 @@ public class TableGenerator {
         return null;
     }
 
+
+    //If it is an operation Right?
     private String inspectExpressionComplex(SimpleNode argumentNode, SymbolsTable symbolsTable, int initialChild) throws SemanticErrorException {
+
         String type = null;
+
+
+        LLIRArithmetic arithmetic = new LLIRArithmetic();
+
+        boolean foundOperator = false;
+
 
         for(int i = initialChild; i < argumentNode.jjtGetNumChildren(); i++){
             SimpleNode node = (SimpleNode) argumentNode.jjtGetChild(i);
@@ -826,15 +834,31 @@ public class TableGenerator {
                         this.semanticError.printError(node, "INT IS INCOMPATIBLE WITH " + type);
                         return null;
                     }
+
+                    if(this.currentLLIRNode instanceof LLIRArithmetic) {
+
+                       arithmetic.setExpression(new llir.LLIRInteger(Integer.parseInt(node.jjtGetVal())),foundOperator);
+                    }
+
                     break;
                 }
-                case JavammTreeConstants.JJTTRUE: 
+                case JavammTreeConstants.JJTTRUE: {
+                    // Adding boolean to the LLIR Assignment node, if applicable
+                    if (this.currentLLIRNode instanceof LLIRAssignment) {
+                        arithmetic.setExpression(new llir.LLIRBoolean(true),foundOperator);
+                    }
+
+                }
                 case JavammTreeConstants.JJTFALSE: {
                     if(type == null){
                         type = "boolean";
                     } else if(!type.equals("boolean")){
                         this.semanticError.printError(node, "BOOLEAN IS INCOMPATIBLE WITH " + type);
                         return null;
+                    }
+
+                    if (this.currentLLIRNode instanceof LLIRAssignment) {
+                        arithmetic.setExpression(new llir.LLIRBoolean(false),foundOperator);
                     }
 
                     break;
@@ -1027,6 +1051,9 @@ public class TableGenerator {
                     if(!type.equals("int")){
                         this.semanticError.printError(node, "OPERATIONS ARE INCOMPATIBLE WITH " + type);
                         return null;
+                    }
+                    if (this.currentLLIRNode instanceof LLIRAssignment) {
+                        arithmetic.setExpression(new llir.LLIRBoolean(true),foundOperator);
                     }
                     break;
                 }
