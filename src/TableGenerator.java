@@ -830,10 +830,10 @@ public class TableGenerator {
                     return null;
                 }
 
-                if(descriptors.size() > 1){
+              /*  if(descriptors.size() > 1){
                     this.semanticError.printError(node, "Argument " + node.jjtGetVal() + " is defined more than once");
                     return null;
-                }
+                }*/
                 TypeDescriptor descriptor = (TypeDescriptor) descriptors.get(0);
                 
                 Type type = descriptor.getType();
@@ -967,10 +967,10 @@ public class TableGenerator {
                     if(descriptors == null ){
                         this.semanticError.printError(node, "Argument " + node.jjtGetVal() + " is not defined");
                         return null;
-                    }else if(descriptors.size() > 1){
+                    }/*else if(descriptors.size() > 1){
                         this.semanticError.printError(node, "Argument " + node.jjtGetVal() + " is defined more than once");
                         return null;
-                    }
+                    }*/ 
                     TypeDescriptor descriptor = (TypeDescriptor) descriptors.get(0);
                     
                     Type descriptorType = descriptor.getType();
