@@ -10,6 +10,7 @@ public class TableGenerator {
     SymbolsTable symbolsTable;
     SemanticError semanticError;
     FunctionDescriptor currentFunctionDescriptor;
+    LLIRPopulator llirPopulator;
     LLIRNode currentLLIRNode;
     LLIRMethodCall currentMethodCall;
     private String className;
@@ -19,7 +20,7 @@ public class TableGenerator {
         this.symbolsTable = new SymbolsTable();
         this.semanticError = new SemanticError();
         this.currentMethodCall= new LLIRMethodCall();
-
+        this.llirPopulator = new LLIRPopulator();
         this.className = null;
     }
 
@@ -430,7 +431,7 @@ public class TableGenerator {
             }
 
             // Add a new LLIR Node (Assignment) to the function
-            this.currentLLIRNode = new LLIRAssignment();
+            this.llirPopulator.addAssignment(new LLIRAssignment());
 
             inspectAssignment(statementNode, symbolTable, typeString);
 
@@ -438,13 +439,15 @@ public class TableGenerator {
                 VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
                 variableDescriptor.setInitialized();
 
+                this.llirPopulator.setAssignmentVariable(new LLIRVariable(variableDescriptor));
+
                 // Sets the variable of the assignment
-                LLIRAssignment llir = (LLIRAssignment) this.currentLLIRNode;
-                LLIRVariable variable = new LLIRVariable(variableDescriptor);
-                llir.setVariable(variable);
+                //LLIRAssignment llir = (LLIRAssignment) this.currentLLIRNode;
+                //LLIRVariable variable = new LLIRVariable(variableDescriptor);
+                //llir.setVariable(variable);
             }
 
-            this.currentFunctionDescriptor.addLLIRNode(this.currentLLIRNode);
+            this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
 
         }
         else if(secondChild.getId() == JavammTreeConstants.JJTARRAY) {
@@ -752,20 +755,21 @@ public class TableGenerator {
             //When we are sure it is a function
             else if(descriptorsList.get(i).getClass() == FunctionDescriptor.class){
                 //Define MethodCall
-                LLIRMethodCall llirMethodCall = new LLIRMethodCall();
 
-                llirMethodCall.setParametersExpressions(this.currentMethodCall.getParametersExpressions());
+                //LLIRMethodCall llirMethodCall = new LLIRMethodCall();
+
+                //llirMethodCall.setParametersExpressions(this.currentMethodCall.getParametersExpressions());
 
 
 
                 FunctionDescriptor functionDescriptor = (FunctionDescriptor) descriptorsList.get(i);
                 //LLIR Set Functions name
-                llirMethodCall.setMethodName(functionDescriptor.getName());
+                //llirMethodCall.setMethodName(functionDescriptor.getName());
 
                 SymbolsTable parametersTable = functionDescriptor.getParametersTable();
 
                 //LLIR Set Functions parametersTable
-                llirMethodCall.setParametersTable(parametersTable);
+                //llirMethodCall.setParametersTable(parametersTable);
 
                 HashMap<String, List<Descriptor>> functionParameters = parametersTable.getTable();
 
@@ -812,11 +816,11 @@ public class TableGenerator {
                 Type functionType = functionDescriptor.getType();
 
                 //Set LLIR Return Type
-                llirMethodCall.setReturnType(functionType);
+                //llirMethodCall.setReturnType(functionType);
 
-                if(this.currentLLIRNode instanceof LLIRAssignment){
+                /*if(this.currentLLIRNode instanceof LLIRAssignment){
                     ((LLIRAssignment) this.currentLLIRNode).setExpression(llirMethodCall);
-                }
+                }*/
 
                 if(functionType == Type.CLASS)
                     return functionDescriptor.getClassName();
@@ -872,14 +876,16 @@ public class TableGenerator {
             case JavammTreeConstants.JJTINTEGERLITERAL: {
 
                 // Adding integer to the LLIR Assignment node, if applicable
-                if(this.currentLLIRNode instanceof LLIRAssignment) {
+                /*if(this.currentLLIRNode instanceof LLIRAssignment) {
                     LLIRAssignment llir = (LLIRAssignment) this.currentLLIRNode;
                     llir.setExpression(new llir.LLIRInteger(Integer.parseInt( node.jjtGetVal() )));
 
                     if (this.currentMethodCall.getParametersExpressions() != null){
                         this.currentMethodCall.getParametersExpressions().add(new llir.LLIRInteger(Integer.parseInt(node.jjtGetVal())));
                     }
-                }
+                }*/
+                LLIRInteger llirInteger = new LLIRInteger(Integer.parseInt( node.jjtGetVal()));
+                this.llirPopulator.addInteger(llirInteger);
 
                 return "int";
             }
@@ -887,27 +893,31 @@ public class TableGenerator {
             case JavammTreeConstants.JJTTRUE:
             {
                 // Adding boolean to the LLIR Assignment node, if applicable
-                if (this.currentLLIRNode instanceof LLIRAssignment) {
+                /*if (this.currentLLIRNode instanceof LLIRAssignment) {
                     LLIRAssignment llir = (LLIRAssignment) this.currentLLIRNode;
                     llir.setExpression(new llir.LLIRBoolean(true));
 
                     if (this.currentMethodCall.getParametersExpressions() != null){
                         this.currentMethodCall.getParametersExpressions().add(new llir.LLIRBoolean(true));
                     }
-                }
+                }*/
+
+                this.llirPopulator.addExpression(new llir.LLIRBoolean(true));
                 return "boolean";
 
             }
             case JavammTreeConstants.JJTFALSE: {
                 // Adding boolean to the LLIR Assignment node, if applicable
-                if (this.currentLLIRNode instanceof LLIRAssignment) {
+                /*if (this.currentLLIRNode instanceof LLIRAssignment) {
                     LLIRAssignment llir = (LLIRAssignment) this.currentLLIRNode;
                     llir.setExpression(new llir.LLIRBoolean(false));
 
                     if (this.currentMethodCall.getParametersExpressions() != null){
                         this.currentMethodCall.getParametersExpressions().add(new llir.LLIRBoolean(false));
                     }
-                }
+                }*/
+                this.llirPopulator.addExpression(new llir.LLIRBoolean(false));
+
                 return "boolean";
             }
             case JavammTreeConstants.JJTIDENTIFIER: {
@@ -934,16 +944,18 @@ public class TableGenerator {
                         this.semanticError.printError(node, "Variable " + node.jjtGetVal() + " is not initialized");
                     }
                     //Variable is defined here?
-                    if (this.currentLLIRNode instanceof LLIRAssignment) {
+                    /*if (this.currentLLIRNode instanceof LLIRAssignment) {
                         LLIRAssignment llir = (LLIRAssignment) this.currentLLIRNode;
                         llir.setExpression(new llir.LLIRVariable(variableDescriptor));
 
                         if (this.currentMethodCall.getParametersExpressions() != null){
                             this.currentMethodCall.getParametersExpressions().add(new llir.LLIRVariable(variableDescriptor));
                         }
-                    }
-                }
+                    }*/
 
+                    this.llirPopulator.addExpression(new LLIRVariable(variableDescriptor));
+
+                }
 
                 return (new StringType(type)).getString();
             }
