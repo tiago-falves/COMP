@@ -502,7 +502,15 @@ public class TableGenerator {
         }
         else{
             //Function call
+            this.llirPopulator.addMethodCall(new LLIRMethodCall());
             inspectFunctionCall(statementNode, symbolTable);
+            llirPopulator.printStack();
+            //If empty add tu function Descriptor
+            if (llirPopulator.getLlirStack().size() == 1){
+                System.out.println("entrei aqui");
+                this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
+            }
+
         }
     }
 
@@ -696,9 +704,9 @@ public class TableGenerator {
         //Set here function parameters
 
 
+
         List<String> parameters = inspectArguments(argumentsNode, symbolsTable);
 
-       //System.out.println("ZAAAAAAS\n\n\n\n" +this.currentMethodCall.getParametersExpressions().size());
 
 
 
@@ -754,20 +762,25 @@ public class TableGenerator {
             else if(descriptorsList.get(i).getClass() == FunctionDescriptor.class){
                 //Define MethodCall
 
-                //LLIRMethodCall llirMethodCall = new LLIRMethodCall();
 
                 //llirMethodCall.setParametersExpressions(this.currentMethodCall.getParametersExpressions());
 
 
 
                 FunctionDescriptor functionDescriptor = (FunctionDescriptor) descriptorsList.get(i);
-                //LLIR Set Functions name
-                //llirMethodCall.setMethodName(functionDescriptor.getName());
 
                 SymbolsTable parametersTable = functionDescriptor.getParametersTable();
 
-                //LLIR Set Functions parametersTable
-                //llirMethodCall.setParametersTable(parametersTable);
+
+                if(this.llirPopulator.lastIsFunctionCall()){
+                    LLIRMethodCall methodCall= ((LLIRMethodCall) this.llirPopulator.getLlirStack().peek());
+                    methodCall.setMethodName(functionDescriptor.getName());
+                    methodCall.setParametersTable(parametersTable);
+                    //Falta adicionar as parameters expressions
+
+                }
+
+
 
                 HashMap<String, List<Descriptor>> functionParameters = parametersTable.getTable();
 
@@ -987,7 +1000,6 @@ public class TableGenerator {
                     }
                     //ARITHMETIC
                     this.llirPopulator.addExpression(new llir.LLIRInteger(Integer.parseInt(node.jjtGetVal())));
-                    //arithmetics.get(arithmetics.size()-1).setExpression(new llir.LLIRInteger(Integer.parseInt(node.jjtGetVal())));
 
                     break;
                 }
@@ -1013,7 +1025,10 @@ public class TableGenerator {
                     break;
                 }
                 case JavammTreeConstants.JJTTHIS: {
-                    this.currentMethodCall.initializeParametersExpression();
+                    /*System.out.println("\n\n\n\nCheguei aqui right");
+                    this.llirPopulator.addMethodCall(new LLIRMethodCall());
+                    this.llirPopulator.printStack();*/
+
                     String functionType = inspectFunctionCall(argumentNode, symbolsTable, i+2);
                     if(type == null){
                         type = functionType;
@@ -1022,6 +1037,7 @@ public class TableGenerator {
                         return null;
                     }
                     i += 3;
+
 
                     //arithmetics.get(arithmetics.size()-1).setExpression(this.currentMethodCall);
                     //this.currentMethodCall.setParametersExpressions(null);

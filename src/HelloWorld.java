@@ -17,6 +17,7 @@ class HelloWorld {
         int c;
         b =5;
 
+        this.zos();
         c = b*15 + 30;
 
         return 5;

@@ -28,6 +28,7 @@ public class LLIRMethodCall extends LLIRExpression {
         this.isStatic = isStatic;
     }
     public LLIRMethodCall(){
+        parametersExpressions = new ArrayList<>();
 
     }
 
@@ -91,10 +92,6 @@ public class LLIRMethodCall extends LLIRExpression {
 
     public void setParametersExpressions(List<LLIRExpression> parametersExpressions) {
         this.parametersExpressions = parametersExpressions;
-    }
-
-    public void initializeParametersExpression(){
-        this.parametersExpressions = new ArrayList<>();
     }
 
     public void setMethodName(String methodName) {

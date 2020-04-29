@@ -70,11 +70,20 @@ public class LLIRPopulator {
         }
     }
 
+    public void popMethodCall(){
+
+    }
+
+    public boolean lastIsFunctionCall(){
+        if (llirStack.isEmpty()) return false;
+        if(this.llirStack.peek() instanceof LLIRMethodCall) return true;
+        return false;
+    }
+
     public void addArithmetic(LLIRArithmetic arithmetic){
 
         if(this.llirStack.peek() instanceof LLIRExpression){
             arithmetic.setLeftExpression((LLIRExpression) this.llirStack.pop());
-            System.out.println("Setted LEft expression\n");
         }
         this.llirStack.push(arithmetic);
     }
