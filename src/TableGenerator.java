@@ -12,6 +12,7 @@ public class TableGenerator {
     FunctionDescriptor currentFunctionDescriptor;
     LLIRNode currentLLIRNode;
     LLIRMethodCall currentMethodCall;
+    private String className;
 
     public TableGenerator(SimpleNode rootNode) {
         this.rootNode = rootNode;
@@ -19,6 +20,7 @@ public class TableGenerator {
         this.semanticError = new SemanticError();
         this.currentMethodCall= new LLIRMethodCall();
 
+        this.className = null;
     }
 
     public SymbolsTable getTable() {
@@ -98,16 +100,17 @@ public class TableGenerator {
         ClassDescriptor classDescriptor = new ClassDescriptor();
         
         SimpleNode childNode = (SimpleNode) classNode.jjtGetChild(0);
-        classDescriptor.setName(childNode.jjtGetVal());
+        this.className = childNode.jjtGetVal();
+        classDescriptor.setName(this.className);
         this.symbolsTable.addSymbol(classDescriptor.getName(), classDescriptor, false);
 
         SymbolsTable classVariablesTable = classDescriptor.getVariablesTable();
         classVariablesTable.setParent(this.symbolsTable);
 
-        List<SimpleNode> simpleNodes = new ArrayList<>();
+        List<SimpleNode> functionsNodes = new ArrayList<>();
+        List<SimpleNode> variablesNodes = new ArrayList<>();
         List<FunctionDescriptor> functions = new ArrayList<>(); 
-
-
+        List<VariableDescriptor> variables = new ArrayList<>();
 
         // Collect attributes and methods access, return type and name 
         for (int i = 0; i < classNode.jjtGetNumChildren(); i++) {
@@ -115,23 +118,74 @@ public class TableGenerator {
             if (child.getId() == JavammTreeConstants.JJTVARIABLEDECLARATION) {
                 VariableDescriptor variableDescriptor = inspectVariable(child);
                 classDescriptor.addVariable(variableDescriptor);
+                variables.add(variableDescriptor);
+                variablesNodes.add(child);
             }
             else if (child.getId() == JavammTreeConstants.JJTMETHODDECLARATION) {
                 FunctionDescriptor functionDescriptor = inspectFunctionHeader(child);
                 functionDescriptor.getParametersTable().setParent(classDescriptor.getFunctionsTable());
                 classDescriptor.addFunction(functionDescriptor.getName(),functionDescriptor);
-                simpleNodes.add(child);
+                functionsNodes.add(child);
                 functions.add(functionDescriptor);
             }
             else if (child.getId() == JavammTreeConstants.JJTEXTENDS) {
-                classDescriptor.setParentClass(((SimpleNode) (classNode.jjtGetChild(i+1))).jjtGetVal());
+                String parentClassName = ((SimpleNode) (classNode.jjtGetChild(i+1))).jjtGetVal();
+                classDescriptor.setParentClass(parentClassName);
+                extendClass(classDescriptor);
             }
 
         }
 
-        for(int i = 0; i < simpleNodes.size(); i++){
-            inspectFunctionBody(simpleNodes.get(i), functions.get(i));
+        SymbolsTable symbolsTable = classDescriptor.getVariablesTable();
+        for(int i = 0; i < variablesNodes.size(); i++){
+            inspectVariableType(variablesNodes.get(i), symbolsTable, variables.get(i));
         } 
+
+        for(int i = 0; i < functionsNodes.size(); i++){
+            inspectFunctionBody(functionsNodes.get(i), functions.get(i));
+        } 
+    }
+
+    private void extendClass(ClassDescriptor classDescriptor){
+        // Get imported methods from the extedended class
+        LinkedHashMap<String, List<Descriptor>> importsTable = this.symbolsTable.getTable();
+        for(HashMap.Entry<String, List<Descriptor>> imports : importsTable.entrySet()){
+            for(int j = 0; j < imports.getValue().size(); j++){
+                Descriptor descriptor = imports.getValue().get(j);
+                
+                // Found an import descriptor
+                if(descriptor.getClass() == ImportDescriptor.class){
+                    ImportDescriptor importDescriptor = (ImportDescriptor) descriptor;
+                    ArrayList<String> identifiers = importDescriptor.getIdentifiers();
+                    
+                    // Found method from the extended class
+                    if(identifiers.size() > 1 && identifiers.get(0).equals(classDescriptor.getParentClass())){
+                        FunctionDescriptor functionDescriptor = new FunctionDescriptor();
+
+                        // Set function name
+                        functionDescriptor.setName(identifiers.get(identifiers.size()-1));
+                        
+                        // Make function static
+                        if(importDescriptor.isStatic()){
+                            functionDescriptor.makeStatic();
+                        }
+
+
+                        // Add function return
+                        StringType returnType = new StringType(importDescriptor.getReturn());
+                        functionDescriptor.setReturnValue(returnType.getString());
+
+                        // Add function parameters
+                        ArrayList<Type> parameters = importDescriptor.getParameters();
+                        for(int k = 0; k < parameters.size(); k++){
+                            functionDescriptor.addParameter(new FunctionParameterDescriptor(new String(new char[1]).replace('\0', (char)('a'+k)), parameters.get(k)));
+                        }
+
+                        classDescriptor.addFunction(functionDescriptor.getName(), functionDescriptor);
+                    }
+                }
+            }
+        }
     }
 
     public VariableDescriptor inspectVariable(SimpleNode variableNode) throws SemanticErrorException {
@@ -143,6 +197,8 @@ public class TableGenerator {
             if (child.getId() == JavammTreeConstants.JJTTYPE) {
                 TypeString typeString = new TypeString(child.jjtGetVal());
                 variableDescriptor.setType(typeString.parseType());
+                if (typeString.parseType() == Type.CLASS)
+                    variableDescriptor.setClassName(child.jjtGetVal());
             }else if(child.getId() == JavammTreeConstants.JJTCLASSTYPE){
                 variableDescriptor.setType(Type.CLASS);
                 variableDescriptor.setClassName(child.jjtGetVal());
@@ -153,6 +209,17 @@ public class TableGenerator {
         }
 
         return variableDescriptor;
+    }
+
+    public void inspectVariableType(SimpleNode varNode, SymbolsTable symbolsTable, VariableDescriptor variableDescriptor) throws SemanticErrorException {
+        if (variableDescriptor.getType() == Type.CLASS) {
+            String className = variableDescriptor.getClassName();
+
+            List<Descriptor> descriptors = symbolsTable.getDescriptor(className);
+            if (descriptors == null) {
+                this.semanticError.printError(varNode, "Wrong type in variable declaration.");
+            }
+        }
     }
 
     public FunctionDescriptor inspectFunctionHeader(SimpleNode functionNode) throws SemanticErrorException {
@@ -302,6 +369,7 @@ public class TableGenerator {
         if (variableAndStatementNode.getId() == JavammTreeConstants.JJTVARIABLEDECLARATION) {
             VariableDescriptor variableDescriptor = inspectVariable(variableAndStatementNode);
             functionDescriptor.addBodyVariable(variableDescriptor.getName(),variableDescriptor);
+            inspectVariableType(variableAndStatementNode, functionDescriptor.getBodyTable(), variableDescriptor);
         } else if (variableAndStatementNode.getId() == JavammTreeConstants.JJTLINESTATEMENT ){
             inspectLineStatement(variableAndStatementNode, functionDescriptor.getBodyTable());
         } else if(variableAndStatementNode.getId() == JavammTreeConstants.JJTWHILESTATEMENT){
@@ -475,7 +543,6 @@ public class TableGenerator {
     }
 
     public void inspectIfStatement(SimpleNode ifNode, SymbolsTable statementParentTable) throws SemanticErrorException {
-        //TODO CHECK this
         if(ifNode.jjtGetNumChildren() == 0){
             this.semanticError.printError(ifNode, "If needs to have an expression.");
             return;
@@ -570,6 +637,23 @@ public class TableGenerator {
         }
     }
     
+    private String checkFunctionCallVariableType(String identifierName, SimpleNode statementNode, SymbolsTable symbolsTable, int initialChild)  throws SemanticErrorException {
+        List<Descriptor> nodeDescriptors = symbolsTable.getDescriptor(identifierName);
+        if(nodeDescriptors != null){
+            for(int i = initialChild; i < nodeDescriptors.size(); i++){
+                if(nodeDescriptors.get(i).getClass() == VariableDescriptor.class || nodeDescriptors.get(i).getClass() == FunctionParameterDescriptor.class){
+                    TypeDescriptor typeDescriptor = (TypeDescriptor) nodeDescriptors.get(i);
+                    if(typeDescriptor.getType() != Type.CLASS){
+                        this.semanticError.printError(statementNode, "Can only call functions from classes");
+                        return null;
+                    }
+                    return typeDescriptor.getClassName();
+                }
+            }
+        }
+        return identifierName;
+    }
+
     private String inspectFunctionCall(SimpleNode statementNode, SymbolsTable symbolsTable) throws SemanticErrorException {
         return inspectFunctionCall(statementNode, symbolsTable, 0);
     }
@@ -580,14 +664,19 @@ public class TableGenerator {
         List<String> identifiers = new ArrayList<>(); 
         SimpleNode node = (SimpleNode) statementNode.jjtGetChild(initialChild);
 
-        identifiers.add(node.jjtGetVal()); 
-
         SimpleNode child = (SimpleNode) statementNode.jjtGetChild(initialChild+1);
         int nextChild = initialChild+1;
         if(child.getId() == JavammTreeConstants.JJTDOT){
+            String identifierName = checkFunctionCallVariableType(node.jjtGetVal(), statementNode, symbolsTable, initialChild);
+            
+            if(!this.className.equals(identifierName)){
+                identifiers.add(identifierName); 
+            }
             node = (SimpleNode) statementNode.jjtGetChild(initialChild+2);
             identifiers.add(node.jjtGetVal()); 
             nextChild = initialChild+3;
+        }else{
+            identifiers.add(node.jjtGetVal());
         }
 
         SimpleNode argumentsNode = (SimpleNode) statementNode.jjtGetChild(nextChild);
@@ -602,7 +691,7 @@ public class TableGenerator {
 
         List<String> parameters = inspectArguments(argumentsNode, symbolsTable);
 
-        System.out.println("ZAAAAAAS\n\n\n\n" +this.currentMethodCall.getParametersExpressions().size());
+       //System.out.println("ZAAAAAAS\n\n\n\n" +this.currentMethodCall.getParametersExpressions().size());
 
 
 
@@ -683,6 +772,7 @@ public class TableGenerator {
                 }
 
                 int j = 0;
+
                 for(HashMap.Entry<String, List<Descriptor>> functionParametersEntry : functionParameters.entrySet()){
                     List<Descriptor> descList = functionParametersEntry.getValue();
                     
@@ -1076,6 +1166,24 @@ public class TableGenerator {
 
                         return "int[]";
                     }
+                    else if (initialChild+3 < argumentNode.jjtGetNumChildren()) {
+                        if (argumentNode.jjtGetChild(initialChild+3).getId() == JavammTreeConstants.JJTDOT) {
+                            String classType = inspectClassInstantiation(argumentNode, symbolsTable, initialChild);
+                            if (classType == null) {
+                                this.semanticError.printError(nextNode,"Undefined class type");
+                                return null;
+                            }
+
+                            //TODO verify if function is declared on the class or in imports
+                            Descriptor descriptor = symbolsTable.getDescriptor(classType).get(0);
+                            
+                            if (inspectFunctionOnClass(argumentNode, descriptor, symbolsTable, initialChild+4))
+                                return inspectFunctionCall(argumentNode, symbolsTable, initialChild+4);
+                            
+                            this.semanticError.printError(nextNode,"Function not declared on class.");
+                            return null;
+                        }
+                    }
                     return inspectClassInstantiation(argumentNode, symbolsTable, initialChild);
                 }
                 //TODO Check this  
@@ -1180,7 +1288,7 @@ public class TableGenerator {
 
     private String inspectClassInstantiation(SimpleNode node, SymbolsTable symbolsTable, int newPosition) throws SemanticErrorException {
         SimpleNode classIdentifierNode = (SimpleNode) node.jjtGetChild(newPosition+1);
-                        
+                      
         // Get all the Class constructors
         List<Descriptor> descriptorsList = symbolsTable.getDescriptor(classIdentifierNode.jjtGetVal());  
         SimpleNode argumentsNode = (SimpleNode) node.jjtGetChild(newPosition+2);
@@ -1197,12 +1305,13 @@ public class TableGenerator {
         for(int i = 0; i < descriptorsList.size(); i++){
             Descriptor descriptor = descriptorsList.get(i);
             if(descriptor.getClass() == ImportDescriptor.class){
+
                 ImportDescriptor importDescriptor = (ImportDescriptor) descriptor;
                 if(importDescriptor.getIdentifiers().size() != 1)
                     continue;
                 
                 List<Type> importParameters = importDescriptor.getParameters();
-                if(importParameters.size() != parameters.size())
+                if(importParameters.size() != parameters.size()) 
                     continue;
                 
                 for(int j = 0; j < importParameters.size(); j++){
@@ -1212,6 +1321,8 @@ public class TableGenerator {
                         return null;
                     }
                 } 
+
+                return classIdentifierNode.jjtGetVal();
                 
             }else if(descriptor.getClass() == FunctionDescriptor.class){
                 FunctionDescriptor functionDescriptor = (FunctionDescriptor) descriptor;
@@ -1248,4 +1359,65 @@ public class TableGenerator {
         this.semanticError.printError(classIdentifierNode, "Class " + classIdentifierNode.jjtGetVal() + " doesn't exist");
         return null;
     }
+
+    private boolean inspectFunctionOnClass(SimpleNode node, Descriptor descriptor, SymbolsTable symbolsTable, int initialChild) throws SemanticErrorException {
+        if (descriptor.getClass() == ClassDescriptor.class) {
+            return isInClass(node, (ClassDescriptor)descriptor, symbolsTable, initialChild);
+        }
+        if (descriptor.getClass() == ImportDescriptor.class) {
+            return isInImport(node, (ImportDescriptor)descriptor, symbolsTable, initialChild);
+        }
+        return false;
+    }
+
+    private boolean isInClass(SimpleNode node, ClassDescriptor classDescriptor, SymbolsTable symbolsTable, int initialChild) throws SemanticErrorException {
+        SymbolsTable functionsTable = classDescriptor.getFunctionsTable();
+
+        SimpleNode functionNode = (SimpleNode)node.jjtGetChild(initialChild);
+        List<Descriptor> functionDescriptors = functionsTable.getDescriptor(functionNode.jjtGetVal());
+        if (functionDescriptors == null)
+            return false;
+
+        List<String> parametersTypes = new ArrayList<>();
+        for (int i = initialChild; i < node.jjtGetNumChildren(); i++) {
+            SimpleNode child = (SimpleNode)node.jjtGetChild(i);
+            if (child.getId() == JavammTreeConstants.JJTARGUMENTS) {
+                parametersTypes = inspectArguments(child, symbolsTable);
+                break;
+            }
+        }
+        
+        for (int i = 0; i < functionDescriptors.size(); i++) {
+            FunctionDescriptor functionDescriptor = (FunctionDescriptor) functionDescriptors.get(i);
+            HashMap<String, List<Descriptor>> parametersTable = functionDescriptor.getParametersTable().getTable();
+            
+            int j = 0;
+            for(HashMap.Entry<String, List<Descriptor>> parameters : parametersTable.entrySet()){
+                Descriptor desc = parameters.getValue().get(0);
+                StringType strType = new StringType(((FunctionParameterDescriptor)desc).getType());
+                if (strType.getString() == parametersTypes.get(j)) {
+                    j++;
+                    if (j == parametersTypes.size())
+                        return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isInImport(SimpleNode node, ImportDescriptor importDescriptor, SymbolsTable symbolsTable, int initialChild) {
+        ArrayList<String> identifiers = importDescriptor.getIdentifiers();
+        SimpleNode functionNode = (SimpleNode)node.jjtGetChild(initialChild);
+
+        for (int i = 0; i < identifiers.size(); i++) {
+            if (identifiers.get(i) == functionNode.jjtGetVal())
+                return true;
+        }
+
+        //TODO fazer o mesmo aqui mas para import
+
+        return false;
+    }
+
 }

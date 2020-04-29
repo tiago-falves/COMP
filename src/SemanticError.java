@@ -18,7 +18,7 @@ public class SemanticError {
         System.err.println("ERROR: " + message);
         
         if(numErrors >= maxNumErrors)
-            throw new SemanticErrorException();
+            throw new SemanticErrorException("Reached maximum number of semantic errors");
     }
 
     public int getNumErrors() {

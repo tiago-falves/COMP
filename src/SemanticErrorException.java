@@ -1,5 +1,10 @@
 public class SemanticErrorException extends Exception {
+    
     public SemanticErrorException(){
-        super("Reached maximum number of semantic errors");
+        super("Compilation failed due to semantic errors");
+    }
+
+    public SemanticErrorException(String message){
+        super(message);
     } 
 }
