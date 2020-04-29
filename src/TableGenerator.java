@@ -518,7 +518,10 @@ public class TableGenerator {
         }
 
         String expressionType = inspectExpression(whileExpression, statementParentTable); //TODO Store this expression in the block descriptor
-        if(!expressionType.equals("boolean")){
+        if(expressionType == null){
+            this.semanticError.printError(whileExpression, "Can't process while statement due to invalid expression");
+            return;
+        }else if(!expressionType.equals("boolean")){
             this.semanticError.printError(whileExpression, "While expression must evaluate to a boolean");
             return;
         }
@@ -555,7 +558,10 @@ public class TableGenerator {
         }
 
         String expressionType = inspectExpression(ifExpression, statementParentTable); //TODO Store this expression in the block descriptor
-        if(!expressionType.equals("boolean")){
+        if(expressionType == null){
+            this.semanticError.printError(ifExpression, "Can't process if statement due to invalid expression");
+            return;
+        } else if(!expressionType.equals("boolean")){
             this.semanticError.printError(ifExpression, "If expression must evaluate to a boolean");
             return;
         }
