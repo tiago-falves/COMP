@@ -17,4 +17,6 @@ public enum ArithmeticOperation {
     public String getOperation() {
         return  this.operation;
     }
+
+
 };

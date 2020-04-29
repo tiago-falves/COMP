@@ -13,4 +13,6 @@ public class LLIRBoolean extends LLIRExpression {
     public boolean getValue() {
         return value;
     }
+
+
 }

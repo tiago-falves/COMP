@@ -13,4 +13,6 @@ public class LLIRNegation extends LLIRExpression {
     public LLIRExpression getExpression() {
         return expression;
     }
+
+
 }

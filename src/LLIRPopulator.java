@@ -39,14 +39,19 @@ public class LLIRPopulator {
 
     //Simple Expression
     public void addExpression(LLIRExpression expression){
-        if (llirStack.peek() instanceof LLIRAssignment){
-            LLIRAssignment assignment = (LLIRAssignment) llirStack.peek();
-            assignment.setExpression(expression);
+
+        this.llirStack.push(expression);
+
+        /*if (llirStack.peek() instanceof LLIRAssignment){
+
+            this.llirStack.push(expression);
+            //LLIRAssignment assignment = (LLIRAssignment) llirStack.peek();
+            //assignment.setExpression(expression);
         }
         if (llirStack.peek() instanceof LLIRArithmetic){
-            LLIRArithmetic assignment = (LLIRArithmetic) llirStack.peek();
-            assignment.setExpression(expression);
-        }
+            LLIRArithmetic arithmetic = (LLIRArithmetic) llirStack.peek();
+            arithmetic.setExpression(expression);
+        }*/
     }
 
     public void setAssignmentVariable(LLIRVariable variable){
@@ -60,12 +65,118 @@ public class LLIRPopulator {
         //If empty then simpleFunctionCall
         if (this.llirStack.empty()){
             this.llirStack.add(methodCall);
+        }else {
+            addExpression(methodCall);
         }
     }
 
     public void addArithmetic(LLIRArithmetic arithmetic){
+
+        if(this.llirStack.peek() instanceof LLIRExpression){
+            arithmetic.setLeftExpression((LLIRExpression) this.llirStack.pop());
+            System.out.println("Setted LEft expression\n");
+        }
         this.llirStack.push(arithmetic);
     }
+
+    public void popArithmetics(){
+        LLIRNode node = llirStack.pop();
+        if(node instanceof LLIRExpression){
+            if(this.llirStack.peek() instanceof LLIRArithmetic){
+                ((LLIRArithmetic)this.llirStack.peek()).setRightExpression((LLIRExpression) node);
+            }
+        }
+        while (this.llirStack.peek() instanceof LLIRArithmetic){
+            LLIRArithmetic actual = (LLIRArithmetic) this.llirStack.pop();
+
+            if (this.llirStack.peek() instanceof LLIRArithmetic){
+                LLIRArithmetic previous = (LLIRArithmetic) this.llirStack.peek();
+                previous.setRightExpression(actual);
+            }
+            if (this.llirStack.peek() instanceof LLIRAssignment){
+                LLIRAssignment previous = (LLIRAssignment) this.llirStack.peek();
+                previous.setExpression(actual);
+                break;
+            }
+        }
+    }
+    //If the stack has an expression before assignment, set assignment expression
+    public void popBeforeAssignment(){
+        if(this.llirStack.peek() instanceof LLIRExpression) {
+            LLIRExpression node = (LLIRExpression) this.llirStack.pop();
+            if (this.llirStack.peek() instanceof LLIRAssignment) {
+                LLIRAssignment assignment = (LLIRAssignment) this.llirStack.peek();
+                assignment.setExpression(node);
+            }
+        }
+    }
+
+    public boolean lastIsArithmetic(){
+        if (llirStack.peek() instanceof LLIRArithmetic) return true;
+        return false;
+    }
+
+    public boolean lastIsAssignment(){
+        if (llirStack.peek() instanceof LLIRAssignment) return true;
+        return false;
+    }
+    public boolean lastIsLLIRExpression(){
+        if (llirStack.peek() instanceof LLIRExpression) return true;
+        return false;
+    }
+    public boolean shouldAddArithmetic(){
+        if (lastIsArithmetic()){
+            LLIRArithmetic arithmetic = (LLIRArithmetic) this.llirStack.peek();
+            if (arithmetic.foundOperator()) return true;
+        }
+        return false;
+    }
+
+    public void addOperator(int nodeId){
+        if(lastIsArithmetic()) {
+            LLIRArithmetic arithmetic = (LLIRArithmetic) this.llirStack.peek();
+            switch (nodeId) {
+                case JavammTreeConstants.JJTMULT: {
+                    arithmetic.setOperation(ArithmeticOperation.MULTIPLICATION);
+                    break;
+                }
+                case JavammTreeConstants.JJTDIV: {
+                    arithmetic.setOperation(ArithmeticOperation.DIVISION);
+
+                    break;
+                }
+                case JavammTreeConstants.JJTPLUS: {
+                    arithmetic.setOperation(ArithmeticOperation.SUM);
+                    break;
+                }
+                case JavammTreeConstants.JJTMINUS: {
+                    arithmetic.setOperation(ArithmeticOperation.SUBTRACTION);
+                    break;
+                }
+            }
+        }
+    }
+
+    public void printStack(){
+        String stack = "";
+
+        Stack<LLIRNode> copy = (Stack<LLIRNode>) this.llirStack.clone();
+        while (!copy.empty()){
+            LLIRNode node  =copy.pop();
+            if (node instanceof LLIRAssignment){
+                stack += "Assignment\n";
+            }else if(node instanceof LLIRArithmetic){
+                stack += "Arithmetic\n";
+            }else if(node instanceof LLIRExpression){
+                stack += "Expression\n";
+
+            }
+        }
+
+        System.out.println("STACK\n\n" + stack);
+
+    }
+
 
 
 

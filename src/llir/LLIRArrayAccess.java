@@ -22,4 +22,7 @@ public class LLIRArrayAccess extends LLIRExpression {
     public LLIRExpression getArray() {
         return array;
     }
+
+
+
 }
