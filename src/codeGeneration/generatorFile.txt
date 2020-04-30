@@ -27,7 +27,9 @@
 	istore_2
 	new Simple
 	dup
-	invokespecial 	istore_3
+	invokespecial Simple/<init>
+	astore	3
+	istore_4
 .end method
 
 

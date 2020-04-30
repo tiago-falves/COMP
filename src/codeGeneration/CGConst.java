@@ -33,12 +33,13 @@ public class CGConst {
 
         store.put(Type.INT, "\tistore_");
         store.put(Type.BOOLEAN, "\tistore\t");
+        store.put(Type.CLASS, "\tastore\t");
 
         load.put(Type.INT, "\tiload_");
         load.put(Type.BOOLEAN, "\tiload_");
         load.put(Type.STRING_ARRAY, "\taload_");
         load.put(Type.STRING, "\taload_");
-        load.put(Type.CLASS, "\taload_");
+        load.put(Type.CLASS, "\taload\t");
 
     }
 

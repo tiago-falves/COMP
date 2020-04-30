@@ -47,6 +47,7 @@ public class AssignmentWriter {
         else if (expression instanceof LLIRClassVariable) {
             ClassVariableWriter classVariableWriter = new ClassVariableWriter((LLIRClassVariable) expression);
             this.code += classVariableWriter.getCode();
+            type = Type.CLASS;
         }
 
 

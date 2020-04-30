@@ -20,7 +20,7 @@ public class ClassVariableWriter {
 
         this.code += NEW + variable.getClassDescriptor().getName() + "\n";
         this.code += DUP;
-        this.code += INSTRUCTION;
+        this.code += INSTRUCTION + variable.getClassDescriptor().getName() + "/<init>\n";
 
         //this.code += CGConst.load.get(Type.CLASS);
 
