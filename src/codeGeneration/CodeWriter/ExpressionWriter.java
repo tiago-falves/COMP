@@ -20,7 +20,6 @@ public class ExpressionWriter {
             BooleanWriter booleanWriter = new BooleanWriter((LLIRBoolean) expression,name);
             this.code += booleanWriter.getCode();
 
-
         }
         else if(expression instanceof LLIRVariable) {
             VariableWriter variableWriter = new VariableWriter((LLIRVariable) expression);

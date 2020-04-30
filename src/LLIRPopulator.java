@@ -117,7 +117,7 @@ public class LLIRPopulator {
                 previous.setExpression(actual);
                 break;
             }
-            else if (this.llirStack.peek() instanceof LLIRMethodCall){
+            else {
                 this.llirStack.push(actual);
                 break;
             }
@@ -193,6 +193,13 @@ public class LLIRPopulator {
                     break;
                 }
             }
+        }
+    }
+
+    public void addClassInstantiation(LLIRClassVariable variable){
+        if (this.llirStack.peek() instanceof LLIRAssignment){
+            LLIRAssignment assignment = (LLIRAssignment) this.llirStack.peek();
+            assignment.setExpression(variable);
         }
     }
 

@@ -1,4 +1,4 @@
-.class public HelloWorld
+.class public Simple
 .super java/lang/Object
 .method public <init>()V
 	aload_0
@@ -11,28 +11,23 @@
 	.limit locals 
 .end method
 
-.method public zas(I)I
+.method public add(II)I
 	.limit stack 
 	.limit locals 
 .end method
 
-.method public zos()I
+.method public zas()I
 	.limit stack 
 	.limit locals 
-.end method
-
-.method public square(I)I
-	.limit stack 
-	.limit locals 
-	iconst_5
+	bipush	30
+	istore_1
+	iconst_0
+	bipush	10
+	isub
 	istore_2
-	aload_0
-	iconst_5
-	iload_2
-	iconst_4
-	iadd
-	imul
-	invokevirtual zas(I)I
+	new Simple
+	dup
+	invokespecial 	istore_3
 .end method
 
 

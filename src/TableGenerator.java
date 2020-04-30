@@ -834,12 +834,6 @@ public class TableGenerator {
                 // If the function was found, the function type is returned
                 Type functionType = functionDescriptor.getType();
 
-                //Set LLIR Return Type
-                //llirMethodCall.setReturnType(functionType);
-
-                /*if(this.currentLLIRNode instanceof LLIRAssignment){
-                    ((LLIRAssignment) this.currentLLIRNode).setExpression(llirMethodCall);
-                }*/
 
                 if(functionType == Type.CLASS)
                     return functionDescriptor.getClassName();
@@ -1155,7 +1149,9 @@ public class TableGenerator {
 
                         return "int[]";
                     }
+                    //Class
                     else if (initialChild+3 < argumentNode.jjtGetNumChildren()) {
+                        //Quando tem mais coisas
                         if (argumentNode.jjtGetChild(initialChild+3).getId() == JavammTreeConstants.JJTDOT) {
                             String classType = inspectClassInstantiation(argumentNode, symbolsTable, initialChild);
                             if (classType == null) {
@@ -1173,7 +1169,8 @@ public class TableGenerator {
                             return null;
                         }
                     }
-                    return inspectClassInstantiation(argumentNode, symbolsTable, initialChild);
+                    String returnValue = inspectClassInstantiation(argumentNode, symbolsTable, initialChild);
+                    return returnValue;
                 }
                 //TODO Check this  
                 case JavammTreeConstants.JJTNEGATION: {
@@ -1228,10 +1225,8 @@ public class TableGenerator {
                 }
             }
         }
-        llirPopulator.printStack();
 
         this.llirPopulator.popArithmetics();
-        llirPopulator.printStack();
 
 
 
@@ -1282,7 +1277,9 @@ public class TableGenerator {
         
         if(parameters.size() == 0 && descriptorsList.size() == 1){
             Descriptor descriptor = descriptorsList.get(0);
+            //Example simple = new Simple
             if(descriptor.getClass() == ClassDescriptor.class){
+                this.llirPopulator.addLLIR(new LLIRClassVariable((ClassDescriptor) descriptor));
                 return classIdentifierNode.jjtGetVal();
             }
         }
