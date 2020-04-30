@@ -935,7 +935,7 @@ public class TableGenerator {
                     }
                     this.llirPopulator.addExpression(new LLIRVariable(variableDescriptor));
                 }
-                if(descriptor.getClass() == NamedTypeDescriptor.class){
+                if(descriptor.getClass() == FunctionParameterDescriptor.class){
                     NamedTypeDescriptor variableDescriptor = (NamedTypeDescriptor) descriptor;
                     this.llirPopulator.addExpression(new LLIRVariable(variableDescriptor));
                 }
@@ -1111,7 +1111,7 @@ public class TableGenerator {
                         this.llirPopulator.addExpression(new llir.LLIRVariable(variableDescriptor));
                     }
                     //Is a function parameter
-                    if(descriptor.getClass() == NamedTypeDescriptor.class){
+                    if(descriptor.getClass() == FunctionParameterDescriptor.class){
                         NamedTypeDescriptor variableDescriptor = (NamedTypeDescriptor) descriptor;
                         this.llirPopulator.addExpression(new LLIRVariable(variableDescriptor));
                     }
