@@ -29,6 +29,10 @@
 	dup
 	invokespecial Simple/<init>
 	astore	3
+	aload_0
+	iload_1
+	iload_2
+	invokevirtual add(II)I
 	istore_4
 .end method
 

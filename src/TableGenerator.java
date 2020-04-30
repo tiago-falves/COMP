@@ -444,6 +444,8 @@ public class TableGenerator {
 
 
             inspectAssignment(statementNode, symbolTable, typeString);
+            this.llirPopulator.printStack();
+
 
             this.llirPopulator.popBeforeAssignment();
 
@@ -689,7 +691,7 @@ public class TableGenerator {
         int nextChild = initialChild+1;
         if(child.getId() == JavammTreeConstants.JJTDOT){
             String identifierName = checkFunctionCallVariableType(node.jjtGetVal(), statementNode, symbolsTable, initialChild);
-            
+
             if(!this.className.equals(identifierName)){
                 identifiers.add(identifierName); 
             }
@@ -710,7 +712,6 @@ public class TableGenerator {
         //Set here function parameters
 
         List<String> parameters = inspectArguments(argumentsNode, symbolsTable);
-
 
 
         llirPopulator.popArguments();
@@ -1013,9 +1014,8 @@ public class TableGenerator {
                 case JavammTreeConstants.JJTIDENTIFIER: {
                     if(i+1 < argumentNode.jjtGetNumChildren()){ //CHECK IF THE IDENTIFIER BELONGS TO A FUNCTION OR ARRAY
                         SimpleNode nextNode = (SimpleNode) argumentNode.jjtGetChild(i+1);
-
+                        //Class calls a function
                         if(nextNode.getId() == JavammTreeConstants.JJTDOT){ //IF THE IDENTIFIER IS FOLLOWED BY A DOT, IT'S A FUNCTION CALL
-
                             SimpleNode nextNextNode = (SimpleNode) argumentNode.jjtGetChild(i+2); //A DOT is always followed by something: length or a function call
 
                             if(nextNextNode.getId() == JavammTreeConstants.JJTLENGTH){
@@ -1049,6 +1049,7 @@ public class TableGenerator {
                             }
 
                             //Else function call
+                            this.llirPopulator.addMethodCall(new LLIRMethodCall());
                             String functionType = inspectFunctionCall(argumentNode, symbolsTable, i);
                             if(type == null){
                                 type = functionType;
@@ -1161,7 +1162,7 @@ public class TableGenerator {
 
                             //TODO verify if function is declared on the class or in imports
                             Descriptor descriptor = symbolsTable.getDescriptor(classType).get(0);
-                            
+
                             if (inspectFunctionOnClass(argumentNode, descriptor, symbolsTable, initialChild+4))
                                 return inspectFunctionCall(argumentNode, symbolsTable, initialChild+4);
                             

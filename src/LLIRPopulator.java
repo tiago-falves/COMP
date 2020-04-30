@@ -129,7 +129,7 @@ public class LLIRPopulator {
         List<LLIRExpression> arguments = new ArrayList<>();
         while (this.llirStack.peek() instanceof LLIRExpression && !lastIsFunctionCall()){
             LLIRExpression actual = (LLIRExpression) this.llirStack.pop();
-            arguments.add(actual);
+            arguments.add(0,actual);
         }
 
         if (this.llirStack.peek() instanceof LLIRMethodCall){

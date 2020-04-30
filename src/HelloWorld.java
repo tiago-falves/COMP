@@ -15,7 +15,10 @@ class HelloWorld {
     public int square(int a){
         int b;
         int c;
-        b =5;
+        a = 1;
+        b = 5;
+        c = 30;
+        b =a+b*c+7;
         //a=5;
 
         //this.zas(5*b + this.zos());
