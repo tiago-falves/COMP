@@ -22,6 +22,8 @@ public class Main {
         root.dumpTest("", 10);
 
         TableGenerator tb = new TableGenerator(root);
+
+        System.out.println("\nBUILDING SYMBOLS TABLE WITH SEMANTIC ANALYSIS\n");
         tb.build();
         if (tb.getNumErrors() > 0) 
             throw new SemanticErrorException();
