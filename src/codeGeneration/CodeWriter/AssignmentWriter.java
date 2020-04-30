@@ -11,6 +11,7 @@ public class AssignmentWriter {
 
     public AssignmentWriter(LLIRAssignment assignment) {
 
+
         this.code  = "";
 
         String name = assignment.getVariable().getVariable().getName();
@@ -42,6 +43,7 @@ public class AssignmentWriter {
         else if (expression instanceof LLIRMethodCall) {
             MethodCallWriter methodCallWriter = new MethodCallWriter((LLIRMethodCall) expression);
             this.code += methodCallWriter.getCode();
+            System.out.println("ENTREI AQUI\n\n\n");
 
         }
 

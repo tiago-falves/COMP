@@ -27,17 +27,10 @@
 	iconst_5
 	istore_2
 	aload_0
-	invokevirtual	//Method zos:()I
-	aload_0
 	iconst_0
 	iconst_4
 	iload_2
 	invokevirtual	//Method zas:(IIZ)I
-	iload_2
-	bipush	15
-	bipush	30
-	iadd
-	imul
 	istore_3
 .end method
 

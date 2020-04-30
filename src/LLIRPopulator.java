@@ -65,11 +65,7 @@ public class LLIRPopulator {
     }
     public void addMethodCall(LLIRMethodCall methodCall){
         //If empty then simpleFunctionCall
-        if (this.llirStack.empty()){
-            this.llirStack.add(methodCall);
-        }else {
-            addExpression(methodCall);
-        }
+        addExpression(methodCall);
     }
 
     public void popMethodCall(){
@@ -92,11 +88,18 @@ public class LLIRPopulator {
 
     public void popArithmetics(){
         LLIRNode node = llirStack.pop();
+
+        //In case of a simple Assignment
         if(node instanceof LLIRExpression){
             if(this.llirStack.peek() instanceof LLIRArithmetic){
                 ((LLIRArithmetic)this.llirStack.peek()).setRightExpression((LLIRExpression) node);
             }
+            if(this.llirStack.peek() instanceof LLIRAssignment){
+                ((LLIRAssignment)this.llirStack.peek()).setExpression((LLIRExpression) node);
+            }
         }
+
+        //In case of a complex assignment
         while (this.llirStack.peek() instanceof LLIRArithmetic){
             LLIRArithmetic actual = (LLIRArithmetic) this.llirStack.pop();
 

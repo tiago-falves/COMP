@@ -17,9 +17,10 @@ class HelloWorld {
         int c;
         b =5;
 
-        this.zos();
-        this.zas(b,4,false);
-        c = b*15 + 30;
+        //this.zos();
+        //this.zas(b,4,false);
+        //c = b*15 + this.zas(b,4,false);
+        c= this.zas(b,4,false);
 
         return 5;
     }

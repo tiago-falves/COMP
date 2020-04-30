@@ -504,12 +504,9 @@ public class TableGenerator {
             //Function call
             this.llirPopulator.addMethodCall(new LLIRMethodCall());
             inspectFunctionCall(statementNode, symbolTable);
-            llirPopulator.printStack();
             //If empty add tu function Descriptor
             if (llirPopulator.getLlirStack().size() == 1){
                 this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
-                LLIRMethodCall m = (LLIRMethodCall) this.currentFunctionDescriptor.getFunctionBody().get(1);
-                System.out.println(m.getMethodName());
             }
 
         }
@@ -990,7 +987,6 @@ public class TableGenerator {
 
         for(int i = initialChild; i < argumentNode.jjtGetNumChildren(); i++){
             SimpleNode node = (SimpleNode) argumentNode.jjtGetChild(i);
-
             switch(node.getId()){
                 case JavammTreeConstants.JJTINTEGERLITERAL: {
                     if(type == null){
@@ -1027,9 +1023,8 @@ public class TableGenerator {
                     break;
                 }
                 case JavammTreeConstants.JJTTHIS: {
-                    /*System.out.println("\n\n\n\nCheguei aqui right");
+
                     this.llirPopulator.addMethodCall(new LLIRMethodCall());
-                    this.llirPopulator.printStack();*/
 
                     String functionType = inspectFunctionCall(argumentNode, symbolsTable, i+2);
                     if(type == null){
@@ -1259,13 +1254,6 @@ public class TableGenerator {
 
         this.llirPopulator.popArithmetics();
 
-
-
-        //Arithmetic
-        /*if(this.currentLLIRNode instanceof LLIRAssignment) {
-            LLIRAssignment llir = (LLIRAssignment) this.currentLLIRNode;
-            llir.setExpression(arithmetics.get(0));
-        }*/
         
         return type;
     }
