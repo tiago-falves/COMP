@@ -420,7 +420,12 @@ public class TableGenerator {
                 }
             }
 
+
             //Assignment
+
+            // Add a new LLIR Node (Assignment) to the function
+            this.llirPopulator.addAssignment(new LLIRAssignment());
+
             Type type = typeDescriptor.getType();
             String typeString;
             if(type == Type.CLASS){
@@ -428,10 +433,15 @@ public class TableGenerator {
             }else{
                 StringType strType = new StringType(type);
                 typeString = strType.getString();
+
+                //Sets assignment variable if it is a Named type descriptor
+                NamedTypeDescriptor variableDescriptor = (NamedTypeDescriptor) typeDescriptor;
+                this.llirPopulator.setAssignmentVariable(new LLIRVariable(variableDescriptor));
+
+
             }
 
-            // Add a new LLIR Node (Assignment) to the function
-            this.llirPopulator.addAssignment(new LLIRAssignment());
+
 
             inspectAssignment(statementNode, symbolTable, typeString);
 
@@ -441,9 +451,7 @@ public class TableGenerator {
             if(typeDescriptor.getClass() == VariableDescriptor.class){
                 VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
                 variableDescriptor.setInitialized();
-
                 this.llirPopulator.setAssignmentVariable(new LLIRVariable(variableDescriptor));
-
             }
             this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
 
@@ -884,15 +892,6 @@ public class TableGenerator {
         switch(node.getId()){
             case JavammTreeConstants.JJTINTEGERLITERAL: {
 
-                // Adding integer to the LLIR Assignment node, if applicable
-                /*if(this.currentLLIRNode instanceof LLIRAssignment) {
-                    LLIRAssignment llir = (LLIRAssignment) this.currentLLIRNode;
-                    llir.setExpression(new llir.LLIRInteger(Integer.parseInt( node.jjtGetVal() )));
-
-                    if (this.currentMethodCall.getParametersExpressions() != null){
-                        this.currentMethodCall.getParametersExpressions().add(new llir.LLIRInteger(Integer.parseInt(node.jjtGetVal())));
-                    }
-                }*/
                 LLIRInteger llirInteger = new LLIRInteger(Integer.parseInt( node.jjtGetVal()));
                 this.llirPopulator.addExpression(llirInteger);
 
@@ -901,30 +900,12 @@ public class TableGenerator {
 
             case JavammTreeConstants.JJTTRUE:
             {
-                // Adding boolean to the LLIR Assignment node, if applicable
-                /*if (this.currentLLIRNode instanceof LLIRAssignment) {
-                    LLIRAssignment llir = (LLIRAssignment) this.currentLLIRNode;
-                    llir.setExpression(new llir.LLIRBoolean(true));
-
-                    if (this.currentMethodCall.getParametersExpressions() != null){
-                        this.currentMethodCall.getParametersExpressions().add(new llir.LLIRBoolean(true));
-                    }
-                }*/
-
                 this.llirPopulator.addExpression(new llir.LLIRBoolean(true));
                 return "boolean";
 
             }
             case JavammTreeConstants.JJTFALSE: {
-                // Adding boolean to the LLIR Assignment node, if applicable
-                /*if (this.currentLLIRNode instanceof LLIRAssignment) {
-                    LLIRAssignment llir = (LLIRAssignment) this.currentLLIRNode;
-                    llir.setExpression(new llir.LLIRBoolean(false));
 
-                    if (this.currentMethodCall.getParametersExpressions() != null){
-                        this.currentMethodCall.getParametersExpressions().add(new llir.LLIRBoolean(false));
-                    }
-                }*/
                 this.llirPopulator.addExpression(new llir.LLIRBoolean(false));
 
                 return "boolean";
@@ -952,18 +933,11 @@ public class TableGenerator {
                     if(!variableDescriptor.isInitialized()){
                         this.semanticError.printError(node, "Variable " + node.jjtGetVal() + " is not initialized");
                     }
-                    //Variable is defined here?
-                    /*if (this.currentLLIRNode instanceof LLIRAssignment) {
-                        LLIRAssignment llir = (LLIRAssignment) this.currentLLIRNode;
-                        llir.setExpression(new llir.LLIRVariable(variableDescriptor));
-
-                        if (this.currentMethodCall.getParametersExpressions() != null){
-                            this.currentMethodCall.getParametersExpressions().add(new llir.LLIRVariable(variableDescriptor));
-                        }
-                    }*/
-
                     this.llirPopulator.addExpression(new LLIRVariable(variableDescriptor));
-
+                }
+                if(descriptor.getClass() == NamedTypeDescriptor.class){
+                    NamedTypeDescriptor variableDescriptor = (NamedTypeDescriptor) descriptor;
+                    this.llirPopulator.addExpression(new LLIRVariable(variableDescriptor));
                 }
 
                 return (new StringType(type)).getString();
@@ -1134,9 +1108,12 @@ public class TableGenerator {
                         if(!variableDescriptor.isInitialized()){
                             this.semanticError.printError(node, "Variable " + node.jjtGetVal() + " is not initialized");
                         }
-
                         this.llirPopulator.addExpression(new llir.LLIRVariable(variableDescriptor));
-
+                    }
+                    //Is a function parameter
+                    if(descriptor.getClass() == NamedTypeDescriptor.class){
+                        NamedTypeDescriptor variableDescriptor = (NamedTypeDescriptor) descriptor;
+                        this.llirPopulator.addExpression(new LLIRVariable(variableDescriptor));
                     }
 
                     break;

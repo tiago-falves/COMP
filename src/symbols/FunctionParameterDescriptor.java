@@ -1,7 +1,6 @@
 package symbols;
 
-public class FunctionParameterDescriptor extends TypeDescriptor{
-    private String name;
+public class FunctionParameterDescriptor extends NamedTypeDescriptor{
 
 
     public FunctionParameterDescriptor(String name, Type type) {
@@ -9,9 +8,7 @@ public class FunctionParameterDescriptor extends TypeDescriptor{
         this.name = name;
     }
 
-    public String getName() {
-        return this.name;
-    }
+    //public String getName() { return this.name; }
 
     public void print(String prefix) {
         System.out.println(prefix + name + " --> " + this.type);

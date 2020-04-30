@@ -11,7 +11,7 @@
 	.limit locals 
 .end method
 
-.method public zas(IIZ)I
+.method public zas(I)I
 	.limit stack 
 	.limit locals 
 .end method
@@ -28,14 +28,12 @@
 	istore_2
 	iload_2
 	bipush	15
-	aload_0
-	iconst_0
-	iconst_4
-	iload_2
-	invokevirtual	//Method zas:(IIZ)I
+	bipush	30
 	iadd
 	imul
 	istore_3
+	iconst_5
+	istore_1
 .end method
 
 

@@ -1,8 +1,7 @@
 package symbols;
 
-public class VariableDescriptor extends TypeDescriptor{
+public class VariableDescriptor extends NamedTypeDescriptor{
     boolean isInitialized;
-    String name;
 
     public VariableDescriptor(Type type) {
         super(type);
@@ -22,12 +21,7 @@ public class VariableDescriptor extends TypeDescriptor{
         return isInitialized;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-    public String getName() {
-        return this.name;
-    }
+
 
     public void print(String prefix) {
         String initializedString;

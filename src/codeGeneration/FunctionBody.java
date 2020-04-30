@@ -28,6 +28,16 @@ public class FunctionBody {
 
 
     private void pushVariables(){
+
+        //Push function parameters
+        LinkedHashMap<String, List<Descriptor>> parametersTable = functionDescriptor.getParametersTable().getTable();
+        for (Map.Entry<String, List<Descriptor>> entry : parametersTable.entrySet()) {
+            String variableName = entry.getKey();
+            int variableIndex = getVariableIndex(variableName);
+            variableToIndex.put(variableName,variableIndex);
+        }
+
+        //Push body variables
         LinkedHashMap<String, List<Descriptor>> bodyTable = functionDescriptor.getBodyTable().getTable();
 
         for (Map.Entry<String, List<Descriptor>> entry : bodyTable.entrySet()) {
@@ -35,7 +45,6 @@ public class FunctionBody {
             int variableIndex = getVariableIndex(variableName);
             variableToIndex.put(variableName,variableIndex);
         }
-
 
     }
 
@@ -53,7 +62,6 @@ public class FunctionBody {
             else if (node instanceof LLIRMethodCall) {
                 MethodCallWriter methodCallWriter = new MethodCallWriter((LLIRMethodCall) node);
                 generatedCode += methodCallWriter.getCode();
-
             }
         }
         
@@ -74,18 +82,6 @@ public class FunctionBody {
         return variableIndex;
     }
 
-    //APAGAR
-    private String pushParameters() {
-        StringBuilder generatedCode = new StringBuilder();
 
-        for (Map.Entry<String, Integer> entry : variableToIndex.entrySet()) {
-            String variableName = entry.getKey();
-            Type variableType = this.functionDescriptor.getVariableType(variableName);
-            String instruction = CGConst.load.get(variableType);
-            generatedCode.append(instruction + entry.getValue() + "\n");
-        }
-
-        return generatedCode.toString();
-    }
 
 }

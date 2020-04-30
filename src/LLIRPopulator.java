@@ -86,6 +86,10 @@ public class LLIRPopulator {
         this.llirStack.push(arithmetic);
     }
 
+    public void addReturn(LLIRReturn returnLLIR){
+        this.llirStack.push(returnLLIR);
+    }
+
     public void popArithmetics(){
         LLIRNode node = llirStack.pop();
 
