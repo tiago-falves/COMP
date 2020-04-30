@@ -95,7 +95,7 @@ void ImportDeclaration() : {Token t;}
     [
         <STATIC> #Static
     ] 
-    t=<IDENTIFIER>{jjtThis.jjtSetVal(t.image);} #Identifier 
+    t=<IDENTIFIER>{jjtThis.jjtSetVal(t.image); jjtThis.jjtSetLine(t.beginLine); jjtThis.jjtSetColumn(t.beginColumn);} #Identifier 
     ImportDeclaration1()
 }
 
@@ -103,7 +103,7 @@ void ImportIdentifier() #void : {Token i;}
 {
     <LENGTH> #IDENTIFIER
     |
-    i=<IDENTIFIER>{jjtThis.jjtSetVal(i.image);} #Identifier       
+    i=<IDENTIFIER>{jjtThis.jjtSetVal(i.image); jjtThis.jjtSetLine(i.beginLine); jjtThis.jjtSetColumn(i.beginColumn);} #Identifier       
 }
 
 void ImportDeclaration1() #void: {} 
@@ -136,23 +136,23 @@ void ImportDeclaration2() #void: {}
 
 void TypeImport() #void: {Token t;}
 {
-    Type() | t=<VOID>{jjtThis.jjtSetVal(t.image);} #Type
+    Type() | t=<VOID>{jjtThis.jjtSetVal(t.image); jjtThis.jjtSetLine(t.beginLine); jjtThis.jjtSetColumn(t.beginColumn);} #Type
 
 }
 
 void Type() #void: {Token t;}
 {
-    t=<BOOLEAN>{jjtThis.jjtSetVal(t.image);} #Type
+    t=<BOOLEAN>{jjtThis.jjtSetVal(t.image); jjtThis.jjtSetLine(t.beginLine); jjtThis.jjtSetColumn(t.beginColumn);} #Type
     | 
-    t=<STRING>{jjtThis.jjtSetVal(t.image);} #Type 
+    t=<STRING>{jjtThis.jjtSetVal(t.image); jjtThis.jjtSetLine(t.beginLine); jjtThis.jjtSetColumn(t.beginColumn);} #Type 
     | 
     t=<INT>
     (
         <SQUARELEFTBRACKET> 
         <SQUARERIGHTBRACKET> 
-        {jjtThis.jjtSetVal(t.image + "[]");} #Type
+        {jjtThis.jjtSetVal(t.image + "[]"); jjtThis.jjtSetLine(t.beginLine); jjtThis.jjtSetColumn(t.beginColumn);} #Type
         |
-        {jjtThis.jjtSetVal(t.image);} #Type
+        {jjtThis.jjtSetVal(t.image); jjtThis.jjtSetLine(t.beginLine); jjtThis.jjtSetColumn(t.beginColumn);} #Type
     )
 }
 
@@ -171,7 +171,7 @@ void MethodDeclaration() : {}
 void MethodHeader() : {Token i;}
 {
     {jjtThis.jjtSetVal("public");} #Modifier
-    Type() i=<IDENTIFIER>{jjtThis.jjtSetVal(i.image);} #Identifier
+    Type() i=<IDENTIFIER>{jjtThis.jjtSetVal(i.image); jjtThis.jjtSetLine(i.beginLine); jjtThis.jjtSetColumn(i.beginColumn);} #Identifier
     <LEFTPARENTHESES> 
         MethodArguments() 
     <RIGHTPARENTHESES> 
@@ -180,10 +180,10 @@ void MethodHeader() : {Token i;}
 void MainArgs() : {Token s, i;}
 {
     <LEFTPARENTHESES> 
-    s=<STRING>{jjtThis.jjtSetVal(s.image+"[]");} #Type 
+    s=<STRING>{jjtThis.jjtSetVal(s.image+"[]"); jjtThis.jjtSetLine(s.beginLine); jjtThis.jjtSetColumn(s.beginColumn);} #Type 
     <SQUARELEFTBRACKET>     
     <SQUARERIGHTBRACKET>
-    i=<IDENTIFIER>{jjtThis.jjtSetVal(i.image);} #Identifier 
+    i=<IDENTIFIER>{jjtThis.jjtSetVal(i.image); jjtThis.jjtSetLine(i.beginLine); jjtThis.jjtSetColumn(i.beginColumn);} #Identifier 
     <RIGHTPARENTHESES> 
 }
 
@@ -201,10 +201,10 @@ void MainDeclaration() : {}
 void MethodArgument() : {Token i1;}
 {
     Type()
-    i1=<IDENTIFIER>{jjtThis.jjtSetVal(i1.image);} #Identifier{}
+    i1=<IDENTIFIER>{jjtThis.jjtSetVal(i1.image); jjtThis.jjtSetLine(i1.beginLine); jjtThis.jjtSetColumn(i1.beginColumn);} #Identifier{}
 }
 
-void MethodArguments() : {Token i1, i2;}
+void MethodArguments() : {}
 {
     [MethodArgument()
     ( 
@@ -216,16 +216,16 @@ void MethodArguments() : {Token i1, i2;}
 void VarDeclaration() #VariableDeclaration : {Token c, t;}
 {
     (
-        Type() | c=<IDENTIFIER>{jjtThis.jjtSetVal(c.image);} #ClassType
+        Type() | c=<IDENTIFIER>{jjtThis.jjtSetVal(c.image); jjtThis.jjtSetLine(c.beginLine); jjtThis.jjtSetColumn(c.beginColumn);} #ClassType
     )
-    t=<IDENTIFIER>{jjtThis.jjtSetVal(t.image);} #VariableName
+    t=<IDENTIFIER>{jjtThis.jjtSetVal(t.image); jjtThis.jjtSetLine(t.beginLine); jjtThis.jjtSetColumn(t.beginColumn);} #VariableName
     <SEMICOLON>
 }
 
 void VarDeclaration2() #VariableDeclaration : {Token i;}
 {
     Type() 
-    i=<IDENTIFIER>{jjtThis.jjtSetVal(i.image);} #VariableName 
+    i=<IDENTIFIER>{jjtThis.jjtSetVal(i.image); jjtThis.jjtSetLine(i.beginLine); jjtThis.jjtSetColumn(i.beginColumn);} #VariableName 
     <SEMICOLON>
 }
 
@@ -252,14 +252,14 @@ void IdentifierStatement() #void : {Token i1;}
 
 void IdentifierVariableDeclaration(Token i1) #VariableDeclaration : {Token i2;}
 {
-    {jjtThis.jjtSetVal(i1.image);} #ClassType
-    i2=<IDENTIFIER>{jjtThis.jjtSetVal(i2.image);} #VariableName 
+    {jjtThis.jjtSetVal(i1.image); jjtThis.jjtSetLine(i1.beginLine); jjtThis.jjtSetColumn(i1.beginColumn);} #ClassType
+    i2=<IDENTIFIER>{jjtThis.jjtSetVal(i2.image); jjtThis.jjtSetLine(i2.beginLine); jjtThis.jjtSetColumn(i2.beginColumn);} #VariableName 
     <SEMICOLON>
 }
 
 void IdentifierNewStatement(Token i1) #LineStatement : {}
 {
-    {jjtThis.jjtSetVal(i1.image);} #Identifier {}
+    {jjtThis.jjtSetVal(i1.image); jjtThis.jjtSetLine(i1.beginLine); jjtThis.jjtSetColumn(i1.beginColumn);} #Identifier {}
     (
         (
             <EQUAL> #Equal 
@@ -299,10 +299,10 @@ void Return() : {}
 void ClassDeclaration() #ClassDeclaration : {Token i1, i2;}
 {
     <CLASS> 
-    i1=<IDENTIFIER>{jjtThis.jjtSetVal(i1.image);} #ClassName{}
+    i1=<IDENTIFIER>{jjtThis.jjtSetVal(i1.image); jjtThis.jjtSetLine(i1.beginLine); jjtThis.jjtSetColumn(i1.beginColumn);} #ClassName{}
     (
         <EXTENDS> #Extends
-        i2=<IDENTIFIER>{jjtThis.jjtSetVal(i2.image);} #ClassName
+        i2=<IDENTIFIER>{jjtThis.jjtSetVal(i2.image); jjtThis.jjtSetLine(i2.beginLine); jjtThis.jjtSetColumn(i2.beginColumn);} #ClassName
     )* 
 
     <LEFTBRACKET>
@@ -338,7 +338,7 @@ void LineStatement() : {Token i;}
         LiteralExpr4() ExpressionTail()
         |
         (
-            i=<IDENTIFIER>{jjtThis.jjtSetVal(i.image);} #Identifier{}
+            i=<IDENTIFIER>{jjtThis.jjtSetVal(i.image); jjtThis.jjtSetLine(i.beginLine); jjtThis.jjtSetColumn(i.beginColumn);} #Identifier{}
             (
                 <EQUAL> #Equal
                 Expression()
@@ -505,7 +505,7 @@ void Expr4() #void : {}
 
 void LiteralExpr4() #void : {Token t;}
 {
-    (t=<INTEGERLITERAL>{jjtThis.jjtSetVal(t.image);} #IntegerLiteral{} 
+    (t=<INTEGERLITERAL>{jjtThis.jjtSetVal(t.image); jjtThis.jjtSetLine(t.beginLine); jjtThis.jjtSetColumn(t.beginColumn);} #IntegerLiteral{} 
         (ExprTail())*) |
     (<TRUE> #True{}
         (ExprTail())*) |
@@ -531,7 +531,7 @@ void LiteralExpr4Parentheses() #ParenthesesExpression : {}
 
 void IdentifierExpr4() #void : {Token t;}
 {
-    t=<IDENTIFIER>{jjtThis.jjtSetVal(t.image);} #Identifier{}
+    t=<IDENTIFIER>{jjtThis.jjtSetVal(t.image); jjtThis.jjtSetLine(t.beginLine); jjtThis.jjtSetColumn(t.beginColumn);} #Identifier{}
     (ExprTail())*
 }
 
@@ -573,7 +573,7 @@ void ObjAccTail() #void : {Token t;}
 {
     <LENGTH> #Length
     | 
-    t=<IDENTIFIER>{jjtThis.jjtSetVal(t.image);} #Identifier 
+    t=<IDENTIFIER>{jjtThis.jjtSetVal(t.image); jjtThis.jjtSetLine(t.beginLine); jjtThis.jjtSetColumn(t.beginColumn);} #Identifier 
     Arguments()
 }
 
@@ -592,10 +592,10 @@ void Argument() #void : {}
 
 void NewExpr() #void : {Token i;}
 {
-    i=<INT>{jjtThis.jjtSetVal(i.image);} #Type
+    i=<INT>{jjtThis.jjtSetVal(i.image); jjtThis.jjtSetLine(i.beginLine); jjtThis.jjtSetColumn(i.beginColumn);} #Type
     ArrAcc()
     |
-    i=<IDENTIFIER>{jjtThis.jjtSetVal(i.image);} #Identifier
+    i=<IDENTIFIER>{jjtThis.jjtSetVal(i.image); jjtThis.jjtSetLine(i.beginLine); jjtThis.jjtSetColumn(i.beginColumn);} #Identifier
     Arguments()
     [ObjAcc()]
 }
