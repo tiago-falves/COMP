@@ -19,8 +19,8 @@ class HelloWorld {
 
         //this.zos();
         //this.zas(b,4,false);
-        //c = b*15 + this.zas(b,4,false);
-        c= this.zas(b,4,false);
+        c = b*15 + this.zas(b,4,false);
+        //c= this.zas(b,4,false);
 
         return 5;
     }
