@@ -89,26 +89,26 @@ SimpleNode JavaMM() : {}
     (ImportDeclaration())* (ClassDeclaration())+ <EOF> {return jjtThis;} // Java code inside brackets
 }
 
-void ImportDeclaration() : {Token t;}
+void ImportDeclaration() : {Token t, s;}
 {
     <IMPORT> 
     [
-        <STATIC> #Static
+        s=<STATIC>{jjtThis.jjtSetLine(s.beginLine); jjtThis.jjtSetColumn(s.beginColumn);} #Static
     ] 
     t=<IDENTIFIER>{jjtThis.jjtSetVal(t.image); jjtThis.jjtSetLine(t.beginLine); jjtThis.jjtSetColumn(t.beginColumn);} #Identifier 
     ImportDeclaration1()
 }
 
-void ImportIdentifier() #void : {Token i;}
+void ImportIdentifier() #void : {Token i, l;}
 {
-    <LENGTH> #IDENTIFIER
+    l=<LENGTH>{jjtThis.jjtSetLine(l.beginLine); jjtThis.jjtSetColumn(l.beginColumn);} #IDENTIFIER
     |
     i=<IDENTIFIER>{jjtThis.jjtSetVal(i.image); jjtThis.jjtSetLine(i.beginLine); jjtThis.jjtSetColumn(i.beginColumn);} #Identifier       
 }
 
-void ImportDeclaration1() #void: {} 
+void ImportDeclaration1() #void: {Token d; } 
 {
-    <DOT> #Dot
+    d=<DOT>{jjtThis.jjtSetLine(d.beginLine); jjtThis.jjtSetColumn(d.beginColumn);} #Dot
     ImportIdentifier()
     ImportDeclaration1()
     | 
@@ -257,17 +257,17 @@ void IdentifierVariableDeclaration(Token i1) #VariableDeclaration : {Token i2;}
     <SEMICOLON>
 }
 
-void IdentifierNewStatement(Token i1) #LineStatement : {}
+void IdentifierNewStatement(Token i1) #LineStatement : {Token e;}
 {
     {jjtThis.jjtSetVal(i1.image); jjtThis.jjtSetLine(i1.beginLine); jjtThis.jjtSetColumn(i1.beginColumn);} #Identifier {}
     (
         (
-            <EQUAL> #Equal 
+            e=<EQUAL>{jjtThis.jjtSetLine(e.beginLine); jjtThis.jjtSetColumn(e.beginColumn);} #Equal 
             Expression()
         )
         |
         (ArrAcc() [
-            <EQUAL> #Equal 
+            e=<EQUAL>{jjtThis.jjtSetLine(e.beginLine); jjtThis.jjtSetColumn(e.beginColumn);} #Equal 
             Expression()
             ])
         |
@@ -296,12 +296,12 @@ void Return() : {}
     <SEMICOLON>
 }
 
-void ClassDeclaration() #ClassDeclaration : {Token i1, i2;}
+void ClassDeclaration() #ClassDeclaration : {Token i1, i2, e;}
 {
     <CLASS> 
     i1=<IDENTIFIER>{jjtThis.jjtSetVal(i1.image); jjtThis.jjtSetLine(i1.beginLine); jjtThis.jjtSetColumn(i1.beginColumn);} #ClassName{}
     (
-        <EXTENDS> #Extends
+        e=<EXTENDS>{jjtThis.jjtSetLine(e.beginLine); jjtThis.jjtSetColumn(e.beginColumn);} #Extends
         i2=<IDENTIFIER>{jjtThis.jjtSetVal(i2.image); jjtThis.jjtSetLine(i2.beginLine); jjtThis.jjtSetColumn(i2.beginColumn);} #ClassName
     )* 
 
@@ -332,7 +332,7 @@ void LiteralStatement() #void : {}
     | LiteralLineStatement()
 }
 
-void LineStatement() : {Token i;}
+void LineStatement() : {Token i, e;}
 {
     (
         LiteralExpr4() ExpressionTail()
@@ -340,10 +340,10 @@ void LineStatement() : {Token i;}
         (
             i=<IDENTIFIER>{jjtThis.jjtSetVal(i.image); jjtThis.jjtSetLine(i.beginLine); jjtThis.jjtSetColumn(i.beginColumn);} #Identifier{}
             (
-                <EQUAL> #Equal
+                e=<EQUAL>{jjtThis.jjtSetLine(e.beginLine); jjtThis.jjtSetColumn(e.beginColumn);} #Equal
                 Expression()
                 |
-                (ArrAcc() [<EQUAL> #Equal Expression()])
+                (ArrAcc() [e=<EQUAL>{jjtThis.jjtSetLine(e.beginLine); jjtThis.jjtSetColumn(e.beginColumn);} #Equal Expression()])
                 |
                 (ObjAcc() ExpressionTail())
                 |
@@ -366,31 +366,31 @@ void ExpressionTail() #void : {}
     (Oper4())* (Oper3())* (Oper2())* (Oper1())*
 }
 
-void Statement1() #void : {}
+void Statement1() #void : {Token e, s;}
 {
     (
-        <EQUAL> #Equal
+        e=<EQUAL>{jjtThis.jjtSetLine(e.beginLine); jjtThis.jjtSetColumn(e.beginColumn);} #Equal
         Expression() 
-        <SEMICOLON> #Semicolon
+        s=<SEMICOLON>{jjtThis.jjtSetLine(s.beginLine); jjtThis.jjtSetColumn(s.beginColumn);} #Semicolon
     ) 
     | ( 
         ArrAcc()
         [
-            <EQUAL> #Equal
+            e=<EQUAL>{jjtThis.jjtSetLine(e.beginLine); jjtThis.jjtSetColumn(e.beginColumn);} #Equal
             Expression() 
-            <SEMICOLON> #Semicolon
+            s=<SEMICOLON>{jjtThis.jjtSetLine(s.beginLine); jjtThis.jjtSetColumn(s.beginColumn);} #Semicolon
         ])
     | ObjAcc()
 }
 
-void IfStatement() : {}
+void IfStatement() : {Token e;}
 {
     <IF> 
     <LEFTPARENTHESES> 
     Expression() #IfExpression
     <RIGHTPARENTHESES>
     Statement()
-    <ELSE> #Else
+    e=<ELSE>{jjtThis.jjtSetLine(e.beginLine); jjtThis.jjtSetColumn(e.beginColumn);} #Else
     Statement()
 }
 
@@ -454,9 +454,9 @@ void Expression() #void : {}
     Expr1() (Oper1())*
 }
 
-void Oper1() #void : {} 
+void Oper1() #void : {Token a;} 
 {
-    <AND> #And
+    a=<AND>{jjtThis.jjtSetLine(a.beginLine); jjtThis.jjtSetColumn(a.beginColumn);} #And
     Expr1() 
 }
 
@@ -465,9 +465,9 @@ void Expr1() #void : {}
     Expr2() (Oper2())*
 }
 
-void Oper2() #void : {}
+void Oper2() #void : {Token l;}
 {
-    <LESS> #Less
+    l=<LESS>{jjtThis.jjtSetLine(l.beginLine); jjtThis.jjtSetColumn(l.beginColumn);} #Less
     Expr2() 
 }
 
@@ -476,11 +476,11 @@ void Expr2() #void : {}
     Expr3() (Oper3())*
 }
 
-void Oper3() #void : {}
+void Oper3() #void : {Token p, m;}
 {
-    <PLUS> #Plus
+    p=<PLUS>{jjtThis.jjtSetLine(p.beginLine); jjtThis.jjtSetColumn(p.beginColumn);} #Plus
     Expr3() |
-    <MINUS> #Minus
+    m=<MINUS>{jjtThis.jjtSetLine(m.beginLine); jjtThis.jjtSetColumn(m.beginColumn);} #Minus
     Expr3() 
 }
 
@@ -489,11 +489,11 @@ void Expr3() #void : {}
     Expr4() (Oper4())*
 }
 
-void Oper4() #void : {}
+void Oper4() #void : {Token m, d;}
 {
-    <MULT> #Mult
+    m=<MULT>{jjtThis.jjtSetLine(m.beginLine); jjtThis.jjtSetColumn(m.beginColumn);} #Mult
     Expr4() |
-    <DIV> #Div
+    d=<DIV>{jjtThis.jjtSetLine(d.beginLine); jjtThis.jjtSetColumn(d.beginColumn);} #Div
     Expr4() 
 }
 
@@ -507,18 +507,18 @@ void LiteralExpr4() #void : {Token t;}
 {
     (t=<INTEGERLITERAL>{jjtThis.jjtSetVal(t.image); jjtThis.jjtSetLine(t.beginLine); jjtThis.jjtSetColumn(t.beginColumn);} #IntegerLiteral{} 
         (ExprTail())*) |
-    (<TRUE> #True{}
+    (t=<TRUE>{jjtThis.jjtSetLine(t.beginLine); jjtThis.jjtSetColumn(t.beginColumn);} #True{}
         (ExprTail())*) |
-    (<FALSE> #False{} 
+    (t=<FALSE>{jjtThis.jjtSetLine(t.beginLine); jjtThis.jjtSetColumn(t.beginColumn);} #False{} 
         (ExprTail())*) |
-    (<THIS> #This{}
+    (t=<THIS>{jjtThis.jjtSetLine(t.beginLine); jjtThis.jjtSetColumn(t.beginColumn);} #This{}
         (ExprTail())*) |
-    (<NEW> #New
+    (t=<NEW>{jjtThis.jjtSetLine(t.beginLine); jjtThis.jjtSetColumn(t.beginColumn);} #New
         NewExpr()) |
     (
         LiteralExpr4Parentheses()
         (ExprTail())*) |
-    (<NEG> #Negation 
+    (t=<NEG>{jjtThis.jjtSetLine(t.beginLine); jjtThis.jjtSetColumn(t.beginColumn);} #Negation 
         Expr4()) 
 }
 
@@ -547,16 +547,16 @@ void ArrAcc() #Array : {}
     <SQUARERIGHTBRACKET> 
 }
 
-void ObjAcc() #void : {}
+void ObjAcc() #void : {Token l, r, d;}
 {
     [
-        <LEFTPARENTHESES> #LeftParentheses
+        l=<LEFTPARENTHESES>{jjtThis.jjtSetLine(l.beginLine); jjtThis.jjtSetColumn(l.beginColumn);} #LeftParentheses
         [
             Expression()
         ]
-        <RIGHTPARENTHESES> #RightParentheses {}
+        r=<RIGHTPARENTHESES>{jjtThis.jjtSetLine(r.beginLine); jjtThis.jjtSetColumn(r.beginColumn);} #RightParentheses {}
     ]
-    <DOT> #Dot
+    d=<DOT>{jjtThis.jjtSetLine(d.beginLine); jjtThis.jjtSetColumn(d.beginColumn);} #Dot
     ObjAccTail()
 }
 
@@ -571,7 +571,7 @@ void ObjAcc() #void : {}
 
 void ObjAccTail() #void : {Token t;}
 {
-    <LENGTH> #Length
+    t=<LENGTH>{jjtThis.jjtSetLine(t.beginLine); jjtThis.jjtSetColumn(t.beginColumn);} #Length
     | 
     t=<IDENTIFIER>{jjtThis.jjtSetVal(t.image); jjtThis.jjtSetLine(t.beginLine); jjtThis.jjtSetColumn(t.beginColumn);} #Identifier 
     Arguments()
