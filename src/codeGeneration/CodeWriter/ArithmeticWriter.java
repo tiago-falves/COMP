@@ -60,6 +60,11 @@ public class ArithmeticWriter {
             ArithmeticWriter arithmeticWriter = new ArithmeticWriter((LLIRArithmetic) expression,name);
             result += arithmeticWriter.getCode();
         }
+        else if (expression instanceof LLIRMethodCall) {
+            MethodCallWriter methodCallWriter = new MethodCallWriter((LLIRMethodCall) expression);
+            result += methodCallWriter.getCode();
+
+        }
         return result;
 
     }

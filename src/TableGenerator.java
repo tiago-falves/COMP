@@ -1251,10 +1251,14 @@ public class TableGenerator {
             }
         }
 
+        llirPopulator.printStack();
 
         this.llirPopulator.popArithmetics();
 
-        
+        llirPopulator.printStack();
+
+
+
         return type;
     }
 
