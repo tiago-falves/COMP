@@ -507,8 +507,9 @@ public class TableGenerator {
             llirPopulator.printStack();
             //If empty add tu function Descriptor
             if (llirPopulator.getLlirStack().size() == 1){
-                System.out.println("entrei aqui");
                 this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
+                LLIRMethodCall m = (LLIRMethodCall) this.currentFunctionDescriptor.getFunctionBody().get(1);
+                System.out.println(m.getMethodName());
             }
 
         }
@@ -704,8 +705,9 @@ public class TableGenerator {
         //Set here function parameters
 
 
-
         List<String> parameters = inspectArguments(argumentsNode, symbolsTable);
+
+        llirPopulator.popArguments();
 
 
 
@@ -776,10 +778,10 @@ public class TableGenerator {
                     LLIRMethodCall methodCall= ((LLIRMethodCall) this.llirPopulator.getLlirStack().peek());
                     methodCall.setMethodName(functionDescriptor.getName());
                     methodCall.setParametersTable(parametersTable);
+                    methodCall.setReturnType(functionDescriptor.getType());
                     //Falta adicionar as parameters expressions
 
                 }
-
 
 
                 HashMap<String, List<Descriptor>> functionParameters = parametersTable.getTable();

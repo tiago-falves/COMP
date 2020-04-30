@@ -1,5 +1,7 @@
 import llir.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 public class LLIRPopulator {
@@ -109,6 +111,21 @@ public class LLIRPopulator {
             }
         }
     }
+
+    public void popArguments(){
+
+        List<LLIRExpression> arguments = new ArrayList<>();
+        while (this.llirStack.peek() instanceof LLIRExpression && !lastIsFunctionCall()){
+            LLIRExpression actual = (LLIRExpression) this.llirStack.pop();
+            arguments.add(actual);
+        }
+        if (this.llirStack.peek() instanceof LLIRMethodCall){
+            LLIRMethodCall function = (LLIRMethodCall) this.llirStack.peek();
+            function.setParametersExpressions(arguments);
+        }
+
+    }
+
     //If the stack has an expression before assignment, set assignment expression
     public void popBeforeAssignment(){
         if(this.llirStack.peek() instanceof LLIRExpression) {

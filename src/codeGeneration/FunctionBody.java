@@ -7,6 +7,7 @@ import java.util.Map;
 import codeGeneration.CodeWriter.AssignmentWriter;
 import codeGeneration.CodeWriter.BooleanWriter;
 import codeGeneration.CodeWriter.IntegerWriter;
+import codeGeneration.CodeWriter.MethodCallWriter;
 import llir.*;
 import symbols.Descriptor;
 import symbols.FunctionDescriptor;
@@ -50,6 +51,8 @@ public class FunctionBody {
                 generatedCode += assignmentWriter.getCode();
             }
             else if (node instanceof LLIRMethodCall) {
+                MethodCallWriter methodCallWriter = new MethodCallWriter((LLIRMethodCall) node);
+                generatedCode += methodCallWriter.getCode();
 
             }
         }

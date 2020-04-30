@@ -4,7 +4,7 @@ class HelloWorld {
         //ioPlus.printHelloWorld();
     }
 
-    public int zas(int x){
+    public int zas(int x,int y,boolean oi){
         return x;
     }
     public int zos(){
@@ -18,6 +18,7 @@ class HelloWorld {
         b =5;
 
         this.zos();
+        this.zas(b,4,false);
         c = b*15 + 30;
 
         return 5;
