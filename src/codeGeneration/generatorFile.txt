@@ -21,19 +21,12 @@
 	.limit locals 
 	bipush	30
 	istore_1
-	iconst_0
-	bipush	10
-	isub
+	iconst_1
+	iconst_5
+	iconst_4
+	imul
+	iadd
 	istore_2
-	new Simple
-	dup
-	invokespecial Simple/<init>
-	astore	3
-	aload_0
-	iload_1
-	iload_2
-	invokevirtual add(II)I
-	istore_4
 .end method
 
 

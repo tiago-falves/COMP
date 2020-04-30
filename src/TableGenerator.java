@@ -441,13 +441,10 @@ public class TableGenerator {
 
             }
 
-
-
             inspectAssignment(statementNode, symbolTable, typeString);
-            this.llirPopulator.printStack();
-
 
             this.llirPopulator.popBeforeAssignment();
+
 
 
             if(typeDescriptor.getClass() == VariableDescriptor.class){
@@ -455,6 +452,8 @@ public class TableGenerator {
                 variableDescriptor.setInitialized();
                 this.llirPopulator.setAssignmentVariable(new LLIRVariable(variableDescriptor));
             }
+
+
             this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
 
         }
@@ -1203,12 +1202,15 @@ public class TableGenerator {
                     return null;
                 }
                 case JavammTreeConstants.JJTPARENTHESESEXPRESSION: {
+                    this.llirPopulator.addExpression(new LLIRParenthesis());
                     String expressionType = inspectExpression(node, symbolsTable);
                     if(type == null){
                         type = expressionType;
                     }else if(!type.equals(expressionType)){
                         this.semanticError.printError(node, ""); //TODO Add print message
                     }
+                    this.llirPopulator.popParenthesis();
+
                     break;
                 }
 

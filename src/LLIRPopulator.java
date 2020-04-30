@@ -70,6 +70,16 @@ public class LLIRPopulator {
 
     public void popMethodCall(){
 
+
+    }
+
+    public void popParenthesis(){
+        if (this.llirStack.empty()) return;
+        LLIRExpression node = (LLIRExpression) this.llirStack.pop();
+        if(this.llirStack.peek() instanceof LLIRParenthesis){
+            ((LLIRParenthesis) this.llirStack.peek()).setExpression(node);
+        }
+
     }
 
     public boolean lastIsFunctionCall(){
@@ -105,8 +115,8 @@ public class LLIRPopulator {
         }
 
         //In case of a complex assignment
-        while (this.llirStack.peek() instanceof LLIRArithmetic){
-            LLIRArithmetic actual = (LLIRArithmetic) this.llirStack.pop();
+        while (this.llirStack.peek() instanceof LLIRArithmetic || this.llirStack.peek() instanceof LLIRExpression ){
+            LLIRExpression actual = (LLIRExpression) this.llirStack.pop();
 
             if (this.llirStack.peek() instanceof LLIRArithmetic){
                 LLIRArithmetic previous = (LLIRArithmetic) this.llirStack.peek();
