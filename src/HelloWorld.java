@@ -16,11 +16,10 @@ class HelloWorld {
         int b;
         int c;
         b =5;
-        a=5;
+        //a=5;
 
         //this.zos();
-        c = b* a + 30; //Ainda nao funciona caso se ponha o a na aritmetica
-
+        c = b* a + 30;
 
         //Simple simple;
         //int c;

@@ -26,8 +26,6 @@
 	.limit locals 
 	iconst_5
 	istore_2
-	iconst_5
-	istore_1
 	iload_2
 	iload_1
 	bipush	30
