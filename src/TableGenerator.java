@@ -709,8 +709,9 @@ public class TableGenerator {
         //Assuming this function gives the correct parameters
         //Set here function parameters
 
-
         List<String> parameters = inspectArguments(argumentsNode, symbolsTable);
+
+
 
         llirPopulator.popArguments();
 
@@ -1227,12 +1228,13 @@ public class TableGenerator {
                 }
             }
         }
-
         llirPopulator.printStack();
 
         this.llirPopulator.popArithmetics();
-
         llirPopulator.printStack();
+
+
+
 
 
 

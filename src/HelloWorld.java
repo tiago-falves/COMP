@@ -18,8 +18,8 @@ class HelloWorld {
         b =5;
         //a=5;
 
-        //this.zos();
-        c = b* a + 30;
+        this.zas(5*b + 4);
+        //c = b* a + this.zas(5);
 
         //Simple simple;
         //int c;

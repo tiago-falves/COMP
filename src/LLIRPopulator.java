@@ -91,10 +91,11 @@ public class LLIRPopulator {
     }
 
     public void popArithmetics(){
-        LLIRNode node = llirStack.pop();
 
         //In case of a simple Assignment
-        if(node instanceof LLIRExpression){
+        if(this.llirStack.peek() instanceof LLIRExpression){
+            LLIRNode node = llirStack.pop();
+
             if(this.llirStack.peek() instanceof LLIRArithmetic){
                 ((LLIRArithmetic)this.llirStack.peek()).setRightExpression((LLIRExpression) node);
             }
@@ -111,9 +112,13 @@ public class LLIRPopulator {
                 LLIRArithmetic previous = (LLIRArithmetic) this.llirStack.peek();
                 previous.setRightExpression(actual);
             }
-            if (this.llirStack.peek() instanceof LLIRAssignment){
+            else if (this.llirStack.peek() instanceof LLIRAssignment){
                 LLIRAssignment previous = (LLIRAssignment) this.llirStack.peek();
                 previous.setExpression(actual);
+                break;
+            }
+            else if (this.llirStack.peek() instanceof LLIRMethodCall){
+                this.llirStack.push(actual);
                 break;
             }
         }
@@ -126,6 +131,7 @@ public class LLIRPopulator {
             LLIRExpression actual = (LLIRExpression) this.llirStack.pop();
             arguments.add(actual);
         }
+
         if (this.llirStack.peek() instanceof LLIRMethodCall){
             LLIRMethodCall function = (LLIRMethodCall) this.llirStack.peek();
             function.setParametersExpressions(arguments);
