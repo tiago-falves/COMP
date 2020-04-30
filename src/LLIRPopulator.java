@@ -200,6 +200,8 @@ public class LLIRPopulator {
                 stack += "Assignment\n";
             }else if(node instanceof LLIRArithmetic){
                 stack += "Arithmetic\n";
+            }else if (node instanceof LLIRMethodCall) {
+                stack += "Method Call\n";
             }else if(node instanceof LLIRExpression){
                 stack += "Expression\n";
 

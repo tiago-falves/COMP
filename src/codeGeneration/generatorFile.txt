@@ -11,25 +11,17 @@
 	.limit locals 
 .end method
 
-.method public zas(I)I
-	.limit stack 
-	.limit locals 
-.end method
-
-.method public zos()I
-	.limit stack 
-	.limit locals 
-.end method
-
 .method public square(I)I
 	.limit stack 
 	.limit locals 
+	aload_0
+	invokevirtual null()null
+	bipush	69
+	istore_1
 	iconst_5
 	istore_2
 	iload_2
 	iload_1
-	bipush	30
-	iadd
 	imul
 	istore_3
 .end method

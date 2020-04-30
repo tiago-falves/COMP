@@ -9,23 +9,17 @@ import java.util.List;
 
 public class MethodCallWriter {
     private static String LOAD = "\taload_0\n";
-    private static String INSTRUCTION = "\tinvokevirtual\t";
-    private static String METHOD = "//Method ";
+    private static String INSTRUCTION = "\tinvokevirtual ";
     private String code;
+
     public MethodCallWriter(LLIRMethodCall methodCall){
-
-
         this.code = LOAD;
-
         this.code += getParameters(methodCall);
+        this.code += INSTRUCTION;
 
-
-        //TODO Adicionar aquele index a frente do invokevirtual, aquilo corresponde a que? ao numero de invokes?
-        //Deve haver tipo uma stack de funçoes?
-
-        this.code += INSTRUCTION + METHOD;
         String arguments = FunctionParameters.getParametersTypes(methodCall.getParametersTable());
-        this.code += methodCall.getMethodName() + ":(" + arguments + ")"+ CGConst.types.get(methodCall.getReturnType()) + "\n";
+
+        this.code += methodCall.getMethodName() + "(" + arguments + ")"+ CGConst.types.get(methodCall.getReturnType()) + "\n";
 
     }
 
