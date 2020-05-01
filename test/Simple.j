@@ -15,17 +15,14 @@
 	bipush	10
 	isub
 	istore_3
+	iload_2
+	iload_3
+	iadd
+	istore_2
 	new Simple
 	dup
 	invokespecial Simple/<init>()V
 	astore	4
-	aload_0
-	iload_2
-	iload_3
-	invokevirtual simple/add(II)I
-	istore_5
-	iload_5
-	invokestatic io/println(I)V
 .end method
 
 .method public add(II)I

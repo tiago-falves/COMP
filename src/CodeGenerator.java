@@ -20,7 +20,7 @@ public class CodeGenerator {
         this.builder = new StringBuilder();
         this.classDescriptor = classDescriptor;
         try {
-            FileWriter file = new FileWriter("src/codeGeneration/generatorFile.txt", false);
+            FileWriter file = new FileWriter("test/Simple.j", false);
             BufferedWriter bufferedWriter = new BufferedWriter(file);
             this.out = new PrintWriter(bufferedWriter);
         } catch (IOException e) {

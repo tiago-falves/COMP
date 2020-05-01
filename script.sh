@@ -1,4 +1,5 @@
 gradle build
 java -jar comp2020-3e.jar test/Simple.jmm
-javac src/HelloWorld.java
-javap -c src/HelloWorld.class > example.txt
+java -jar jasmin-2.4/jasmin.jar test/Simple.j
+javac src/SimpleTrue.java
+javap -c src/SimpleTrue.class > src/example.txt

@@ -1,5 +1,5 @@
 ; <- this is a comment in jasmin
-.class public Simple
+.class public SimpleTrue
 .super java/lang/Object
 ;      ^ replace super if extends was used
 ;standard initializer
@@ -21,15 +21,15 @@
 	isub
 	istore 2 ; variable b
 	; a new instance requires the new instruction, followed by a dup and an invokespecial targeting the class constructor
-	new Simple
+	new SimpleTrue
 	dup
-	invokespecial Simple/<init>()V
+	invokespecial SimpleTrue/<init>()V
 	astore 3 ; variable simple
 	; invocation of a nonstatic method
 	aload 3
 	iload 1
 	iload 2
-	invokevirtual Simple/add(II)I
+	invokevirtual SimpleTrue/add(II)I
 	istore 4
 	; invocation of io.println
 	iload 4
