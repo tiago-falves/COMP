@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import llir.LLIRArithmetic;
 import llir.LLIRExpression;
 import llir.LLIRInteger;
+import llir.LLIRParenthesis;
 import llir.ArithmeticOperation;
 
 public class ArithmeticTransformer {
@@ -38,8 +39,6 @@ public class ArithmeticTransformer {
 
         LLIRArithmetic result = (LLIRArithmetic) recursiveTransform(expressions, operators, 1);
 
-        printArithmetic(result);
-
         // TODO: check parenthesis and transform the arithmetics inside them
 
         return result;
@@ -57,11 +56,23 @@ public class ArithmeticTransformer {
                     List<LLIRExpression> leftExpressions = sliceExpressions(expressions, 0, i+1);
                     List<LLIRExpression> rightExpressions = sliceExpressions(expressions, i+1, expressions.size());
 
-                    return new LLIRArithmetic(
-                        operators.get(i), 
-                        recursiveTransform(leftExpressions, leftOperations, priorityLevel), 
-                        recursiveTransform(rightExpressions, rightOperations, priorityLevel)
-                        );
+                    // build tree left - right in order of descending depth
+                    if(leftExpressions.size() >= rightExpressions.size()) {
+                        return new LLIRArithmetic(
+                            operators.get(i), 
+                            recursiveTransform(leftExpressions, leftOperations, priorityLevel), 
+                            recursiveTransform(rightExpressions, rightOperations, priorityLevel)
+                            );
+                    }
+                    else {
+                        return new LLIRArithmetic(
+                            operators.get(i), 
+                            recursiveTransform(rightExpressions, rightOperations, priorityLevel), 
+                            recursiveTransform(leftExpressions, leftOperations, priorityLevel)
+                            );
+                    }
+
+
                 }
                 else if(priorityLevel == 2 && (operators.get(i) == ArithmeticOperation.SUM || operators.get(i) == ArithmeticOperation.SUBTRACTION)) {
                     List<ArithmeticOperation> leftOperations = sliceOperators(operators, 0, i);
@@ -70,11 +81,21 @@ public class ArithmeticTransformer {
                     List<LLIRExpression> leftExpressions = sliceExpressions(expressions, 0, i+1);
                     List<LLIRExpression> rightExpressions = sliceExpressions(expressions, i+1, expressions.size());
 
-                    return new LLIRArithmetic(
-                        operators.get(i), 
-                        recursiveTransform(leftExpressions, leftOperations, priorityLevel), 
-                        recursiveTransform(rightExpressions, rightOperations, priorityLevel)
-                        );
+                    // build tree left - right in order of descending depth
+                    if(leftExpressions.size() >= rightExpressions.size()) {
+                        return new LLIRArithmetic(
+                            operators.get(i), 
+                            recursiveTransform(leftExpressions, leftOperations, priorityLevel), 
+                            recursiveTransform(rightExpressions, rightOperations, priorityLevel)
+                            );
+                    }
+                    else {
+                        return new LLIRArithmetic(
+                            operators.get(i), 
+                            recursiveTransform(rightExpressions, rightOperations, priorityLevel), 
+                            recursiveTransform(leftExpressions, leftOperations, priorityLevel)
+                            );
+                    }
                 }
                 else if(priorityLevel == 3 && (operators.get(i) == ArithmeticOperation.MULTIPLICATION || operators.get(i) == ArithmeticOperation.DIVISION)) {
                     List<ArithmeticOperation> leftOperations = sliceOperators(operators, 0, i);
@@ -83,11 +104,21 @@ public class ArithmeticTransformer {
                     List<LLIRExpression> leftExpressions = sliceExpressions(expressions, 0, i+1);
                     List<LLIRExpression> rightExpressions = sliceExpressions(expressions, i+1, expressions.size());
 
-                    return new LLIRArithmetic(
-                        operators.get(i), 
-                        recursiveTransform(leftExpressions, leftOperations, priorityLevel), 
-                        recursiveTransform(rightExpressions, rightOperations, priorityLevel)
-                        );
+                    // build tree left - right in order of descending depth
+                    if(leftExpressions.size() >= rightExpressions.size()) {
+                        return new LLIRArithmetic(
+                            operators.get(i), 
+                            recursiveTransform(leftExpressions, leftOperations, priorityLevel), 
+                            recursiveTransform(rightExpressions, rightOperations, priorityLevel)
+                            );
+                    }
+                    else {
+                        return new LLIRArithmetic(
+                            operators.get(i), 
+                            recursiveTransform(rightExpressions, rightOperations, priorityLevel), 
+                            recursiveTransform(leftExpressions, leftOperations, priorityLevel)
+                            );
+                    }
                 }
             }
 
@@ -97,7 +128,7 @@ public class ArithmeticTransformer {
         return expressions.get(0);
     }
 
-    public List<ArithmeticOperation> sliceOperators(List<ArithmeticOperation> ops, int from, int to) {
+    private List<ArithmeticOperation> sliceOperators(List<ArithmeticOperation> ops, int from, int to) {
         List<ArithmeticOperation> sliced = new ArrayList<>();
         if(from < 0 || to > ops.size() || to - from <= 0) 
             return sliced;
@@ -108,7 +139,7 @@ public class ArithmeticTransformer {
         return sliced;
     }
 
-    public List<LLIRExpression> sliceExpressions(List<LLIRExpression> exps, int from, int to) {
+    private List<LLIRExpression> sliceExpressions(List<LLIRExpression> exps, int from, int to) {
         List<LLIRExpression> sliced = new ArrayList<>();
         if(from < 0 || to > exps.size() || to - from <= 0) 
             return sliced;
@@ -123,6 +154,7 @@ public class ArithmeticTransformer {
         printRecursive(arithmetic, "");
     }
 
+    // ONLY FOR INTEGERS AND DEBUGGING PURPOSES
     private void printRecursive(LLIRArithmetic arithmetic, String space) {
         LLIRExpression left = arithmetic.getLeftExpression();
         LLIRExpression right = arithmetic.getRightExpression();
