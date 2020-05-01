@@ -215,7 +215,7 @@ public class LLIRPopulator {
         }
     }
 
-    public void addClassInstantiation(LLIRClassVariable variable){
+    public void addClassInstantiation(LLIRClassVariableInstantiation variable){
         if (this.llirStack.peek() instanceof LLIRAssignment){
             LLIRAssignment assignment = (LLIRAssignment) this.llirStack.peek();
             assignment.setExpression(variable);

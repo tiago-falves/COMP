@@ -19,6 +19,7 @@ public class LLIRMethodCall extends LLIRExpression {
     private  SymbolsTable parametersTable;
     private  Type returnType;
     private  boolean isStatic;
+    private String className;
 
     public LLIRMethodCall(List<LLIRExpression> parameters, String name, SymbolsTable parametersTable, Type returnType, boolean isStatic) {
         this.parametersExpressions = parameters;
@@ -29,6 +30,7 @@ public class LLIRMethodCall extends LLIRExpression {
     }
     public LLIRMethodCall(){
         parametersExpressions = new ArrayList<>();
+        this.className ="";
 
     }
 
@@ -107,5 +109,11 @@ public class LLIRMethodCall extends LLIRExpression {
     }
 
 
+    public String getClassName() {
+        return className;
+    }
 
+    public void setClassName(String className) {
+        this.className = className;
+    }
 }

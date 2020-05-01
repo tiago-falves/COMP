@@ -1,12 +1,10 @@
 package llir;
 
 import symbols.ClassDescriptor;
-import symbols.NamedTypeDescriptor;
-import symbols.Type;
-import symbols.VariableDescriptor;
 
 public class LLIRClassVariable extends LLIRExpression {
     private ClassDescriptor classDescriptor;
+    private String name;
 
     public LLIRClassVariable(ClassDescriptor variable) {
         this.classDescriptor = variable;
@@ -14,9 +12,18 @@ public class LLIRClassVariable extends LLIRExpression {
 
     public LLIRClassVariable() {
         this.classDescriptor= new ClassDescriptor();
+        this.name ="";
     }
 
     public ClassDescriptor getClassDescriptor(){
         return classDescriptor;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

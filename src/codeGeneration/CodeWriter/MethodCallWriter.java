@@ -18,6 +18,7 @@ public class MethodCallWriter {
         this.code += INSTRUCTION;
 
         String arguments = FunctionParameters.getParametersTypes(methodCall.getParametersTable());
+        if (methodCall.getClassName()!="") this.code+= methodCall.getClassName() + "/";
 
         this.code += methodCall.getMethodName() + "(" + arguments + ")"+ CGConst.types.get(methodCall.getReturnType()) + "\n";
 

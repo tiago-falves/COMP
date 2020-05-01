@@ -2,8 +2,6 @@ import llir.*;
 import symbols.*;
 
 import java.util.*;
-import java.util.Map.Entry;
-import java.util.function.Function;
 
 public class TableGenerator {
     SimpleNode rootNode;
@@ -233,6 +231,7 @@ public class TableGenerator {
         else if (child.getId() == JavammTreeConstants.JJTMETHODHEADER) {
             return inspectMethodHeader(child);
         }
+
 
         return null;
     }
@@ -1037,7 +1036,6 @@ public class TableGenerator {
                         //Class calls a function
                         if(nextNode.getId() == JavammTreeConstants.JJTDOT){ //IF THE IDENTIFIER IS FOLLOWED BY A DOT, IT'S A FUNCTION CALL
                             SimpleNode nextNextNode = (SimpleNode) argumentNode.jjtGetChild(i+2); //A DOT is always followed by something: length or a function call
-
                             if(nextNextNode.getId() == JavammTreeConstants.JJTLENGTH){
                                 List<Descriptor> descriptors = symbolsTable.getDescriptor(node.jjtGetVal());
                                 if(descriptors == null){
@@ -1069,7 +1067,10 @@ public class TableGenerator {
                             }
 
                             //Else function call
-                            this.llirPopulator.addMethodCall(new LLIRMethodCall());
+                            LLIRMethodCall methodCall = new LLIRMethodCall();
+                            methodCall.setClassName(node.val);
+                            this.llirPopulator.addMethodCall(methodCall);
+
                             String functionType = inspectFunctionCall(argumentNode, symbolsTable, i);
                             if(type == null){
                                 type = functionType;
@@ -1303,7 +1304,7 @@ public class TableGenerator {
             Descriptor descriptor = descriptorsList.get(0);
             //Example simple = new Simple
             if(descriptor.getClass() == ClassDescriptor.class){
-                this.llirPopulator.addLLIR(new LLIRClassVariable((ClassDescriptor) descriptor));
+                this.llirPopulator.addLLIR(new LLIRClassVariableInstantiation((ClassDescriptor) descriptor));
                 return classIdentifierNode.jjtGetVal();
             }
         }

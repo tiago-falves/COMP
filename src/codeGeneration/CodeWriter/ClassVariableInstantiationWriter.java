@@ -1,26 +1,24 @@
 package codeGeneration.CodeWriter;
 
-import codeGeneration.CGConst;
 import codeGeneration.FunctionBody;
-import llir.LLIRClassVariable;
-import llir.LLIRVariable;
-import symbols.Type;
+import llir.LLIRClassVariableInstantiation;
 
-public class ClassVariableWriter {
+public class ClassVariableInstantiationWriter {
     private static String NEW = "\tnew ";
     private static String DUP = "\tdup\n";
     private static String INSTRUCTION = "\tinvokespecial ";
 
     private String code;
 
-    public ClassVariableWriter(LLIRClassVariable variable){
+    public ClassVariableInstantiationWriter(LLIRClassVariableInstantiation variable){
         this.code = "";
 
         FunctionBody.currentOperationIndex++;
 
         this.code += NEW + variable.getClassDescriptor().getName() + "\n";
         this.code += DUP;
-        this.code += INSTRUCTION + variable.getClassDescriptor().getName() + "/<init>\n";
+        this.code += INSTRUCTION + variable.getClassDescriptor().getName() + "/<init>()V\n";
+
 
         //this.code += CGConst.load.get(Type.CLASS);
 

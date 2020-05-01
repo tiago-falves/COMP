@@ -26,6 +26,7 @@ public class FunctionBody {
 
     private void pushVariables(){
 
+
         //Push function parameters
         LinkedHashMap<String, List<Descriptor>> parametersTable = functionDescriptor.getParametersTable().getTable();
         for (Map.Entry<String, List<Descriptor>> entry : parametersTable.entrySet()) {
@@ -46,9 +47,6 @@ public class FunctionBody {
     }
 
     public String generate(){
-
-        System.out.println(functionDescriptor.getName());
-        System.out.println(this.functionDescriptor.getFunctionBody().size());
 
         String generatedCode = new String();
 
