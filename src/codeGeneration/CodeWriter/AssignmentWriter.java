@@ -36,7 +36,10 @@ public class AssignmentWriter {
         }
 
         else if (expression instanceof LLIRArithmetic) {
-            ArithmeticWriter arithmeticWriter = new ArithmeticWriter((LLIRArithmetic) expression,name);
+            ArithmeticTransformer transformer = new ArithmeticTransformer((LLIRArithmetic) expression);
+            LLIRArithmetic transformed = transformer.transform();
+
+            ArithmeticWriter arithmeticWriter = new ArithmeticWriter(transformed,name);
             this.code += arithmeticWriter.getCode();
         }
 
@@ -47,17 +50,18 @@ public class AssignmentWriter {
 
         }
 
-
+        // get the instruction to store
         this.code += CGConst.store.get(type);
         FunctionBody.currentOperationIndex = 0;
 
+        // assign to the correct variable
         int variableIndex = FunctionBody.getVariableIndex(name);
         this.code = this.code + variableIndex + "\n";
 
-
-
     }
+
     public String getCode(){
         return this.code;
     }
+    
 }

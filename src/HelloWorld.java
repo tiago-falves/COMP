@@ -13,22 +13,8 @@ class HelloWorld {
 
     //So para Testar
     public int square(int a){
-        int b;
         int c;
-        b =5;
-        //a=5;
-
-        //this.zos();
-        c = b* a + 30;
-
-        //Simple simple;
-        //int c;
-        //a = 30;
-        //b = 0-10;
-        //simple = new Simple();
-        //c = simple.add(a,b);
-        //io.println(c);
-        //return a+b;
+        c = 1 * 3 + 5 * 3;
 
         return 5;
     }
