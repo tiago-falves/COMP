@@ -15,8 +15,7 @@ public class ReturnWriter {
         LLIRExpression expression = returnLLIR.getExpression();
         ExpressionWriter expressionWriter = new ExpressionWriter(expression,"NAME");
         this.code+= expressionWriter.getCode();
-        this.code+=RETURN;
-        //this.code+= CGConst.returnTypes.get(returnLLIR.getReturnType());
+        this.code+= CGConst.returnTypes.get(returnLLIR.getReturnType()) + "\n";
     }
 
     public String getCode(){

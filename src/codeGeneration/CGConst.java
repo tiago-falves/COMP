@@ -43,10 +43,10 @@ public class CGConst {
         load.put(Type.STRING, "\taload_");
         load.put(Type.CLASS, "\taload\t");
 
-        returnTypes.put(Type.INT, "?\tireturn");
-        returnTypes.put(Type.BOOLEAN, "?\tireturn");
-        returnTypes.put(Type.INT_ARRAY, "?\tareturn");
-        returnTypes.put(Type.VOID, "?\treturn");
+        returnTypes.put(Type.INT, "\tireturn");
+        returnTypes.put(Type.BOOLEAN, "\tireturn");
+        returnTypes.put(Type.INT_ARRAY, "\tareturn");
+        returnTypes.put(Type.VOID, "\treturn");
 
     }
 

@@ -34,7 +34,7 @@
 	iload_1
 	iload_2
 	iadd
-	return
+	ireturn
 .end method
 
 

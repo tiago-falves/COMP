@@ -386,6 +386,7 @@ public class TableGenerator {
             if (child.getId() == JavammTreeConstants.JJTRETURN){
                 LLIRReturn llirReturn = new LLIRReturn();
                 llirPopulator.addLLIR(llirReturn);
+                llirReturn.setReturnType(functionDescriptor.getReturnValue());
                 inspectReturn(child, functionDescriptor);
                 llirPopulator.popReturn();
                 this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
