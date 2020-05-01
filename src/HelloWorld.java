@@ -13,8 +13,9 @@ class HelloWorld {
 
     //So para Testar
     public int square(int a){
-        int c;
-        c = 1 * 3 + 5 / 3 * 3;
+        int b;
+
+        b = 3 * 2 + 5;
 
         return 5;
     }

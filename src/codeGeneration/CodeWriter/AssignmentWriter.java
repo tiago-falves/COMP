@@ -10,8 +10,7 @@ public class AssignmentWriter {
     private String code;
 
     public AssignmentWriter(LLIRAssignment assignment) {
-
-
+        
         this.code  = "";
 
         String name = assignment.getVariable().getVariable().getName();

@@ -12,12 +12,12 @@ public class ArithmeticWriter {
     public ArithmeticWriter(LLIRArithmetic arithmetic, String name){
         this.code  = "";
         this.arithmetic = arithmetic;
-        this.code += generateLeftCode(arithmetic.getLeftExpression(),name);
-        this.code += generateRightCode(arithmetic.getRightExpression(),name);
+        this.code += generateCode(arithmetic.getLeftExpression(),name);     // left
+        this.code += generateCode(arithmetic.getRightExpression(),name);    // right
         this.code += CGConst.arithmeticOperators.get(arithmetic.getOperation()) + "\n";
     }
 
-    private String generateLeftCode(LLIRExpression expression,String name){
+    private String generateCode(LLIRExpression expression,String name){
 
         String result = new String();
         if(expression instanceof LLIRInteger) {
@@ -27,38 +27,6 @@ public class ArithmeticWriter {
         else if(expression instanceof LLIRVariable) {
             VariableWriter variableWriter = new VariableWriter((LLIRVariable) expression);
             result += variableWriter.getCode();
-        }
-        else if (expression instanceof LLIRArithmetic) {
-            ArithmeticWriter arithmeticWriter = new ArithmeticWriter((LLIRArithmetic) expression,name);
-            result += arithmeticWriter.getCode();
-        }
-        else if (expression instanceof LLIRMethodCall) {
-            MethodCallWriter methodCallWriter = new MethodCallWriter((LLIRMethodCall) expression);
-            result += methodCallWriter.getCode();
-        }
-
-        /*
-        System.out.println();
-        System.out.println("LEFT CODE");
-        System.out.println(result);
-        System.out.println("\n");
-        */
-
-        return result;
-    }
-
-    private String generateRightCode(LLIRExpression expression, String name){
-
-        String result = new String();
-        if(expression instanceof LLIRInteger) {
-            IntegerWriter integerWriter = new IntegerWriter((LLIRInteger) expression,name);
-            result += integerWriter.getCode();
-
-        }
-        else if(expression instanceof LLIRVariable) {
-            VariableWriter variableWriter = new VariableWriter((LLIRVariable) expression);
-            result += variableWriter.getCode();
-
         }
         else if (expression instanceof LLIRArithmetic) {
             ArithmeticWriter arithmeticWriter = new ArithmeticWriter((LLIRArithmetic) expression,name);
@@ -72,13 +40,6 @@ public class ArithmeticWriter {
             ExpressionWriter expressionWriter = new ExpressionWriter(((LLIRParenthesis) expression).getExpression(),name);
             result += expressionWriter.getCode();
         }
-
-        /*
-        System.out.println();
-        System.out.println("RIGHT CODE");
-        System.out.println(result);
-        System.out.println("\n");
-        */
 
         return result;
     }

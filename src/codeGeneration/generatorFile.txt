@@ -24,14 +24,10 @@
 .method public square(I)I
 	.limit stack 
 	.limit locals 
-	iconst_1
 	iconst_3
+	iconst_2
 	imul
 	iconst_5
-	iconst_3
-	iconst_3
-	imul
-	idiv
 	iadd
 	istore_2
 .end method
