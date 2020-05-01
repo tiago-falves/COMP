@@ -29,7 +29,9 @@
 	imul
 	iconst_5
 	iconst_3
+	iconst_3
 	imul
+	idiv
 	iadd
 	istore_2
 .end method

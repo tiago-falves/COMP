@@ -46,8 +46,11 @@ public class AssignmentWriter {
         else if (expression instanceof LLIRMethodCall) {
             MethodCallWriter methodCallWriter = new MethodCallWriter((LLIRMethodCall) expression);
             this.code += methodCallWriter.getCode();
-            System.out.println("ENTREI AQUI\n\n\n");
-
+        }
+        else if (expression instanceof LLIRClassVariable) {
+            ClassVariableWriter classVariableWriter = new ClassVariableWriter((LLIRClassVariable) expression);
+            this.code += classVariableWriter.getCode();
+            type = Type.CLASS;
         }
 
         // get the instruction to store

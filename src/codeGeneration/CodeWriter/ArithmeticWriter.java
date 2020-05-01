@@ -67,7 +67,10 @@ public class ArithmeticWriter {
         else if (expression instanceof LLIRMethodCall) {
             MethodCallWriter methodCallWriter = new MethodCallWriter((LLIRMethodCall) expression);
             result += methodCallWriter.getCode();
-
+        }
+        else if (expression instanceof LLIRParenthesis) {
+            ExpressionWriter expressionWriter = new ExpressionWriter(((LLIRParenthesis) expression).getExpression(),name);
+            result += expressionWriter.getCode();
         }
 
         /*

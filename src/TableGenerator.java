@@ -441,11 +441,10 @@ public class TableGenerator {
 
             }
 
-
-
             inspectAssignment(statementNode, symbolTable, typeString);
 
             this.llirPopulator.popBeforeAssignment();
+
 
 
             if(typeDescriptor.getClass() == VariableDescriptor.class){
@@ -453,6 +452,8 @@ public class TableGenerator {
                 variableDescriptor.setInitialized();
                 this.llirPopulator.setAssignmentVariable(new LLIRVariable(variableDescriptor));
             }
+
+
             this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
 
         }
@@ -689,7 +690,7 @@ public class TableGenerator {
         int nextChild = initialChild+1;
         if(child.getId() == JavammTreeConstants.JJTDOT){
             String identifierName = checkFunctionCallVariableType(node.jjtGetVal(), statementNode, symbolsTable, initialChild);
-            
+
             if(!this.className.equals(identifierName)){
                 identifiers.add(identifierName); 
             }
@@ -709,8 +710,8 @@ public class TableGenerator {
         //Assuming this function gives the correct parameters
         //Set here function parameters
 
-
         List<String> parameters = inspectArguments(argumentsNode, symbolsTable);
+
 
         llirPopulator.popArguments();
 
@@ -833,12 +834,6 @@ public class TableGenerator {
                 // If the function was found, the function type is returned
                 Type functionType = functionDescriptor.getType();
 
-                //Set LLIR Return Type
-                //llirMethodCall.setReturnType(functionType);
-
-                /*if(this.currentLLIRNode instanceof LLIRAssignment){
-                    ((LLIRAssignment) this.currentLLIRNode).setExpression(llirMethodCall);
-                }*/
 
                 if(functionType == Type.CLASS)
                     return functionDescriptor.getClassName();
@@ -1018,9 +1013,8 @@ public class TableGenerator {
                 case JavammTreeConstants.JJTIDENTIFIER: {
                     if(i+1 < argumentNode.jjtGetNumChildren()){ //CHECK IF THE IDENTIFIER BELONGS TO A FUNCTION OR ARRAY
                         SimpleNode nextNode = (SimpleNode) argumentNode.jjtGetChild(i+1);
-
+                        //Class calls a function
                         if(nextNode.getId() == JavammTreeConstants.JJTDOT){ //IF THE IDENTIFIER IS FOLLOWED BY A DOT, IT'S A FUNCTION CALL
-
                             SimpleNode nextNextNode = (SimpleNode) argumentNode.jjtGetChild(i+2); //A DOT is always followed by something: length or a function call
 
                             if(nextNextNode.getId() == JavammTreeConstants.JJTLENGTH){
@@ -1054,6 +1048,7 @@ public class TableGenerator {
                             }
 
                             //Else function call
+                            this.llirPopulator.addMethodCall(new LLIRMethodCall());
                             String functionType = inspectFunctionCall(argumentNode, symbolsTable, i);
                             if(type == null){
                                 type = functionType;
@@ -1154,7 +1149,9 @@ public class TableGenerator {
 
                         return "int[]";
                     }
+                    //Class
                     else if (initialChild+3 < argumentNode.jjtGetNumChildren()) {
+                        //Quando tem mais coisas
                         if (argumentNode.jjtGetChild(initialChild+3).getId() == JavammTreeConstants.JJTDOT) {
                             String classType = inspectClassInstantiation(argumentNode, symbolsTable, initialChild);
                             if (classType == null) {
@@ -1164,7 +1161,7 @@ public class TableGenerator {
 
                             //TODO verify if function is declared on the class or in imports
                             Descriptor descriptor = symbolsTable.getDescriptor(classType).get(0);
-                            
+
                             if (inspectFunctionOnClass(argumentNode, descriptor, symbolsTable, initialChild+4))
                                 return inspectFunctionCall(argumentNode, symbolsTable, initialChild+4);
                             
@@ -1172,7 +1169,8 @@ public class TableGenerator {
                             return null;
                         }
                     }
-                    return inspectClassInstantiation(argumentNode, symbolsTable, initialChild);
+                    String returnValue = inspectClassInstantiation(argumentNode, symbolsTable, initialChild);
+                    return returnValue;
                 }
                 //TODO Check this  
                 case JavammTreeConstants.JJTNEGATION: {
@@ -1204,12 +1202,15 @@ public class TableGenerator {
                     return null;
                 }
                 case JavammTreeConstants.JJTPARENTHESESEXPRESSION: {
+                    this.llirPopulator.addExpression(new LLIRParenthesis());
                     String expressionType = inspectExpression(node, symbolsTable);
                     if(type == null){
                         type = expressionType;
                     }else if(!type.equals(expressionType)){
                         this.semanticError.printError(node, ""); //TODO Add print message
                     }
+                    this.llirPopulator.popParenthesis();
+
                     break;
                 }
 
@@ -1228,11 +1229,10 @@ public class TableGenerator {
             }
         }
 
-        llirPopulator.printStack();
-
         this.llirPopulator.popArithmetics();
 
-        llirPopulator.printStack();
+
+
 
 
 
@@ -1280,7 +1280,9 @@ public class TableGenerator {
         
         if(parameters.size() == 0 && descriptorsList.size() == 1){
             Descriptor descriptor = descriptorsList.get(0);
+            //Example simple = new Simple
             if(descriptor.getClass() == ClassDescriptor.class){
+                this.llirPopulator.addLLIR(new LLIRClassVariable((ClassDescriptor) descriptor));
                 return classIdentifierNode.jjtGetVal();
             }
         }
