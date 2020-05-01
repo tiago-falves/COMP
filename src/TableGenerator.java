@@ -344,6 +344,31 @@ public class TableGenerator {
         }
     }
 
+    public void inspectReturn(SimpleNode node, FunctionDescriptor functionDescriptor) throws SemanticErrorException {
+        if(node.jjtGetNumChildren() == 0){
+            if(functionDescriptor.getReturnValue() != Type.VOID){
+                this.semanticError.printError(node, "Function of type void can't return anything");
+            }
+        }else{
+            String returnType = inspectExpression(node, functionDescriptor.getBodyTable()); 
+            if(returnType == null){
+                this.semanticError.printError(node, "Can't evalute return expression");
+                return;
+            }
+
+            if(functionDescriptor.getReturnValue() == Type.CLASS){
+                if(!returnType.equals(functionDescriptor.getClassName())){
+                    this.semanticError.printError(node, "Function of type " + functionDescriptor.getClassName() + " can't return type " + returnType);
+                }   
+            }else{
+                StringType stringType = new StringType(functionDescriptor.getType());
+                if(!returnType.equals(stringType.getString())){
+                    this.semanticError.printError(node, "Function of type " + stringType.getString() + " can't return type " + returnType);
+                }
+            }
+        }
+    }
+
     //Inspects all the methods except main
     public void inspectMethodBody(SimpleNode methodNode, FunctionDescriptor functionDescriptor) throws SemanticErrorException {
 
@@ -353,8 +378,7 @@ public class TableGenerator {
 
             //Method Body Parser 
             if (child.getId() == JavammTreeConstants.JJTRETURN){
-                SimpleNode actualReturn = (SimpleNode) child.jjtGetChild(0);
-                functionDescriptor.setActualReturnValue(actualReturn.val);
+                inspectReturn(child, functionDescriptor);
             }
             else inspectVariableAndStatement(child, functionDescriptor);
         }
@@ -449,7 +473,7 @@ public class TableGenerator {
                     }
                 }
                 if(typeDescriptor == null){
-                    System.err.println("Error: Variable " + firstChild.jjtGetVal()+" doesn't have a type");
+                    this.semanticError.printError(firstChild, "Error: Variable " + firstChild.jjtGetVal()+" doesn't have a type");
                     return;
                 }
             }
@@ -457,14 +481,14 @@ public class TableGenerator {
             //Assignment
             Type type = typeDescriptor.getType();
             if(type != Type.STRING_ARRAY && type != Type.INT_ARRAY){
-                System.err.println("Error: Variable " + firstChild.jjtGetVal()+" is not an array");
+                this.semanticError.printError(firstChild, "Error: Variable " + firstChild.jjtGetVal()+" is not an array");
                 return;   
             }
 
             SimpleNode arrayNode =  (SimpleNode) statementNode.jjtGetChild(1);
             String indexType = inspectExpression(arrayNode, symbolTable);
             if(!indexType.equals("int")){
-                System.err.println("Error: Array index must be an int");
+                this.semanticError.printError(statementNode, "Error: Array index must be an int");
                 return;
             }
            
@@ -864,6 +888,9 @@ public class TableGenerator {
                 }
 
                 return (new StringType(type)).getString();
+            }
+            case JavammTreeConstants.JJTPARENTHESESEXPRESSION: {
+                return inspectExpression(node, symbolsTable);
             }
             default: {
                 //TODO Adicionar mais casos
