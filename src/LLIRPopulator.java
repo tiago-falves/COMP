@@ -68,6 +68,14 @@ public class LLIRPopulator {
         addExpression(methodCall);
     }
 
+    public void addImport(LLIRImport llirImport){
+        if(this.llirStack.peek() instanceof LLIRMethodCall){
+            LLIRMethodCall methodCall = (LLIRMethodCall) llirStack.pop();
+            llirImport.setParametersExpressions(methodCall.getParametersExpressions());
+            this.llirStack.add(llirImport);
+        }
+    }
+
     public void popMethodCall(){
 
 
@@ -87,6 +95,7 @@ public class LLIRPopulator {
         if(this.llirStack.peek() instanceof LLIRMethodCall) return true;
         return false;
     }
+
 
     public void addArithmetic(LLIRArithmetic arithmetic){
 
@@ -225,9 +234,12 @@ public class LLIRPopulator {
                 stack += "Arithmetic\n";
             }else if (node instanceof LLIRMethodCall) {
                 stack += "Method Call\n";
+            }else if(node instanceof LLIRImport){
+                stack += "Import\n";
             }else if(node instanceof LLIRExpression){
                 stack += "Expression\n";
-
+            }else if(node instanceof LLIRReturn){
+                stack += "Return\n";
             }
         }
 

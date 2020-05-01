@@ -4,10 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import codeGeneration.CodeWriter.AssignmentWriter;
-import codeGeneration.CodeWriter.BooleanWriter;
-import codeGeneration.CodeWriter.IntegerWriter;
-import codeGeneration.CodeWriter.MethodCallWriter;
+import codeGeneration.CodeWriter.*;
 import llir.*;
 import symbols.Descriptor;
 import symbols.FunctionDescriptor;
@@ -62,6 +59,9 @@ public class FunctionBody {
             else if (node instanceof LLIRMethodCall) {
                 MethodCallWriter methodCallWriter = new MethodCallWriter((LLIRMethodCall) node);
                 generatedCode += methodCallWriter.getCode();
+            }else if (node instanceof LLIRImport) {
+                ImportWriter importWriter = new ImportWriter((LLIRImport) node);
+                generatedCode += importWriter.getCode();
             }
         }
         
