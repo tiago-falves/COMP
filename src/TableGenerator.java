@@ -268,6 +268,7 @@ public class TableGenerator {
 
     public FunctionDescriptor inspectMethodHeader(SimpleNode methodNode) throws SemanticErrorException {
 
+
         FunctionDescriptor functionDescriptor = new FunctionDescriptor();
         this.currentFunctionDescriptor = functionDescriptor;
 
@@ -341,6 +342,7 @@ public class TableGenerator {
     }
 
     public void inspectMainBody(SimpleNode mainNode, FunctionDescriptor functionDescriptor) throws SemanticErrorException {
+        this.currentFunctionDescriptor = functionDescriptor;
 
         //Main Body Parser
         for (int i = 1; i < mainNode.jjtGetNumChildren(); i++) {
@@ -351,7 +353,7 @@ public class TableGenerator {
 
     //Inspects all the methods except main
     public void inspectMethodBody(SimpleNode methodNode, FunctionDescriptor functionDescriptor) throws SemanticErrorException {
-
+        this.currentFunctionDescriptor = functionDescriptor;
         //Cycle can have MethodHeader, LineStatement return IntegralLiteral
         for (int i = 1; i < methodNode.jjtGetNumChildren(); i++) {
             SimpleNode child = (SimpleNode) methodNode.jjtGetChild(i);
@@ -457,7 +459,6 @@ public class TableGenerator {
                 variableDescriptor.setInitialized();
                 this.llirPopulator.setAssignmentVariable(new LLIRVariable(variableDescriptor));
             }
-
 
             this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
 

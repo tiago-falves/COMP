@@ -47,6 +47,9 @@ public class FunctionBody {
 
     public String generate(){
 
+        System.out.println(functionDescriptor.getName());
+        System.out.println(this.functionDescriptor.getFunctionBody().size());
+
         String generatedCode = new String();
 
         pushVariables();
