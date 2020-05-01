@@ -69,7 +69,7 @@ public class LLIRPopulator {
     }
 
     public void addImport(LLIRImport llirImport){
-        if(this.llirStack.peek() instanceof LLIRMethodCall){
+        if(peek() instanceof LLIRMethodCall){
             LLIRMethodCall methodCall = (LLIRMethodCall) llirStack.pop();
             llirImport.setParametersExpressions(methodCall.getParametersExpressions());
             this.llirStack.add(llirImport);
@@ -84,22 +84,22 @@ public class LLIRPopulator {
     public void popParenthesis(){
         if (this.llirStack.empty()) return;
         LLIRExpression node = (LLIRExpression) this.llirStack.pop();
-        if(this.llirStack.peek() instanceof LLIRParenthesis){
-            ((LLIRParenthesis) this.llirStack.peek()).setExpression(node);
+        if(peek() instanceof LLIRParenthesis){
+            ((LLIRParenthesis) peek()).setExpression(node);
         }
 
     }
 
     public boolean lastIsFunctionCall(){
         if (llirStack.isEmpty()) return false;
-        if(this.llirStack.peek() instanceof LLIRMethodCall) return true;
+        if(peek() instanceof LLIRMethodCall) return true;
         return false;
     }
 
 
     public void addArithmetic(LLIRArithmetic arithmetic){
 
-        if(this.llirStack.peek() instanceof LLIRExpression){
+        if(peek() instanceof LLIRExpression){
             arithmetic.setLeftExpression((LLIRExpression) this.llirStack.pop());
         }
         this.llirStack.push(arithmetic);
@@ -112,27 +112,27 @@ public class LLIRPopulator {
     public void popArithmetics(){
 
         //In case of a simple Assignment
-        if(this.llirStack.peek() instanceof LLIRExpression){
+        if(peek() instanceof LLIRExpression){
             LLIRNode node = llirStack.pop();
 
-            if(this.llirStack.peek() instanceof LLIRArithmetic){
-                ((LLIRArithmetic)this.llirStack.peek()).setRightExpression((LLIRExpression) node);
+            if(peek() instanceof LLIRArithmetic){
+                ((LLIRArithmetic)peek()).setRightExpression((LLIRExpression) node);
             }
-            if(this.llirStack.peek() instanceof LLIRAssignment){
-                ((LLIRAssignment)this.llirStack.peek()).setExpression((LLIRExpression) node);
+            if(peek() instanceof LLIRAssignment){
+                ((LLIRAssignment)peek()).setExpression((LLIRExpression) node);
             }
         }
 
         //In case of a complex assignment
-        while (this.llirStack.peek() instanceof LLIRArithmetic || this.llirStack.peek() instanceof LLIRExpression ){
+        while (peek() instanceof LLIRArithmetic || peek() instanceof LLIRExpression ){
             LLIRExpression actual = (LLIRExpression) this.llirStack.pop();
 
-            if (this.llirStack.peek() instanceof LLIRArithmetic){
-                LLIRArithmetic previous = (LLIRArithmetic) this.llirStack.peek();
+            if (peek() instanceof LLIRArithmetic){
+                LLIRArithmetic previous = (LLIRArithmetic) peek();
                 previous.setRightExpression(actual);
             }
-            else if (this.llirStack.peek() instanceof LLIRAssignment){
-                LLIRAssignment previous = (LLIRAssignment) this.llirStack.peek();
+            else if (peek() instanceof LLIRAssignment){
+                LLIRAssignment previous = (LLIRAssignment) peek();
                 previous.setExpression(actual);
                 break;
             }
@@ -143,16 +143,25 @@ public class LLIRPopulator {
         }
     }
 
+    public LLIRNode peek(){
+        if(!this.llirStack.empty()){
+            return this.llirStack.peek();
+        }
+        return new LLIRNull();
+
+
+    }
+
     public void popArguments(){
 
         List<LLIRExpression> arguments = new ArrayList<>();
-        while (this.llirStack.peek() instanceof LLIRExpression && !lastIsFunctionCall()){
+        while (peek() instanceof LLIRExpression && !lastIsFunctionCall()){
             LLIRExpression actual = (LLIRExpression) this.llirStack.pop();
             arguments.add(0,actual);
         }
 
-        if (this.llirStack.peek() instanceof LLIRMethodCall){
-            LLIRMethodCall function = (LLIRMethodCall) this.llirStack.peek();
+        if (peek() instanceof LLIRMethodCall){
+            LLIRMethodCall function = (LLIRMethodCall) peek();
             function.setParametersExpressions(arguments);
         }
 
@@ -160,10 +169,10 @@ public class LLIRPopulator {
 
     //If the stack has an expression before assignment, set assignment expression
     public void popBeforeAssignment(){
-        if(this.llirStack.peek() instanceof LLIRExpression) {
+        if(peek() instanceof LLIRExpression) {
             LLIRExpression node = (LLIRExpression) this.llirStack.pop();
-            if (this.llirStack.peek() instanceof LLIRAssignment) {
-                LLIRAssignment assignment = (LLIRAssignment) this.llirStack.peek();
+            if (peek() instanceof LLIRAssignment) {
+                LLIRAssignment assignment = (LLIRAssignment) peek();
                 assignment.setExpression(node);
             }
         }
@@ -184,7 +193,7 @@ public class LLIRPopulator {
     }
     public boolean shouldAddArithmetic(){
         if (lastIsArithmetic()){
-            LLIRArithmetic arithmetic = (LLIRArithmetic) this.llirStack.peek();
+            LLIRArithmetic arithmetic = (LLIRArithmetic) peek();
             if (arithmetic.foundOperator()) return true;
         }
         return false;
@@ -192,7 +201,7 @@ public class LLIRPopulator {
 
     public void addOperator(int nodeId){
         if(lastIsArithmetic()) {
-            LLIRArithmetic arithmetic = (LLIRArithmetic) this.llirStack.peek();
+            LLIRArithmetic arithmetic = (LLIRArithmetic) peek();
             switch (nodeId) {
                 case JavammTreeConstants.JJTMULT: {
                     arithmetic.setOperation(ArithmeticOperation.MULTIPLICATION);
@@ -216,8 +225,8 @@ public class LLIRPopulator {
     }
 
     public void addClassInstantiation(LLIRClassVariableInstantiation variable){
-        if (this.llirStack.peek() instanceof LLIRAssignment){
-            LLIRAssignment assignment = (LLIRAssignment) this.llirStack.peek();
+        if (peek() instanceof LLIRAssignment){
+            LLIRAssignment assignment = (LLIRAssignment) peek();
             assignment.setExpression(variable);
         }
     }
