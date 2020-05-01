@@ -12,7 +12,6 @@ public class FunctionDescriptor extends TypeDescriptor {
     protected SymbolsTable bodyTable;
     protected SymbolsTable parametersTable;
 
-    private Type actualReturnValue;
     private boolean isStatic;
     private Access access;
     private String name;
@@ -76,15 +75,6 @@ public class FunctionDescriptor extends TypeDescriptor {
         Type type = typeString.parseType();
         //Nao falta string no type?
         this.type = type;
-    }
-
-    public Type getActualReturnValue() {
-        return this.actualReturnValue;
-    }
-    
-    public void setActualReturnValue(String returnValue){
-        //TODO Dar parse da expressao, por exemplo ver se e true ou false e essas cenas
-
     }
 
     public void makeStatic() {
