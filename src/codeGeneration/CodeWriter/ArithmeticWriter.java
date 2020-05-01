@@ -15,12 +15,7 @@ public class ArithmeticWriter {
         this.code += generateLeftCode(arithmetic.getLeftExpression(),name);
         this.code += generateRightCode(arithmetic.getRightExpression(),name);
         this.code += CGConst.arithmeticOperators.get(arithmetic.getOperation()) + "\n";
-
-
     }
-
-
-
 
     private String generateLeftCode(LLIRExpression expression,String name){
 
@@ -33,17 +28,26 @@ public class ArithmeticWriter {
             VariableWriter variableWriter = new VariableWriter((LLIRVariable) expression);
             result += variableWriter.getCode();
         }
+        else if (expression instanceof LLIRArithmetic) {
+            ArithmeticWriter arithmeticWriter = new ArithmeticWriter((LLIRArithmetic) expression,name);
+            result += arithmeticWriter.getCode();
+        }
         else if (expression instanceof LLIRMethodCall) {
             MethodCallWriter methodCallWriter = new MethodCallWriter((LLIRMethodCall) expression);
             result += methodCallWriter.getCode();
-
         }
 
-        return result;
+        /*
+        System.out.println();
+        System.out.println("LEFT CODE");
+        System.out.println(result);
+        System.out.println("\n");
+        */
 
+        return result;
     }
 
-    private String generateRightCode(LLIRExpression expression,String name){
+    private String generateRightCode(LLIRExpression expression, String name){
 
         String result = new String();
         if(expression instanceof LLIRInteger) {
@@ -68,11 +72,19 @@ public class ArithmeticWriter {
             ExpressionWriter expressionWriter = new ExpressionWriter(((LLIRParenthesis) expression).getExpression(),name);
             result += expressionWriter.getCode();
         }
-        return result;
 
+        /*
+        System.out.println();
+        System.out.println("RIGHT CODE");
+        System.out.println(result);
+        System.out.println("\n");
+        */
+
+        return result;
     }
 
     public String getCode(){
         return this.code;
     }
+
 }

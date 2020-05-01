@@ -34,7 +34,6 @@ public class MethodCallWriter {
         for (LLIRExpression expression : parameters){
             ExpressionWriter expressionWriter = new ExpressionWriter(expression,"NAME");
             result += expressionWriter.getCode();
-
         }
 
         return result;

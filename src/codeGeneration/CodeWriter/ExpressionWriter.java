@@ -27,7 +27,10 @@ public class ExpressionWriter {
         }
 
         else if (expression instanceof LLIRArithmetic) {
-            ArithmeticWriter arithmeticWriter = new ArithmeticWriter((LLIRArithmetic) expression,name);
+            ArithmeticTransformer transformer = new ArithmeticTransformer((LLIRArithmetic) expression);
+            LLIRArithmetic transformed = transformer.transform();
+
+            ArithmeticWriter arithmeticWriter = new ArithmeticWriter(transformed,name);
             this.code += arithmeticWriter.getCode();
         }
 
