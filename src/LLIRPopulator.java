@@ -152,6 +152,16 @@ public class LLIRPopulator {
 
     }
 
+    public void popReturn(){
+        if(lastIsLLIRExpression()){
+            LLIRExpression expression = (LLIRExpression) this.llirStack.pop();
+            if(peek() instanceof  LLIRReturn){
+                LLIRReturn returnLLIR = (LLIRReturn) peek();
+                returnLLIR.setExpression(expression);
+            }
+        }
+    }
+
     public void popArguments(){
 
         List<LLIRExpression> arguments = new ArrayList<>();

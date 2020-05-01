@@ -384,7 +384,11 @@ public class TableGenerator {
 
             //Method Body Parser 
             if (child.getId() == JavammTreeConstants.JJTRETURN){
+                LLIRReturn llirReturn = new LLIRReturn();
+                llirPopulator.addLLIR(llirReturn);
                 inspectReturn(child, functionDescriptor);
+                llirPopulator.popReturn();
+                this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
             }
             else inspectVariableAndStatement(child, functionDescriptor);
         }

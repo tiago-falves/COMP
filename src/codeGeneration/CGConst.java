@@ -11,6 +11,7 @@ public class CGConst {
     public static HashMap<Type, String> types;
     public static HashMap<Type, String> store;
     public static HashMap<Type, String> load;
+    public static HashMap<Type, String> returnTypes;
     public static HashMap<ArithmeticOperation, String> arithmeticOperators;
 
     static {
@@ -18,6 +19,7 @@ public class CGConst {
         store = new HashMap<>();
         load = new HashMap<>();
         arithmeticOperators = new HashMap<>();
+        returnTypes = new HashMap<>();
 
         arithmeticOperators.put(SUM, "\tiadd");
         arithmeticOperators.put(SUBTRACTION, "\tisub");
@@ -40,6 +42,11 @@ public class CGConst {
         load.put(Type.STRING_ARRAY, "\taload_");
         load.put(Type.STRING, "\taload_");
         load.put(Type.CLASS, "\taload\t");
+
+        returnTypes.put(Type.INT, "?\tireturn");
+        returnTypes.put(Type.BOOLEAN, "?\tireturn");
+        returnTypes.put(Type.INT_ARRAY, "?\tareturn");
+        returnTypes.put(Type.VOID, "?\treturn");
 
     }
 

@@ -1,83 +1,40 @@
-.class public Lazysort
-.super Quicksort
+.class public Simple
+.super java/lang/Object
 .method public <init>()V
 	aload_0
-	invokenonvirtual Quicksort<init>()V
+	invokenonvirtual java/lang/Object<init>()V
 	return
-.end method
-
-.method public quicksort([III)Z
-	.limit stack 99
-	.limit locals 99
-.end method
-
-.method public quicksort([I)Z
-	.limit stack 99
-	.limit locals 99
-	iconst_0
-	iconst_5
-	invokestatic MathUtils/random(II)I
-	iconst_1
-	istore	2
-	iconst_0
-	istore	2
-	iload_2
-	istore_2
-	aload_0
-	iload_1
-	iconst_0
-	iconst_1
-	isub
-	invokevirtual quicksort([III)Z
-	istore_2
-.end method
-
-.method public printL([I)Z
-	.limit stack 99
-	.limit locals 99
 .end method
 
 .method public static main([Ljava/lang/String;)V
 	.limit stack 99
 	.limit locals 99
-	bipush	10
+	bipush	30
 	istore_2
 	iconst_0
+	bipush	10
+	isub
 	istore_3
-	iload_3
-	iconst_1
-	iadd
-	istore_3
-	new Lazysort
+	new Simple
 	dup
-	invokespecial Lazysort/<init>()V
-	astore	5
+	invokespecial Simple/<init>()V
+	astore	4
 	aload_0
 	iload_2
-	invokevirtual q/printL([I)Z
-	istore_4
+	iload_3
+	invokevirtual simple/add(II)I
+	istore_5
+	iload_5
+	invokestatic io/println(I)V
 .end method
 
-.method public beLazy([I)Z
+.method public add(II)I
 	.limit stack 99
 	.limit locals 99
-	istore_2
-	iconst_0
-	istore_3
-	iconst_0
-	bipush	10
-	invokestatic MathUtils/random(II)I
-	iload_3
-	iconst_1
+	iload_1
+	iload_2
 	iadd
-	istore_3
-	iconst_0
-	bipush	10
-	invokestatic MathUtils/random(II)I
-	iload_3
-	iconst_1
-	iadd
-	istore_3
+	return
 .end method
 
 
