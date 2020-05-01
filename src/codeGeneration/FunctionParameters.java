@@ -1,9 +1,6 @@
 package codeGeneration;
 
-import symbols.Descriptor;
-import symbols.FunctionDescriptor;
-import symbols.FunctionParameterDescriptor;
-import symbols.SymbolsTable;
+import symbols.*;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -47,6 +44,20 @@ public class FunctionParameters {
                 }
             }
         }
+        return parameters;
+
+    }
+    public static String getParametersTypes(List<Type> types){
+
+        String parameters = new String();
+        for (Type type : types){
+            String parameter = CGConst.types.get(type);
+            parameters = parameters.concat(parameter);
+
+        }
+
+
+
         return parameters;
 
     }

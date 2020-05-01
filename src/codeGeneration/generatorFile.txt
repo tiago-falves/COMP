@@ -20,13 +20,9 @@
 	.limit stack 
 	.limit locals 
 	bipush	30
-	istore_1
-	iconst_1
-	iconst_5
-	iconst_4
-	imul
-	iadd
-	istore_2
+	istore_4
+	iload_4
+	invokestatic io/println(I)V
 .end method
 
 

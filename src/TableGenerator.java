@@ -358,11 +358,16 @@ public class TableGenerator {
 
             //Method Body Parser 
             if (child.getId() == JavammTreeConstants.JJTRETURN){
+                //this.llirPopulator.addReturn(new LLIRReturn());
                 SimpleNode actualReturn = (SimpleNode) child.jjtGetChild(0);
                 functionDescriptor.setActualReturnValue(actualReturn.val);
             }
             else inspectVariableAndStatement(child, functionDescriptor);
         }
+
+
+
+
 
     }
 
@@ -726,7 +731,20 @@ public class TableGenerator {
 
         for(int i = 0; i < descriptorsList.size(); i++){
             if(descriptorsList.get(i).getClass()  == ImportDescriptor.class){
+
+
                 ImportDescriptor importDescriptor = (ImportDescriptor) descriptorsList.get(i);
+
+                boolean empty = false;
+
+                if(!llirPopulator.getLlirStack().empty()){
+                    empty = true;
+                }
+
+
+                this.llirPopulator.addImport(new LLIRImport(importDescriptor));
+
+                if(empty) this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
 
                 ArrayList<String> importIdentifiers = importDescriptor.getIdentifiers();
                 if(importIdentifiers.size() != identifiers.size()) 
@@ -760,6 +778,8 @@ public class TableGenerator {
                 Type importType = importDescriptor.getType();
                 if(importType == Type.CLASS)
                     return importDescriptor.getClassName();
+
+
                 
                 StringType stringType = new StringType(importType);
                 

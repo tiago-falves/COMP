@@ -11,7 +11,6 @@ public class AssignmentWriter {
 
     public AssignmentWriter(LLIRAssignment assignment) {
 
-
         this.code  = "";
 
         String name = assignment.getVariable().getVariable().getName();
@@ -56,8 +55,6 @@ public class AssignmentWriter {
 
         int variableIndex = FunctionBody.getVariableIndex(name);
         this.code = this.code + variableIndex + "\n";
-
-
 
     }
     public String getCode(){
