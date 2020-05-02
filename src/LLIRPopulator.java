@@ -19,6 +19,7 @@ public class LLIRPopulator {
     }
 
     public LLIRNode popLLIR(){
+        if (this.llirStack.empty()) return new LLIRNull();
         return this.llirStack.pop();
     }
 
@@ -57,8 +58,8 @@ public class LLIRPopulator {
     }
 
     public void setAssignmentVariable(LLIRVariable variable){
-        if (llirStack.peek() instanceof LLIRAssignment){
-            LLIRAssignment assignment = (LLIRAssignment) llirStack.peek();
+        if (this.peek() instanceof LLIRAssignment){
+            LLIRAssignment assignment = (LLIRAssignment) this.peek();
             assignment.setVariable(variable);
         }
 
@@ -189,16 +190,16 @@ public class LLIRPopulator {
     }
 
     public boolean lastIsArithmetic(){
-        if (llirStack.peek() instanceof LLIRArithmetic) return true;
+        if (this.peek() instanceof LLIRArithmetic) return true;
         return false;
     }
 
     public boolean lastIsAssignment(){
-        if (llirStack.peek() instanceof LLIRAssignment) return true;
+        if (this.peek() instanceof LLIRAssignment) return true;
         return false;
     }
     public boolean lastIsLLIRExpression(){
-        if (llirStack.peek() instanceof LLIRExpression) return true;
+        if (this.peek() instanceof LLIRExpression) return true;
         return false;
     }
     public boolean shouldAddArithmetic(){
