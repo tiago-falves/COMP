@@ -1271,24 +1271,18 @@ public class TableGenerator {
     }
 
     private boolean isInImport(SimpleNode node, String classType, SymbolsTable symbolsTable, int initialChild) {
-        //TODO verificar isto
-
         SimpleNode functionNode = (SimpleNode)node.jjtGetChild(initialChild+4);
         List<Descriptor> importDescriptors = symbolsTable.getDescriptor(functionNode.jjtGetVal());
+
+        if (importDescriptors == null)
+            return false;
 
         for (int i = 0; i < importDescriptors.size(); i++) {
             ImportDescriptor importD = (ImportDescriptor)importDescriptors.get(i);
             ArrayList<String> identifiers = importD.getIdentifiers();
 
-            for (int j = 0; j < identifiers.size(); i++) {
-                if (identifiers.get(j).equals(classType) && j == 0) 
-                    return true;
-                else if (identifiers.get(j).equals(classType) && j != 0)
-                    break;
-                else if (identifiers.get(j).equals((functionNode).jjtGetVal()))
-                    return true;
-                else break;
-            }
+            if (identifiers.get(0).equals(classType)) 
+                return true;
         }
 
         return false;
