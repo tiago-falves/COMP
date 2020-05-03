@@ -2,7 +2,7 @@
 .super java/lang/Object
 .method public <init>()V
 	aload_0
-	invokenonvirtual java/lang/Object<init>()V
+	invokenonvirtual java/lang/Object/<init>()V
 	return
 .end method
 
@@ -23,6 +23,12 @@
 	dup
 	invokespecial Simple/<init>()V
 	astore	4
+	aload_0
+	iload_2
+	iload_3
+	invokevirtual simple/add(II)I
+	istore_5
+	return
 .end method
 
 .method public add(II)I

@@ -48,6 +48,8 @@ public class FunctionBody {
 
     public String generate(){
 
+        boolean foundReturn = false;
+
         String generatedCode = new String();
 
         pushVariables();
@@ -67,8 +69,10 @@ public class FunctionBody {
             else if (node instanceof LLIRReturn) {
                 ReturnWriter returnWriter = new ReturnWriter((LLIRReturn) node);
                 generatedCode += returnWriter.getCode();
+                foundReturn = true;
             }
         }
+        if(!foundReturn) generatedCode += "\treturn\n";
         
         return generatedCode;
     }

@@ -30,9 +30,15 @@ public class FunctionHeader {
     }
 
     public String generate() {
+
         String generatedCode = INSTRUCTION;
         if(functionDescriptor.isStatic()) generatedCode+=STATIC;
         generatedCode += methodName + "(" + methodDescriptor + ")" + returnType + "\n";
+
+        if(functionDescriptor.getName()== "main"){
+            generatedCode = ".method public static main([Ljava/lang/String;)V\n";
+        }
+
         generatedCode += STACK_LIMIT + "\n" + LOCALS_LIMIT + "\n";
         return generatedCode;
     }

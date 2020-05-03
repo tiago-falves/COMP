@@ -10,8 +10,8 @@ class Simple {
         a = a + b;
 
         simple = new Simple();
-        //c = simple.add(a,b); //Aqui que aload e que se deve fazer?
-        //io.println(c);
+        c = simple.add(a,b); //Aqui que aload e que se deve fazer?
+        //io.println(a);
 	}
 	public int add(int a, int b){
 		return a+b;

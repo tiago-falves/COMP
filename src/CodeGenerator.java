@@ -26,7 +26,6 @@ public class CodeGenerator {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     public void generate(){
@@ -62,20 +61,6 @@ public class CodeGenerator {
     private void generateFunction(FunctionDescriptor functionDescriptor) {
         FunctionGenerator functionGenerator = new FunctionGenerator(functionDescriptor);
         write(functionGenerator.generate());
-
-        //generateFunctionBody(functionDescriptor);
-
-    }
-
-    private void generateFunctionBody(FunctionDescriptor functionDescriptor) {
-        VarDeclarations varDeclarations = new VarDeclarations(functionDescriptor);
-        write(varDeclarations.generate());
-        generateStatements(functionDescriptor);
-
-    }
-
-    private void generateStatements(FunctionDescriptor functionDescriptor) {
-        // add
     }
 
     private void generateMainHeader(FunctionDescriptor function) {
@@ -86,13 +71,7 @@ public class CodeGenerator {
         this.builder.append("\n");
     }
 
-    private void tab(){
-        this.builder.append("\t");
-    }
 
-    private void generateClassHeader() {
-        // add
-    }
 
     private void write(String content){
         this.builder.append(content);

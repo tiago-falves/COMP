@@ -13,6 +13,7 @@ public class FunctionGenerator {
     public String generate(){
 
         FunctionHeader functionHeader = new FunctionHeader(functionDescriptor);
+
         FunctionBody functionBody = new FunctionBody(functionDescriptor, functionHeader.getParameters());
         FunctionFooter footer = new FunctionFooter();
 
