@@ -6,6 +6,13 @@ public class Main {
 	
 	public static void main(String[] args) throws ParseException, java.io.FileNotFoundException, SemanticErrorException {
 
+        boolean debugMode = false;
+        
+        for(int i = 1; i < args.length; i++){
+            if(args[i].equals("-d") || args[i].equals("--debug"))
+                debugMode = true;
+        }
+
         ParseException.resetWhileErrors();
 
         SymbolsTable symbolsTable = new SymbolsTable();
@@ -18,19 +25,24 @@ public class Main {
             throw new ParseException("Errors");
         }
 
-        //root.dump(""); // prints the tree on the screen
-        root.dumpTest("", 10);
+        if(debugMode)
+            root.dumpTest("", 10);
 
         TableGenerator tb = new TableGenerator(root);
 
-        System.out.println("\nBUILDING SYMBOLS TABLE WITH SEMANTIC ANALYSIS...\n");
+        if(debugMode)
+            System.out.println("\nBUILDING SYMBOLS TABLE WITH SEMANTIC ANALYSIS...\n");
+        
         tb.build();
+        
         if (tb.getNumErrors() > 0) 
             throw new SemanticErrorException();
 
-        System.out.println("\n\n\nPRINTING SYMBOLS TABLE...\n");
-        tb.getTable().print("");
-        System.out.println();
+        if(debugMode){
+            System.out.println("\n\n\nPRINTING SYMBOLS TABLE...\n");
+            tb.getTable().print("");
+            System.out.println();
+        }
 
         symbolsTable = tb.getTable();
         ClassDescriptor classDescriptor = CodeGenerator.getClass(root, symbolsTable);
