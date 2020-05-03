@@ -20,6 +20,10 @@ To run you have two options: Run the ``.class`` files or run the JAR.
 
 flag -d or --debug
 
+### Treat non-initialized variables as a warning
+
+flag -Winit or --InitializedWarning
+
 ### Run ``.class``
 
 To run the ``.class`` files, do the following:

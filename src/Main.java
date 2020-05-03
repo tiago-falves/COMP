@@ -6,11 +6,16 @@ public class Main {
 	
 	public static void main(String[] args) throws ParseException, java.io.FileNotFoundException, SemanticErrorException {
 
+        // Check Flags
         boolean debugMode = false;
+        boolean initializedWarning = false;
         
         for(int i = 1; i < args.length; i++){
-            if(args[i].equals("-d") || args[i].equals("--debug"))
+            if(args[i].equals("-d") || args[i].equals("--debug")){
                 debugMode = true;
+            }else if(args[i].equals("-Winit") || args[i].equals("--InitializedWarning")){
+                initializedWarning = true;
+            }
         }
 
         ParseException.resetWhileErrors();
@@ -28,7 +33,7 @@ public class Main {
         if(debugMode)
             root.dumpTest("", 10);
 
-        TableGenerator tb = new TableGenerator(root);
+        TableGenerator tb = new TableGenerator(root, initializedWarning);
 
         if(debugMode)
             System.out.println("\nBUILDING SYMBOLS TABLE WITH SEMANTIC ANALYSIS...\n");

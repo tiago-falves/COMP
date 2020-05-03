@@ -12,14 +12,20 @@ public class TableGenerator {
     LLIRNode currentLLIRNode;
     LLIRMethodCall currentMethodCall;
     private String className;
+    private boolean initializedWarning;
 
     public TableGenerator(SimpleNode rootNode) {
+        this(rootNode, false);
+    }
+
+    public TableGenerator(SimpleNode rootNode, boolean initializedWarning){
         this.rootNode = rootNode;
         this.symbolsTable = new SymbolsTable();
         this.semanticError = new SemanticError();
         this.currentMethodCall= new LLIRMethodCall();
         this.llirPopulator = new LLIRPopulator();
         this.className = null;
+        this.initializedWarning = initializedWarning;
     }
 
     public SymbolsTable getTable() {
@@ -983,7 +989,11 @@ public class TableGenerator {
                 if(descriptor.getClass() == VariableDescriptor.class){
                     VariableDescriptor variableDescriptor = (VariableDescriptor) descriptor;
                     if(!variableDescriptor.isInitialized()){
-                        this.semanticError.printError(node, "Variable " + node.jjtGetVal() + " is not initialized");
+                        if(this.initializedWarning){
+                            System.err.println("Warning: Variable" + node.jjtGetVal() + " is not initialized\n");
+                        }else{
+                            this.semanticError.printError(node, "Variable " + node.jjtGetVal() + " is not initialized");
+                        }
                     }
                     this.llirPopulator.addExpression(new LLIRVariable(variableDescriptor));
                 }
@@ -1162,7 +1172,11 @@ public class TableGenerator {
                     if(descriptor.getClass() == VariableDescriptor.class){
                         VariableDescriptor variableDescriptor = (VariableDescriptor) descriptor;
                         if(!variableDescriptor.isInitialized()){
-                            this.semanticError.printError(node, "Variable " + node.jjtGetVal() + " is not initialized");
+                            if(this.initializedWarning){
+                                System.err.println("Warning: Variable" + node.jjtGetVal() + " is not initialized\n");
+                            }else{
+                                this.semanticError.printError(node, "Variable " + node.jjtGetVal() + " is not initialized");
+                            }
                         }
                         this.llirPopulator.addExpression(new llir.LLIRVariable(variableDescriptor));
                     }
