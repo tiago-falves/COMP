@@ -24,7 +24,7 @@ todas as verificações feitas na análise semantica devem reportar erro excepto
        + devem fazer uma análise através do control flow, i.e., se há um if e a variável só é inicializada dentro de ou o then ou o else, deve-se dar um warning a indicar que poderá não estar inicializada 
        + será considerado bónus a quem resolver esta verificação usando erros em vez de warning. ✔
             - cuidado que se a analise não estiver bem feita os erros vão fazer com que o vosso compilador não passe para a geração de código! ✔
-			- caso pretendam fazer esta abordagem com erros adicionem uma forma de ativar/desativar o erro para facilitar no caso de haver problemas.
+			- caso pretendam fazer esta abordagem com erros adicionem uma forma de ativar/desativar o erro para facilitar no caso de haver problemas. ✔
 
 - Function Verification
 	* verificar se o "target" do método existe, e se este contém o método (e.g. a.foo, ver se 'a' existe e se tem um método 'foo') ✔
