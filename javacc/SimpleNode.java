@@ -2,6 +2,7 @@
 /* JavaCCOptions:MULTI=false,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 
 import symbols.SymbolsTable;
+import symbols.*;
 
 public class SimpleNode implements Node {
 
@@ -10,10 +11,28 @@ public class SimpleNode implements Node {
   protected int id;
   protected Object value;
   protected Javamm parser;
-  protected String val;  
+  protected String val;
+  protected Descriptor descriptor;
+
+  // Line where the node starts
+  private int line;
+  
+  // Column where the node starts
+  private int column;
+
+  public Descriptor getDescriptor() {
+    return descriptor;
+  }
+
+  public void setDescriptor(Descriptor descriptor) {
+    this.descriptor = descriptor;
+  }
+
 
   public SimpleNode(int i) {
     id = i;
+    this.line = -1;
+    this.column = -1;
   }
 
   public SimpleNode(Javamm p, int i) {
@@ -62,6 +81,22 @@ public class SimpleNode implements Node {
 
   public void jjtSetVal(String val) {
     this.val = val;
+  }
+
+  public void jjtSetLine(int line){
+    this.line = line;
+  }
+
+  public int jjtGetLine(){
+    return this.line;
+  }
+
+  public void jjtSetColumn(int column){
+    this.column = column;
+  }
+
+  public int jjtGetColumn(){
+    return this.column;
   }
 
   /* You can override these two methods in subclasses of SimpleNode to

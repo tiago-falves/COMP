@@ -5,5 +5,7 @@ public enum Type {
     INT_ARRAY,
     VOID,
     BOOLEAN,
-    CLASS
+    CLASS,
+    STRING,
+    STRING_ARRAY
 };

@@ -17,12 +17,11 @@ public class TypeString {
                 return Type.VOID;
             case "boolean":
                 return Type.BOOLEAN;
+            case "String[]":
+                return Type.STRING_ARRAY;
             case "class":
-                return Type.CLASS;
-
-            //TODO: VER ISTO
             default:
-                return Type.VOID;
+                return Type.CLASS;
         }
     }
 }

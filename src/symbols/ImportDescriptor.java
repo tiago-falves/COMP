@@ -2,17 +2,17 @@ package symbols;
 
 import java.util.ArrayList;
 
-public class ImportDescriptor extends Descriptor {
+public class ImportDescriptor extends TypeDescriptor {
     boolean isStatic;
     ArrayList<String> identifiers;
     ArrayList<Type> parameters;
-    Type returnType;
 
     public ImportDescriptor() {
+        super(null);
         this.isStatic = false;
         this.identifiers = new ArrayList();
         this.parameters = new ArrayList();
-        this.returnType = null;
+        this.type = Type.VOID;
     }
 
     // Identifiers
@@ -63,14 +63,47 @@ public class ImportDescriptor extends Descriptor {
 
     // Return
     public boolean hasReturn() {
-        return this.returnType != null;
+        return this.type != null;
     }
 
     public Type getReturn() {
-        return this.returnType;
+        return this.type;
     }
 
     public void setReturn(Type returnType) {
-        this.returnType = returnType;
+        this.type = returnType;
+    }
+
+    public void print(String prefix) {
+        String newPrefix = prefix + "   ";
+
+        String staticString;
+        if(isStatic) staticString = "static";
+        else staticString = "non-static";
+
+        StringBuilder identifierBuilder = new StringBuilder();
+        for(String identifier : identifiers) {
+            identifierBuilder.append(identifier);
+        }
+
+        // printing the import name
+        System.out.println(prefix + "IMPORT " + identifierBuilder.toString() + " (" + staticString + ")");
+
+        // printing return value
+        System.out.println(newPrefix + "Return:\n" + newPrefix + "   " + this.type);
+
+        // printing parameters
+        if(parameters.size() > 0) {
+            System.out.println(newPrefix + "Parameters:");
+            for(Type paramater : this.parameters) {
+                System.out.println(newPrefix + "   " + paramater);
+            }
+        } else {
+            System.out.println(newPrefix + "Parameters:");
+            System.out.println(newPrefix + "   " + "None");
+        }
+
+
+        System.out.println("");
     }
 }
