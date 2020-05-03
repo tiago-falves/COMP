@@ -1173,7 +1173,7 @@ public class TableGenerator {
                         VariableDescriptor variableDescriptor = (VariableDescriptor) descriptor;
                         if(!variableDescriptor.isInitialized()){
                             if(this.initializedWarning){
-                                System.err.println("Warning: Variable" + node.jjtGetVal() + " is not initialized\n");
+                                System.err.println("Warning: Variable " + node.jjtGetVal() + " is not initialized\n");
                             }else{
                                 this.semanticError.printError(node, "Variable " + node.jjtGetVal() + " is not initialized");
                             }
