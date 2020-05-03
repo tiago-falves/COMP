@@ -16,6 +16,10 @@ To compile the program, run ``gradle build``. This will compile your classes to 
 
 To run you have two options: Run the ``.class`` files or run the JAR.
 
+### Debug mode 
+
+flag -d or --debug
+
 ### Run ``.class``
 
 To run the ``.class`` files, do the following:
