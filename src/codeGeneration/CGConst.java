@@ -33,11 +33,11 @@ public class CGConst {
         types.put(Type.VOID, "V");
         types.put(Type.STRING_ARRAY, "[Ljava/lang/String;"); //TODO Quase certo que isto nao esta bem
 
-        store.put(Type.INT, "\tistore_");
+        store.put(Type.INT, "\tistore");
         store.put(Type.BOOLEAN, "\tistore\t");
         store.put(Type.CLASS, "\tastore\t");
 
-        load.put(Type.INT, "\tiload_");
+        load.put(Type.INT, "\tiload");
         load.put(Type.BOOLEAN, "\tiload_");
         load.put(Type.STRING_ARRAY, "\taload_");
         load.put(Type.STRING, "\taload_");

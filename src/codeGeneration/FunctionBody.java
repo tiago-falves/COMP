@@ -91,6 +91,14 @@ public class FunctionBody {
         return variableIndex;
     }
 
+    public static String getVariableIndexString(String name){
+        int number = getVariableIndex(name);
+        if(number <= 3) return "_" + number;
+        else return "\t" + number;
+    }
+
+    
+
 
 
 }

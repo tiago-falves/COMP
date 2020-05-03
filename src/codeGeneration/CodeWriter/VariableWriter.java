@@ -18,7 +18,7 @@ public class VariableWriter {
 
         FunctionBody.currentOperationIndex = 0;
 
-        int variableIndex = FunctionBody.getVariableIndex(variable.getVariable().getName());
+        String variableIndex = FunctionBody.getVariableIndexString(variable.getVariable().getName());
         this.code = this.code + variableIndex + "\n";
     }
 

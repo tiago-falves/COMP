@@ -57,7 +57,7 @@ public class AssignmentWriter {
         FunctionBody.currentOperationIndex = 0;
 
         // assign to the correct variable
-        int variableIndex = FunctionBody.getVariableIndex(name);
+        String variableIndex = FunctionBody.getVariableIndexString(name);
         this.code = this.code + variableIndex + "\n";
 
     }

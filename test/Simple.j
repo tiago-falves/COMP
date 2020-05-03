@@ -22,12 +22,14 @@
 	new Simple
 	dup
 	invokespecial Simple/<init>()V
-	astore	4
-	aload_0
+	astore		4
+	aload	4
 	iload_2
 	iload_3
-	invokevirtual simple/add(II)I
-	istore_5
+	invokevirtual Simple/add(II)I
+	istore	5
+	iload_2
+	invokestatic ioa/println(I)V
 	return
 .end method
 
