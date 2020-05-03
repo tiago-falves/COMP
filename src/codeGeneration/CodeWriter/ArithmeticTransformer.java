@@ -39,8 +39,6 @@ public class ArithmeticTransformer {
 
         LLIRArithmetic result = (LLIRArithmetic) recursiveTransform(expressions, operators, 1);
 
-        // TODO: check parenthesis and transform the arithmetics inside them
-
         return result;
     }
 
