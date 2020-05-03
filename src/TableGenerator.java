@@ -566,7 +566,7 @@ public class TableGenerator {
             return;
         }
 
-        String expressionType = inspectExpression(whileExpression, statementParentTable); //TODO Store this expression in the block descriptor
+        String expressionType = inspectExpression(whileExpression, statementParentTable);
         if(expressionType == null){
             this.semanticError.printError(whileExpression, "Can't process while statement due to invalid expression");
             return;
@@ -606,7 +606,7 @@ public class TableGenerator {
             return;
         }
 
-        String expressionType = inspectExpression(ifExpression, statementParentTable); //TODO Store this expression in the block descriptor
+        String expressionType = inspectExpression(ifExpression, statementParentTable); 
         if(expressionType == null){
             this.semanticError.printError(ifExpression, "Can't process if statement due to invalid expression");
             return;
@@ -973,10 +973,6 @@ public class TableGenerator {
                     return null;
                 }
 
-              /*  if(descriptors.size() > 1){
-                    this.semanticError.printError(node, "Argument " + node.jjtGetVal() + " is defined more than once");
-                    return null;
-                }*/
                 TypeDescriptor descriptor = (TypeDescriptor) descriptors.get(0);
                 
                 Type type = descriptor.getType();
@@ -1002,8 +998,7 @@ public class TableGenerator {
                 return inspectExpression(node, symbolsTable);
             }
             default: {
-                //TODO Adicionar mais casos
-                this.semanticError.printError(node,"Argument Node ID: " + node.getId()); //Para detetar novos casos 
+                System.out.println("Warning: Unknown Argument Node ID: " + node.getId()); //Para detetar novos casos 
             }
         }
 
@@ -1231,7 +1226,6 @@ public class TableGenerator {
                     String returnValue = inspectClassInstantiation(argumentNode, symbolsTable, initialChild);
                     return returnValue;
                 }
-                //TODO Check this  
                 case JavammTreeConstants.JJTNEGATION: {
                     if(type == null){
                         type = "boolean";
@@ -1241,7 +1235,6 @@ public class TableGenerator {
                     }
                     break;
                 }
-                //TODO Check this  
                 case JavammTreeConstants.JJTLESS: {
                     if(!type.equals("int")){
                         this.semanticError.printError(node, "CAN'T COMPARE " + type + " WITH OPERATOR <");
@@ -1266,7 +1259,7 @@ public class TableGenerator {
                     if(type == null){
                         type = expressionType;
                     }else if(!type.equals(expressionType)){
-                        this.semanticError.printError(node, ""); //TODO Add print message
+                        this.semanticError.printError(node, "CAN'T EVALUATE EXPRESSION INSIDE PARENTHESES");
                     }
                     this.llirPopulator.popParenthesis();
 
