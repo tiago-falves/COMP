@@ -725,12 +725,13 @@ public class TableGenerator {
         SimpleNode child = (SimpleNode) statementNode.jjtGetChild(initialChild+1);
         int nextChild = initialChild+1;
 
-        if (imported)
+        if (imported){
             if (child.getId() == JavammTreeConstants.JJTARGUMENTS) {
                 child = (SimpleNode) statementNode.jjtGetChild(initialChild+2);
                 nextChild++;
                 initialChild++;
             }
+        }
 
         if(child.getId() == JavammTreeConstants.JJTDOT){
             String identifierName = checkFunctionCallVariableType(node.jjtGetVal(), statementNode, symbolsTable, initialChild);
