@@ -106,6 +106,14 @@ public class LLIRPopulator {
         this.llirStack.push(arithmetic);
     }
 
+    public void addConditional(LLIRConditional conditional){
+        if(peek() instanceof LLIRExpression){
+            conditional.setLeftExpression((LLIRExpression) this.llirStack.pop());
+        }
+
+        this.llirStack.push(conditional);
+    }
+
     public void addReturn(LLIRReturn returnLLIR){
         this.llirStack.push(returnLLIR);
     }
@@ -119,17 +127,24 @@ public class LLIRPopulator {
             if(peek() instanceof LLIRArithmetic){
                 ((LLIRArithmetic)peek()).setRightExpression((LLIRExpression) node);
             }
+            if(peek() instanceof LLIRConditional){
+                ((LLIRConditional)peek()).setRightExpression((LLIRExpression)node);
+            }
             if(peek() instanceof LLIRAssignment){
                 ((LLIRAssignment)peek()).setExpression((LLIRExpression) node);
             }
         }
 
         //In case of a complex assignment
-        while (peek() instanceof LLIRArithmetic || peek() instanceof LLIRExpression ){
+        while (peek() instanceof LLIRArithmetic || peek() instanceof LLIRExpression || peek() instanceof LLIRConditional){
             LLIRExpression actual = (LLIRExpression) this.llirStack.pop();
 
             if (peek() instanceof LLIRArithmetic){
                 LLIRArithmetic previous = (LLIRArithmetic) peek();
+                previous.setRightExpression(actual);
+            }
+            if (peek() instanceof LLIRConditional){
+                LLIRConditional previous = (LLIRConditional) peek();
                 previous.setRightExpression(actual);
             }
             else if (peek() instanceof LLIRAssignment){
@@ -194,6 +209,11 @@ public class LLIRPopulator {
         return false;
     }
 
+    public boolean lastIsConditional(){
+        if(this.peek() instanceof LLIRConditional) return true;
+        return false;
+    }
+
     public boolean lastIsAssignment(){
         if (this.peek() instanceof LLIRAssignment) return true;
         return false;
@@ -206,6 +226,13 @@ public class LLIRPopulator {
         if (lastIsArithmetic()){
             LLIRArithmetic arithmetic = (LLIRArithmetic) peek();
             if (arithmetic.foundOperator()) return true;
+        }
+        return false;
+    }
+    public boolean shouldAddConditional(){
+        if (lastIsConditional()){
+            LLIRConditional conditional = (LLIRConditional) peek();
+            if (conditional.foundOperator()) return true;
         }
         return false;
     }
@@ -229,6 +256,22 @@ public class LLIRPopulator {
                 }
                 case JavammTreeConstants.JJTMINUS: {
                     arithmetic.setOperation(ArithmeticOperation.SUBTRACTION);
+                    break;
+                }
+            }
+        }else if(lastIsConditional()){
+            LLIRConditional conditional = (LLIRConditional) peek();
+            switch(nodeId){
+                case JavammTreeConstants.JJTAND:{
+                    conditional.setOperation(ConditionalOperation.AND);
+                    break;
+                }
+                case JavammTreeConstants.JJTLESS:{
+                    conditional.setOperation(ConditionalOperation.LESS_THAN);
+                    break;
+                }
+                case JavammTreeConstants.JJTNEGATION:{
+                    conditional.setOperation(ConditionalOperation.NEGATION);
                     break;
                 }
             }

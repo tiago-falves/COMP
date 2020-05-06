@@ -1039,13 +1039,7 @@ public class TableGenerator {
 
                     break;
                 }
-                case JavammTreeConstants.JJTTRUE: {
-                    // Adding boolean to the LLIR Assignment node, if applicable
-                    //ARITHMETIC
-
-                    //arithmetics.get(arithmetics.size()-1).setExpression(currentMethodCall);
-
-                }
+                case JavammTreeConstants.JJTTRUE:
                 case JavammTreeConstants.JJTFALSE: {
                     if(type == null){
                         type = "boolean";
@@ -1054,9 +1048,8 @@ public class TableGenerator {
                         return null;
                     }
 
-                    //ARITHMETIC
-                    //arithmetics.get(arithmetics.size()-1).setExpression(new llir.LLIRBoolean(false));
-
+                    //CONDITIONAL
+                    this.llirPopulator.addExpression(new llir.LLIRBoolean(node.getId() == JavammTreeConstants.JJTTRUE ? true : false));
 
                     break;
                 }
@@ -1193,6 +1186,11 @@ public class TableGenerator {
                         this.semanticError.printError(node, "OPERATION && IS INCOMPATIBLE WITH " + type);
                         return null;
                     }
+                    
+                    //CONDITIONAL &&
+                    if(llirPopulator.lastIsLLIRExpression()) this.llirPopulator.addConditional(new LLIRConditional());
+                    this.llirPopulator.addOperator(node.getId());
+
                     break;
                 }
                 case JavammTreeConstants.JJTNEW: {
@@ -1247,6 +1245,11 @@ public class TableGenerator {
                         this.semanticError.printError(node, "OPERATION ! IS INCOMPATIBLE WITH " + type);
                         return null;
                     }
+
+                    //CONDITIONAL !
+                    if(llirPopulator.lastIsLLIRExpression()) this.llirPopulator.addConditional(new LLIRConditional());
+                    this.llirPopulator.addOperator(node.getId());
+
                     break;
                 }
                 case JavammTreeConstants.JJTLESS: {
@@ -1255,6 +1258,10 @@ public class TableGenerator {
                         return null;
                     }
                     
+                    //CONDITIONAL <
+                    if(llirPopulator.lastIsLLIRExpression()) this.llirPopulator.addConditional(new LLIRConditional());
+                    this.llirPopulator.addOperator(node.getId());
+
                     String otherType = inspectExpression(argumentNode, symbolsTable, i+1);
                     if(!otherType.equals("int")){
                         this.semanticError.printError(node, "CAN'T COMPARE " + otherType + " WITH OPERATOR <");
