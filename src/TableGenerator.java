@@ -14,6 +14,7 @@ public class TableGenerator {
     private String className;
     private boolean initializedWarning;
     private ArrayList<VariableDescriptor> initializedIfVars = new ArrayList<>();
+     private ArrayList<VariableDescriptor> initializedElseVars = new ArrayList<>();
 
     public TableGenerator(SimpleNode rootNode) {
         this(rootNode, false);
@@ -424,10 +425,10 @@ public class TableGenerator {
     }
 
     public void inspectLineStatement(SimpleNode statementNode, SymbolsTable symbolsTable) throws SemanticErrorException {
-        inspectLineStatement(statementNode, symbolsTable, false);
+        inspectLineStatement(statementNode, symbolsTable, false, false);
     }
 
-    public void inspectLineStatement(SimpleNode statementNode, SymbolsTable symbolTable, boolean isIfClause) throws SemanticErrorException {
+    public void inspectLineStatement(SimpleNode statementNode, SymbolsTable symbolTable, boolean isIfClause, boolean foundElseClause) throws SemanticErrorException {
         if(statementNode.jjtGetNumChildren() < 3){
             this.semanticError.printError(statementNode, "Invalid Line Statement");
             return;
@@ -494,8 +495,13 @@ public class TableGenerator {
 
             if(typeDescriptor.getClass() == VariableDescriptor.class){
                 VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
-                if (!variableDescriptor.isInitialized() && isIfClause)
+                if (!variableDescriptor.isInitialized() && isIfClause && !foundElseClause) {
+                    variableDescriptor.setInitializedInIfClause();
                     this.initializedIfVars.add(variableDescriptor);
+                }
+                else if (variableDescriptor.isInitializedInIfClause() && isIfClause && foundElseClause) {
+                    this.initializedElseVars.add(variableDescriptor);
+                }
                 variableDescriptor.setInitialized();
                 this.llirPopulator.setAssignmentVariable(new LLIRVariable(variableDescriptor));
             }
@@ -551,8 +557,10 @@ public class TableGenerator {
 
             if(typeDescriptor.getClass() == VariableDescriptor.class){
                 VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
-                if (!variableDescriptor.isInitialized() && isIfClause)
+                if (!variableDescriptor.isInitialized() && isIfClause && !foundElseClause)
                     this.initializedIfVars.add(variableDescriptor);
+                else if (isIfClause && foundElseClause)
+                    this.initializedElseVars.add(variableDescriptor);
                 variableDescriptor.setInitialized();
             }
             //TODO Add case where variable is a FunctionParameterDescriptor -> useful in the code generation
@@ -639,7 +647,7 @@ public class TableGenerator {
             SimpleNode statementNode = (SimpleNode) ifNode.jjtGetChild(i);
 
             if (statementNode.getId() == JavammTreeConstants.JJTLINESTATEMENT ){
-                inspectLineStatement(statementNode, blockDescriptor.getLocalTable(), true);
+                inspectLineStatement(statementNode, blockDescriptor.getLocalTable(), true, found_else);
             } else if(statementNode.getId() == JavammTreeConstants.JJTWHILESTATEMENT){
                 inspectWhileStatement(statementNode, blockDescriptor.getLocalTable());
             } else if(statementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
@@ -655,16 +663,37 @@ public class TableGenerator {
             }
         }
 
+        handleIfVarsInitializations();
+    }
+
+    private void handleIfVarsInitializations() throws SemanticErrorException {
         for (int i = 0; i < this.initializedIfVars.size(); i++) {
-            /*List<Descriptor> vars = statementParentTable.getDescriptor(this.initializedIfVars.get(i).getName());
-            if (vars == null)
-                break;
-            Descriptor var = vars.get(0);
-            if (var.getClass() != VariableDescriptor.class)
-                break;
-            VariableDescriptor varDesc = (VariableDescriptor)var;
-            if (!varDesc.isInitialized())*/
-                System.out.println("Warning: Variable "+this.initializedIfVars.get(i).getName()+" might not have been initialized.");
+            for (int j = 0; j < this.initializedElseVars.size(); j++) {
+                if (this.initializedIfVars.get(i).getName().equals(this.initializedElseVars.get(j).getName())) {
+                    this.initializedIfVars.remove(i);
+                    this.initializedElseVars.remove(j);
+                    i--;
+                    break;
+                }
+            }
+        }
+        for (int i = 0; i < this.initializedElseVars.size(); i++) {
+            for (int j = 0; j < this.initializedIfVars.size(); j++) {
+                if (this.initializedElseVars.get(i).getName().equals(this.initializedIfVars.get(j).getName())) {
+                    this.initializedIfVars.remove(i);
+                    this.initializedElseVars.remove(j);
+                    i--;
+                    break;
+                }
+            }
+        }
+        System.out.println(this.initializedIfVars.size());
+        System.out.println(this.initializedElseVars.size());
+        for (int i = 0; i < this.initializedIfVars.size(); i++) {
+            System.out.println("Warning: Variable "+this.initializedIfVars.get(i).getName()+" might not have been initialized.");
+        }
+        for (int i = 0; i < this.initializedElseVars.size(); i++) {
+            System.out.println("Warning: Variable "+this.initializedElseVars.get(i).getName()+" might not have been initialized.");
         }
     }
 

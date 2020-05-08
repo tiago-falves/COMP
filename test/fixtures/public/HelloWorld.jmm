@@ -6,9 +6,11 @@ class HelloWorld {
 		int z;
 
 		if (true) {
+			x = 2;
 		}
 		else {
-			x = 0;
+			x = 2;
+			x = 4;
 		}
 
 		y = x + 2;
