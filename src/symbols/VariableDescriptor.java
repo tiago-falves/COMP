@@ -2,7 +2,8 @@ package symbols;
 
 public class VariableDescriptor extends NamedTypeDescriptor{
     boolean isInitialized;
-    boolean initializedInIfClause;
+    boolean initializedInIfClause = false;
+    boolean initializedInElseClause = false;
 
     public VariableDescriptor(Type type) {
         super(type);
@@ -22,12 +23,20 @@ public class VariableDescriptor extends NamedTypeDescriptor{
         this.initializedInIfClause = true;
     }
 
+    public void setInitializedInElseClause() {
+        this.initializedInElseClause = true;
+    }
+
     public boolean isInitialized(){
         return isInitialized;
     }
 
     public boolean isInitializedInIfClause(){
         return initializedInIfClause;
+    }
+
+    public boolean isInitializedInElseClause(){
+        return initializedInElseClause;
     }
 
     public void print(String prefix) {

@@ -495,12 +495,15 @@ public class TableGenerator {
 
             if(typeDescriptor.getClass() == VariableDescriptor.class){
                 VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
-                if (!variableDescriptor.isInitialized() && isIfClause && !foundElseClause) {
-                    variableDescriptor.setInitializedInIfClause();
-                    this.initializedIfVars.add(variableDescriptor);
-                }
-                else if (variableDescriptor.isInitializedInIfClause() && isIfClause && foundElseClause) {
-                    this.initializedElseVars.add(variableDescriptor);
+                if (!variableDescriptor.isInitialized() || variableDescriptor.isInitializedInIfClause()) {
+                    if (!variableDescriptor.isInitializedInIfClause() && isIfClause && !foundElseClause) {
+                        variableDescriptor.setInitializedInIfClause();
+                        this.initializedIfVars.add(variableDescriptor);
+                    }
+                    else if (!variableDescriptor.isInitializedInElseClause() && isIfClause && foundElseClause) {
+                        variableDescriptor.setInitializedInElseClause();
+                        this.initializedElseVars.add(variableDescriptor);
+                    }
                 }
                 variableDescriptor.setInitialized();
                 this.llirPopulator.setAssignmentVariable(new LLIRVariable(variableDescriptor));
@@ -557,10 +560,15 @@ public class TableGenerator {
 
             if(typeDescriptor.getClass() == VariableDescriptor.class){
                 VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
-                if (!variableDescriptor.isInitialized() && isIfClause && !foundElseClause)
+
+                if (!variableDescriptor.isInitializedInIfClause() && isIfClause && !foundElseClause) {
+                    variableDescriptor.setInitializedInIfClause();
                     this.initializedIfVars.add(variableDescriptor);
-                else if (isIfClause && foundElseClause)
+                }
+                if (!variableDescriptor.isInitializedInElseClause() && isIfClause && foundElseClause) {
+                    variableDescriptor.setInitializedInElseClause();
                     this.initializedElseVars.add(variableDescriptor);
+                }
                 variableDescriptor.setInitialized();
             }
             //TODO Add case where variable is a FunctionParameterDescriptor -> useful in the code generation
@@ -687,8 +695,7 @@ public class TableGenerator {
                 }
             }
         }
-        System.out.println(this.initializedIfVars.size());
-        System.out.println(this.initializedElseVars.size());
+        
         for (int i = 0; i < this.initializedIfVars.size(); i++) {
             System.out.println("Warning: Variable "+this.initializedIfVars.get(i).getName()+" might not have been initialized.");
         }
