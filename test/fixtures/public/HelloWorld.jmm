@@ -1,7 +1,19 @@
 import static ioPlus.printHelloWorld(void) void;
 class HelloWorld {
 	public static void main(String[] args) {
-		//ioPlus.printHelloWorld();
+		int x;
+		int y;
+		int z;
+
+		if (true) {
+		}
+		else {
+			x = 0;
+		}
+
+		y = x + 2;
+
+		ioPlus.printHelloWorld();
 	}
 
 }

@@ -13,6 +13,7 @@ public class TableGenerator {
     LLIRMethodCall currentMethodCall;
     private String className;
     private boolean initializedWarning;
+    private ArrayList<VariableDescriptor> initializedIfVars = new ArrayList<>();
 
     public TableGenerator(SimpleNode rootNode) {
         this(rootNode, false);
@@ -422,7 +423,11 @@ public class TableGenerator {
         }
     }
 
-    public void inspectLineStatement(SimpleNode statementNode, SymbolsTable symbolTable) throws SemanticErrorException {
+    public void inspectLineStatement(SimpleNode statementNode, SymbolsTable symbolsTable) throws SemanticErrorException {
+        inspectLineStatement(statementNode, symbolsTable, false);
+    }
+
+    public void inspectLineStatement(SimpleNode statementNode, SymbolsTable symbolTable, boolean isIfClause) throws SemanticErrorException {
         if(statementNode.jjtGetNumChildren() < 3){
             this.semanticError.printError(statementNode, "Invalid Line Statement");
             return;
@@ -489,6 +494,8 @@ public class TableGenerator {
 
             if(typeDescriptor.getClass() == VariableDescriptor.class){
                 VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
+                if (!variableDescriptor.isInitialized() && isIfClause)
+                    this.initializedIfVars.add(variableDescriptor);
                 variableDescriptor.setInitialized();
                 this.llirPopulator.setAssignmentVariable(new LLIRVariable(variableDescriptor));
             }
@@ -544,6 +551,8 @@ public class TableGenerator {
 
             if(typeDescriptor.getClass() == VariableDescriptor.class){
                 VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
+                if (!variableDescriptor.isInitialized() && isIfClause)
+                    this.initializedIfVars.add(variableDescriptor);
                 variableDescriptor.setInitialized();
             }
             //TODO Add case where variable is a FunctionParameterDescriptor -> useful in the code generation
@@ -630,17 +639,32 @@ public class TableGenerator {
             SimpleNode statementNode = (SimpleNode) ifNode.jjtGetChild(i);
 
             if (statementNode.getId() == JavammTreeConstants.JJTLINESTATEMENT ){
-                inspectLineStatement(statementNode, blockDescriptor.getLocalTable());
+                inspectLineStatement(statementNode, blockDescriptor.getLocalTable(), true);
             } else if(statementNode.getId() == JavammTreeConstants.JJTWHILESTATEMENT){
                 inspectWhileStatement(statementNode, blockDescriptor.getLocalTable());
             } else if(statementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
+                ArrayList<VariableDescriptor> initializedIfVarsLocal = initializedIfVars;
+                initializedIfVars = new ArrayList<>();
                 inspectIfStatement(statementNode, blockDescriptor.getLocalTable());
+                initializedIfVars = initializedIfVarsLocal;
             } else if(statementNode.getId() == JavammTreeConstants.JJTELSE && !found_else){
                 found_else = true;
                 continue;
             } else{
                 this.semanticError.printError(statementNode, "Unknown symbol "+statementNode.getId());
             }
+        }
+
+        for (int i = 0; i < this.initializedIfVars.size(); i++) {
+            /*List<Descriptor> vars = statementParentTable.getDescriptor(this.initializedIfVars.get(i).getName());
+            if (vars == null)
+                break;
+            Descriptor var = vars.get(0);
+            if (var.getClass() != VariableDescriptor.class)
+                break;
+            VariableDescriptor varDesc = (VariableDescriptor)var;
+            if (!varDesc.isInitialized())*/
+                System.out.println("Warning: Variable "+this.initializedIfVars.get(i).getName()+" might not have been initialized.");
         }
     }
 
