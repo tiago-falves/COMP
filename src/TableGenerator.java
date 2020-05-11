@@ -497,8 +497,9 @@ public class TableGenerator {
             if(typeDescriptor.getClass() == VariableDescriptor.class){
                 VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
                 if (!variableDescriptor.isInitialized() || variableDescriptor.isInitializedInIf()) {
-                    if (isElse)
+                    if (isElse) {
                         this.initializedElseVars.add(variableDescriptor);
+                    }
                     else if (isIf) {
                         this.initializedIfVars.add(variableDescriptor);
                         variableDescriptor.setInitializedInIf();
@@ -625,6 +626,10 @@ public class TableGenerator {
     }
 
     public void inspectIfStatement(SimpleNode ifNode, SymbolsTable statementParentTable) throws SemanticErrorException {
+        inspectIfStatement(ifNode, statementParentTable, true);
+    }
+
+    public void inspectIfStatement(SimpleNode ifNode, SymbolsTable statementParentTable, boolean isFirst) throws SemanticErrorException {
         if(ifNode.jjtGetNumChildren() == 0){
             this.semanticError.printError(ifNode, "If needs to have an expression.");
             return;
@@ -659,10 +664,19 @@ public class TableGenerator {
                 inspectWhileStatement(statementNode, blockDescriptor.getLocalTable());
             } else if(statementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
 
-                HashSet<VariableDescriptor> initializedIfVarsLocal = this.initializedIfVars;
-                this.initializedIfVars = new HashSet<VariableDescriptor>();
-                inspectIfStatement(statementNode, blockDescriptor.getLocalTable());
-                this.initializedIfVars.addAll(initializedIfVarsLocal);
+                HashSet<VariableDescriptor> initializedVarsLocal = new HashSet<>();
+                if (found_else && isFirst) {
+                    initializedVarsLocal = this.initializedElseVars;
+                    this.initializedElseVars.clear();
+                }
+                else  {
+                    initializedVarsLocal = this.initializedIfVars;
+                    this.initializedIfVars.clear();
+                }
+                inspectIfStatement(statementNode, blockDescriptor.getLocalTable(), false);
+                if (found_else && isFirst)
+                    this.initializedElseVars.addAll(initializedVarsLocal);
+                else this.initializedIfVars.addAll(initializedVarsLocal);
 
             } else if(statementNode.getId() == JavammTreeConstants.JJTELSE && !found_else){
                 found_else = true;
@@ -672,20 +686,19 @@ public class TableGenerator {
             }
         }
 
-        handleIfVarsInitializations();
+        handleIfVarsInitializations(found_else, isFirst);
     }
 
-    private void handleIfVarsInitializations() throws SemanticErrorException {
-        HashSet<VariableDescriptor> initializedIfVarsLocal = new HashSet<>();
-
+    private void handleIfVarsInitializations(boolean isElse, boolean isFirst) throws SemanticErrorException {
+        HashSet<VariableDescriptor> initializedVarsLocal = new HashSet<>();
         Iterator<VariableDescriptor> i = this.initializedIfVars.iterator();
-        Iterator<VariableDescriptor> j = this.initializedElseVars.iterator();
         while (i.hasNext()) {
             VariableDescriptor ifVar = i.next();
+            Iterator<VariableDescriptor> j = this.initializedElseVars.iterator();
             while (j.hasNext()) {
                 VariableDescriptor elseVar = j.next();
                 if (ifVar.getName().equals(elseVar.getName())) {
-                    initializedIfVarsLocal.add(ifVar);
+                    initializedVarsLocal.add(ifVar);
                     i.remove();
                     j.remove();
                     break;
@@ -698,15 +711,18 @@ public class TableGenerator {
         while (k.hasNext()) {
             VariableDescriptor ifVar = k.next();
             ifVar.setNonInitializedInFunction();
-            //System.out.println("Warning: Variable "+ifVar.getName()+" might not have been initialized.");
         }
         while (l.hasNext()) {
             VariableDescriptor elseVar = l.next();
             elseVar.setNonInitializedInFunction();
-            //System.out.println("Warning: Variable "+elseVar.getName()+" might not have been initialized.");
         }
 
-        this.initializedIfVars = initializedIfVarsLocal;
+        if (isElse && isFirst) {
+            this.initializedElseVars = initializedVarsLocal;
+        }
+        else if (isFirst) {
+            this.initializedIfVars = initializedVarsLocal;
+        }
     }
 
     private String inspectArrayAccess(SimpleNode statementNode, SymbolsTable symbolsTable, int initialChild) throws SemanticErrorException {
