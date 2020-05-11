@@ -420,6 +420,7 @@ public class TableGenerator {
         } else if(variableAndStatementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
             inspectIfStatement(variableAndStatementNode, functionDescriptor.getBodyTable());
             this.initializedIfVars.clear();
+            this.initializedElseVars.clear();
         }else{
             this.semanticError.printError(variableAndStatementNode, "Unknown symbol");
         }
@@ -561,8 +562,9 @@ public class TableGenerator {
             if(typeDescriptor.getClass() == VariableDescriptor.class){
                 VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
                 if (!variableDescriptor.isInitialized() || variableDescriptor.isInitializedInIf()) {
-                    if (isElse)
+                    if (isElse) {
                         this.initializedElseVars.add(variableDescriptor);
+                    }
                     else if (isIf) {
                         this.initializedIfVars.add(variableDescriptor);
                         variableDescriptor.setInitializedInIf();
@@ -619,6 +621,7 @@ public class TableGenerator {
             } else if(statementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
                 inspectIfStatement(statementNode, blockDescriptor.getLocalTable());
                 this.initializedIfVars.clear();
+                this.initializedElseVars.clear();
             }else{
                 this.semanticError.printError(statementNode, "Unknown symbol");
             }
@@ -629,7 +632,7 @@ public class TableGenerator {
         inspectIfStatement(ifNode, statementParentTable, true);
     }
 
-    public void inspectIfStatement(SimpleNode ifNode, SymbolsTable statementParentTable, boolean isFirst) throws SemanticErrorException {
+    public void inspectIfStatement(SimpleNode ifNode, SymbolsTable statementParentTable, boolean previousFlow) throws SemanticErrorException {
         if(ifNode.jjtGetNumChildren() == 0){
             this.semanticError.printError(ifNode, "If needs to have an expression.");
             return;
@@ -664,19 +667,20 @@ public class TableGenerator {
                 inspectWhileStatement(statementNode, blockDescriptor.getLocalTable());
             } else if(statementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
 
-                HashSet<VariableDescriptor> initializedVarsLocal = new HashSet<>();
-                if (found_else && isFirst) {
-                    initializedVarsLocal = this.initializedElseVars;
-                    this.initializedElseVars.clear();
-                }
-                else  {
-                    initializedVarsLocal = this.initializedIfVars;
-                    this.initializedIfVars.clear();
-                }
-                inspectIfStatement(statementNode, blockDescriptor.getLocalTable(), false);
-                if (found_else && isFirst)
-                    this.initializedElseVars.addAll(initializedVarsLocal);
-                else this.initializedIfVars.addAll(initializedVarsLocal);
+                HashSet<VariableDescriptor> initializedIfVarsLocal = new HashSet<>();
+                HashSet<VariableDescriptor> initializedElseVarsLocal = new HashSet<>();
+                
+                initializedElseVarsLocal = this.initializedElseVars;
+                this.initializedElseVars.clear();
+            
+            
+                initializedIfVarsLocal = this.initializedIfVars;
+                this.initializedIfVars.clear();
+                
+                inspectIfStatement(statementNode, blockDescriptor.getLocalTable(), found_else);
+                
+                this.initializedElseVars.addAll(initializedIfVarsLocal);
+                this.initializedIfVars.addAll(initializedElseVarsLocal);
 
             } else if(statementNode.getId() == JavammTreeConstants.JJTELSE && !found_else){
                 found_else = true;
@@ -686,23 +690,32 @@ public class TableGenerator {
             }
         }
 
-        handleIfVarsInitializations(found_else, isFirst);
+        handleIfVarsInitializations(previousFlow);
     }
 
-    private void handleIfVarsInitializations(boolean isElse, boolean isFirst) throws SemanticErrorException {
-        HashSet<VariableDescriptor> initializedVarsLocal = new HashSet<>();
+    private void handleIfVarsInitializations(boolean isElse) throws SemanticErrorException {
+        HashSet<VariableDescriptor> initializedIfVarsLocal = new HashSet<>();
+        HashSet<VariableDescriptor> initializedElseVarsLocal = new HashSet<>();
+
         Iterator<VariableDescriptor> i = this.initializedIfVars.iterator();
         while (i.hasNext()) {
             VariableDescriptor ifVar = i.next();
-            Iterator<VariableDescriptor> j = this.initializedElseVars.iterator();
-            while (j.hasNext()) {
-                VariableDescriptor elseVar = j.next();
-                if (ifVar.getName().equals(elseVar.getName())) {
-                    initializedVarsLocal.add(ifVar);
-                    i.remove();
-                    j.remove();
-                    break;
-                }
+            //TODO verify this
+            //Iterator<VariableDescriptor> j = this.initializedElseVars.iterator();
+            //while (j.hasNext()) {
+                //VariableDescriptor elseVar = j.next();
+                //if (ifVar.getName().equals(elseVar.getName())) {
+                    //initializedVarsLocal.add(ifVar);
+                    //i.remove();
+                    //j.remove();
+                    //break;
+                //}
+            //}
+            if (this.initializedElseVars.contains(ifVar)) {
+                i.remove();
+                this.initializedElseVars.remove(ifVar);
+                initializedIfVarsLocal.add(ifVar);
+                initializedElseVarsLocal.add(ifVar);
             }
         }
         
@@ -717,12 +730,8 @@ public class TableGenerator {
             elseVar.setNonInitializedInFunction();
         }
 
-        if (isElse && isFirst) {
-            this.initializedElseVars = initializedVarsLocal;
-        }
-        else if (isFirst) {
-            this.initializedIfVars = initializedVarsLocal;
-        }
+        this.initializedElseVars = initializedIfVarsLocal;
+        this.initializedIfVars = initializedElseVarsLocal;
     }
 
     private String inspectArrayAccess(SimpleNode statementNode, SymbolsTable symbolsTable, int initialChild) throws SemanticErrorException {
