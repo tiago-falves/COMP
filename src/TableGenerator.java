@@ -567,6 +567,7 @@ public class TableGenerator {
                 if (!variableDescriptor.isInitialized()) {
                     if (isElse) {
                         this.initializedElseVars.add(variableDescriptor);
+                        variableDescriptor.setInitializedInIf();
                     }
                     else if (isIf) {
                         this.initializedIfVars.add(variableDescriptor);
@@ -724,10 +725,12 @@ public class TableGenerator {
         Iterator<VariableDescriptor> k = this.initializedIfVars.iterator();
         Iterator<VariableDescriptor> l = this.initializedElseVars.iterator();
         while (k.hasNext()) {
+            System.out.println("if");
             VariableDescriptor ifVar = k.next();
             ifVar.setNonInitializedInFunction();
         }
         while (l.hasNext()) {
+            System.out.println("else");
             VariableDescriptor elseVar = l.next();
             elseVar.setNonInitializedInFunction();
         }
