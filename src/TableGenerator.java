@@ -419,6 +419,7 @@ public class TableGenerator {
             inspectWhileStatement(variableAndStatementNode, functionDescriptor.getBodyTable());
         } else if(variableAndStatementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
             inspectIfStatement(variableAndStatementNode, functionDescriptor.getBodyTable());
+            setVarsInitialized(functionDescriptor.getBodyTable());
             this.initializedIfVars.clear();
             this.initializedElseVars.clear();
         }else{
@@ -497,16 +498,18 @@ public class TableGenerator {
 
             if(typeDescriptor.getClass() == VariableDescriptor.class){
                 VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
-                if (!variableDescriptor.isInitialized() || variableDescriptor.isInitializedInIf()) {
+                if (!variableDescriptor.isInitialized()) {
                     if (isElse) {
                         this.initializedElseVars.add(variableDescriptor);
+                        variableDescriptor.setInitializedInIf();
                     }
                     else if (isIf) {
                         this.initializedIfVars.add(variableDescriptor);
                         variableDescriptor.setInitializedInIf();
                     }
                 }
-                variableDescriptor.setInitialized();
+                if (!isIf)
+                    variableDescriptor.setInitialized();
                 this.llirPopulator.setAssignmentVariable(new LLIRVariable(variableDescriptor));
             }
 
@@ -561,7 +564,7 @@ public class TableGenerator {
 
             if(typeDescriptor.getClass() == VariableDescriptor.class){
                 VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
-                if (!variableDescriptor.isInitialized() || variableDescriptor.isInitializedInIf()) {
+                if (!variableDescriptor.isInitialized()) {
                     if (isElse) {
                         this.initializedElseVars.add(variableDescriptor);
                     }
@@ -620,6 +623,7 @@ public class TableGenerator {
                 inspectWhileStatement(statementNode, blockDescriptor.getLocalTable());
             } else if(statementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
                 inspectIfStatement(statementNode, blockDescriptor.getLocalTable());
+                setVarsInitialized(blockDescriptor.getLocalTable());
                 this.initializedIfVars.clear();
                 this.initializedElseVars.clear();
             }else{
@@ -672,8 +676,6 @@ public class TableGenerator {
                 
                 initializedElseVarsLocal = this.initializedElseVars;
                 this.initializedElseVars.clear();
-            
-            
                 initializedIfVarsLocal = this.initializedIfVars;
                 this.initializedIfVars.clear();
                 
@@ -1091,7 +1093,7 @@ public class TableGenerator {
 
                 if(descriptor.getClass() == VariableDescriptor.class){
                     VariableDescriptor variableDescriptor = (VariableDescriptor) descriptor;
-                    if(!variableDescriptor.isInitialized()){
+                    if(!variableDescriptor.isInitialized() && !variableDescriptor.isInitializedInIf()){
                         if(this.initializedWarning){
                             System.err.println("Warning: Variable " + node.jjtGetVal() + " is not initialized\n");
                         }else{
@@ -1284,8 +1286,8 @@ public class TableGenerator {
                     //Is Variable
                     if(descriptor.getClass() == VariableDescriptor.class){
                         VariableDescriptor variableDescriptor = (VariableDescriptor) descriptor;
-                        if(!variableDescriptor.isInitialized()){
-                            if(this.initializedWarning){
+                        if(!variableDescriptor.isInitialized() && !variableDescriptor.isInitializedInIf()){
+                            if(this.initializedWarning && !variableDescriptor.isInitializedInIf()){
                                 System.err.println("Warning: Variable " + node.jjtGetVal() + " is not initialized\n");
                             }else{
                                 this.semanticError.printError(node, "Variable " + node.jjtGetVal() + " is not initialized");
@@ -1581,7 +1583,7 @@ public class TableGenerator {
         return false;
     }
 
-    private boolean isInImport(SimpleNode node, String classType, SymbolsTable symbolsTable, int initialChild) {
+    private boolean isInImport(SimpleNode node, String classType, SymbolsTable symbolsTable, int initialChild) throws SemanticErrorException {
         SimpleNode functionNode = (SimpleNode)node.jjtGetChild(initialChild+4);
         List<Descriptor> importDescriptors = symbolsTable.getDescriptor(functionNode.jjtGetVal());
 
@@ -1597,6 +1599,21 @@ public class TableGenerator {
         }
 
         return false;
+    }
+
+    private void setVarsInitialized(SymbolsTable symbolsTable) throws SemanticErrorException {
+        Iterator<VariableDescriptor> it = this.initializedIfVars.iterator();
+        while(it.hasNext()) {
+            VariableDescriptor var = it.next();
+            List<Descriptor> descriptors = symbolsTable.getDescriptor(var.getName());
+            for (int i = 0; i < descriptors.size(); i++) {
+                Descriptor desc = descriptors.get(i);
+                if (desc.getClass() == VariableDescriptor.class) {
+                    VariableDescriptor variable = (VariableDescriptor)desc;
+                    variable.setInitialized();
+                }
+            }
+        } 
     }
 
 }
