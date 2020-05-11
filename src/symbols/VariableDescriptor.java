@@ -3,16 +3,20 @@ package symbols;
 public class VariableDescriptor extends NamedTypeDescriptor{
     boolean isInitialized;
     boolean isInitializedInIf;
+    boolean isInitializedInFunction;
 
     public VariableDescriptor(Type type) {
         super(type);
         
         this.isInitialized = false;
         this.isInitializedInIf = false;
+        this.isInitializedInFunction = true;
     }
 
     public VariableDescriptor() {
         super(Type.VOID);
+        this.isInitializedInIf = false;
+        this.isInitializedInFunction = true;
     }
 
     public void setInitialized() {
@@ -23,12 +27,20 @@ public class VariableDescriptor extends NamedTypeDescriptor{
         this.isInitializedInIf = true;
     }
 
+    public void setNonInitializedInFunction() {
+        this.isInitializedInFunction = false;
+    }
+
     public boolean isInitialized(){
         return isInitialized;
     }
 
     public boolean isInitializedInIf(){
         return isInitializedInIf;
+    }
+
+    public boolean isInitializedInFunction(){
+        return isInitializedInFunction;
     }
 
     public void print(String prefix) {

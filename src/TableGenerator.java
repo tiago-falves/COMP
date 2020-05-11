@@ -419,11 +419,7 @@ public class TableGenerator {
             inspectWhileStatement(variableAndStatementNode, functionDescriptor.getBodyTable());
         } else if(variableAndStatementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
             inspectIfStatement(variableAndStatementNode, functionDescriptor.getBodyTable());
-            Iterator<VariableDescriptor> i = this.initializedIfVars.iterator();
-            while (i.hasNext()) {
-                VariableDescriptor ifVar = i.next();
-                ifVar.setInitialized();
-            }
+            this.initializedIfVars.clear();
         }else{
             this.semanticError.printError(variableAndStatementNode, "Unknown symbol");
         }
@@ -620,14 +616,8 @@ public class TableGenerator {
             } else if(statementNode.getId() == JavammTreeConstants.JJTWHILESTATEMENT){
                 inspectWhileStatement(statementNode, blockDescriptor.getLocalTable());
             } else if(statementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
-
                 inspectIfStatement(statementNode, blockDescriptor.getLocalTable());
-                Iterator<VariableDescriptor> it = this.initializedIfVars.iterator();
-                while (it.hasNext()) {
-                    VariableDescriptor ifVar = it.next();
-                    ifVar.setInitialized();
-                }
-                
+                this.initializedIfVars.clear();
             }else{
                 this.semanticError.printError(statementNode, "Unknown symbol");
             }
@@ -707,11 +697,13 @@ public class TableGenerator {
         Iterator<VariableDescriptor> l = this.initializedElseVars.iterator();
         while (k.hasNext()) {
             VariableDescriptor ifVar = k.next();
-            System.out.println("Warning: Variable "+ifVar.getName()+" might not have been initialized.");
+            ifVar.setNonInitializedInFunction();
+            //System.out.println("Warning: Variable "+ifVar.getName()+" might not have been initialized.");
         }
         while (l.hasNext()) {
             VariableDescriptor elseVar = l.next();
-            System.out.println("Warning: Variable "+elseVar.getName()+" might not have been initialized.");
+            elseVar.setNonInitializedInFunction();
+            //System.out.println("Warning: Variable "+elseVar.getName()+" might not have been initialized.");
         }
 
         this.initializedIfVars = initializedIfVarsLocal;
@@ -730,6 +722,12 @@ public class TableGenerator {
                 if(idDescriptor.getType() != Type.INT_ARRAY && idDescriptor.getType() != Type.STRING_ARRAY){
                     this.semanticError.printError(idNode, "CAN ONLY ACCESS ARRAYS OF INT OR STRING");
                     return null;
+                }
+                if (d.getClass() == VariableDescriptor.class) {
+                    VariableDescriptor variableDescriptor = (VariableDescriptor)d;
+                    if (!variableDescriptor.isInitializedInFunction()) {
+                        System.err.println("Warning: Variable " + idNode.jjtGetVal() + " might not have been initialized\n");
+                    }
                 }
                 break;
             }
@@ -780,6 +778,13 @@ public class TableGenerator {
                     if(typeDescriptor.getType() != Type.CLASS){
                         this.semanticError.printError(statementNode, "Can only call functions from classes");
                         return null;
+                    }
+
+                    if (typeDescriptor.getClass() == VariableDescriptor.class) {
+                        VariableDescriptor variableDescriptor = (VariableDescriptor)typeDescriptor;
+                        if (!variableDescriptor.isInitializedInFunction()) {
+                            System.err.println("Warning: Variable " + identifierName + " might not have been initialized\n");
+                        }
                     }
                     return typeDescriptor.getClassName();
                 }
@@ -1068,6 +1073,9 @@ public class TableGenerator {
                             this.semanticError.printError(node, "Variable " + node.jjtGetVal() + " is not initialized");
                         }
                     }
+                    else if (!variableDescriptor.isInitializedInFunction()) {
+                        System.err.println("Warning: Variable " + node.jjtGetVal() + " might not have been initialized\n");
+                    }
                     this.llirPopulator.addExpression(new LLIRVariable(variableDescriptor));
                 }
                 if(descriptor.getClass() == FunctionParameterDescriptor.class){
@@ -1174,6 +1182,13 @@ public class TableGenerator {
                                             this.semanticError.printError(nextNextNode, "Property length only exists in arrays");
                                             return null;
                                         } 
+
+                                        if (descriptor.getClass() == VariableDescriptor.class) {
+                                            VariableDescriptor variableDescriptor = (VariableDescriptor)descriptor;
+                                            if (!variableDescriptor.isInitializedInFunction()) {
+                                                System.err.println("Warning: Variable " + node.jjtGetVal() + " might not have been initialized\n");
+                                            }
+                                        }
                                         
                                         i += 2;
                                         foundDescriptor = true; // found the function we're looking for
@@ -1250,6 +1265,9 @@ public class TableGenerator {
                             }else{
                                 this.semanticError.printError(node, "Variable " + node.jjtGetVal() + " is not initialized");
                             }
+                        }
+                        else if (!variableDescriptor.isInitializedInFunction()) {
+                            System.err.println("Warning: Variable " + node.jjtGetVal() + " might not have been initialized\n");
                         }
                         this.llirPopulator.addExpression(new llir.LLIRVariable(variableDescriptor));
                     }
