@@ -13,6 +13,8 @@ public class TableGenerator {
     LLIRMethodCall currentMethodCall;
     private String className;
     private boolean initializedWarning;
+    private HashSet<VariableDescriptor> initializedIfVars = new HashSet<>();
+    private HashSet<VariableDescriptor> initializedElseVars = new HashSet<>();
 
     public TableGenerator(SimpleNode rootNode) {
         this(rootNode, false);
@@ -417,12 +419,21 @@ public class TableGenerator {
             inspectWhileStatement(variableAndStatementNode, functionDescriptor.getBodyTable());
         } else if(variableAndStatementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
             inspectIfStatement(variableAndStatementNode, functionDescriptor.getBodyTable());
+            Iterator<VariableDescriptor> i = this.initializedIfVars.iterator();
+            while (i.hasNext()) {
+                VariableDescriptor ifVar = i.next();
+                ifVar.setInitialized();
+            }
         }else{
             this.semanticError.printError(variableAndStatementNode, "Unknown symbol");
         }
     }
 
-    public void inspectLineStatement(SimpleNode statementNode, SymbolsTable symbolTable) throws SemanticErrorException {
+    public void inspectLineStatement(SimpleNode statementNode, SymbolsTable symbolsTable) throws SemanticErrorException {
+        inspectLineStatement(statementNode, symbolsTable, false, false);
+    }
+
+    public void inspectLineStatement(SimpleNode statementNode, SymbolsTable symbolTable, boolean isIf, boolean isElse) throws SemanticErrorException {
         if(statementNode.jjtGetNumChildren() < 3){
             this.semanticError.printError(statementNode, "Invalid Line Statement");
             return;
@@ -489,6 +500,14 @@ public class TableGenerator {
 
             if(typeDescriptor.getClass() == VariableDescriptor.class){
                 VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
+                if (!variableDescriptor.isInitialized() || variableDescriptor.isInitializedInIf()) {
+                    if (isElse)
+                        this.initializedElseVars.add(variableDescriptor);
+                    else if (isIf) {
+                        this.initializedIfVars.add(variableDescriptor);
+                        variableDescriptor.setInitializedInIf();
+                    }
+                }
                 variableDescriptor.setInitialized();
                 this.llirPopulator.setAssignmentVariable(new LLIRVariable(variableDescriptor));
             }
@@ -544,6 +563,14 @@ public class TableGenerator {
 
             if(typeDescriptor.getClass() == VariableDescriptor.class){
                 VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
+                if (!variableDescriptor.isInitialized() || variableDescriptor.isInitializedInIf()) {
+                    if (isElse)
+                        this.initializedElseVars.add(variableDescriptor);
+                    else if (isIf) {
+                        this.initializedIfVars.add(variableDescriptor);
+                        variableDescriptor.setInitializedInIf();
+                    }
+                }
                 variableDescriptor.setInitialized();
             }
             //TODO Add case where variable is a FunctionParameterDescriptor -> useful in the code generation
@@ -593,7 +620,14 @@ public class TableGenerator {
             } else if(statementNode.getId() == JavammTreeConstants.JJTWHILESTATEMENT){
                 inspectWhileStatement(statementNode, blockDescriptor.getLocalTable());
             } else if(statementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
+
                 inspectIfStatement(statementNode, blockDescriptor.getLocalTable());
+                Iterator<VariableDescriptor> it = this.initializedIfVars.iterator();
+                while (it.hasNext()) {
+                    VariableDescriptor ifVar = it.next();
+                    ifVar.setInitialized();
+                }
+                
             }else{
                 this.semanticError.printError(statementNode, "Unknown symbol");
             }
@@ -630,11 +664,16 @@ public class TableGenerator {
             SimpleNode statementNode = (SimpleNode) ifNode.jjtGetChild(i);
 
             if (statementNode.getId() == JavammTreeConstants.JJTLINESTATEMENT ){
-                inspectLineStatement(statementNode, blockDescriptor.getLocalTable());
+                inspectLineStatement(statementNode, blockDescriptor.getLocalTable(), true, found_else);
             } else if(statementNode.getId() == JavammTreeConstants.JJTWHILESTATEMENT){
                 inspectWhileStatement(statementNode, blockDescriptor.getLocalTable());
             } else if(statementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
+
+                HashSet<VariableDescriptor> initializedIfVarsLocal = this.initializedIfVars;
+                this.initializedIfVars = new HashSet<VariableDescriptor>();
                 inspectIfStatement(statementNode, blockDescriptor.getLocalTable());
+                this.initializedIfVars.addAll(initializedIfVarsLocal);
+
             } else if(statementNode.getId() == JavammTreeConstants.JJTELSE && !found_else){
                 found_else = true;
                 continue;
@@ -642,6 +681,40 @@ public class TableGenerator {
                 this.semanticError.printError(statementNode, "Unknown symbol "+statementNode.getId());
             }
         }
+
+        handleIfVarsInitializations();
+    }
+
+    private void handleIfVarsInitializations() throws SemanticErrorException {
+        HashSet<VariableDescriptor> initializedIfVarsLocal = new HashSet<>();
+
+        Iterator<VariableDescriptor> i = this.initializedIfVars.iterator();
+        Iterator<VariableDescriptor> j = this.initializedElseVars.iterator();
+        while (i.hasNext()) {
+            VariableDescriptor ifVar = i.next();
+            while (j.hasNext()) {
+                VariableDescriptor elseVar = j.next();
+                if (ifVar.getName().equals(elseVar.getName())) {
+                    initializedIfVarsLocal.add(ifVar);
+                    i.remove();
+                    j.remove();
+                    break;
+                }
+            }
+        }
+        
+        Iterator<VariableDescriptor> k = this.initializedIfVars.iterator();
+        Iterator<VariableDescriptor> l = this.initializedElseVars.iterator();
+        while (k.hasNext()) {
+            VariableDescriptor ifVar = k.next();
+            System.out.println("Warning: Variable "+ifVar.getName()+" might not have been initialized.");
+        }
+        while (l.hasNext()) {
+            VariableDescriptor elseVar = l.next();
+            System.out.println("Warning: Variable "+elseVar.getName()+" might not have been initialized.");
+        }
+
+        this.initializedIfVars = initializedIfVarsLocal;
     }
 
     private String inspectArrayAccess(SimpleNode statementNode, SymbolsTable symbolsTable, int initialChild) throws SemanticErrorException {
