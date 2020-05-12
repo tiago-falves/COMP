@@ -499,6 +499,7 @@ public class TableGenerator {
             if(typeDescriptor.getClass() == VariableDescriptor.class){
                 VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
                 if (!variableDescriptor.isInitialized()) {
+                    System.out.println("Line Statement: "+isElse);
                     if (isElse) {
                         this.initializedElseVars.add(variableDescriptor);
                         variableDescriptor.setInitializedInIf();
@@ -661,7 +662,9 @@ public class TableGenerator {
         BlockDescriptor blockDescriptor = new BlockDescriptor(statementParentTable);
         
         statementParentTable.addSymbol("if", blockDescriptor);
-        
+        System.out.println("Chamada a um if statement");
+        System.out.println("if size: "+this.initializedIfVars.size());
+        System.out.println("else size: "+this.initializedElseVars.size());
         boolean found_else = false;
         for(int i = 1; i < ifNode.jjtGetNumChildren(); i++){
             SimpleNode statementNode = (SimpleNode) ifNode.jjtGetChild(i);
@@ -682,11 +685,15 @@ public class TableGenerator {
                 
                 inspectIfStatement(statementNode, blockDescriptor.getLocalTable(), found_else);
                 
-                this.initializedElseVars.addAll(initializedIfVarsLocal);
-                this.initializedIfVars.addAll(initializedElseVarsLocal);
+                if (found_else)
+                    this.initializedElseVars.addAll(initializedIfVarsLocal);
+                else this.initializedIfVars.addAll(initializedElseVarsLocal);
 
             } else if(statementNode.getId() == JavammTreeConstants.JJTELSE && !found_else){
                 found_else = true;
+                System.out.println("Chamada a um else statement");
+                System.out.println("if size: "+this.initializedIfVars.size());
+                System.out.println("else size: "+this.initializedElseVars.size());
                 continue;
             } else{
                 this.semanticError.printError(statementNode, "Unknown symbol "+statementNode.getId());
@@ -697,6 +704,10 @@ public class TableGenerator {
     }
 
     private void handleIfVarsInitializations(boolean isElse) throws SemanticErrorException {
+        System.out.println("Starting validation");
+        System.out.println("if size: "+this.initializedIfVars.size());
+        System.out.println("else size: "+this.initializedElseVars.size()+"\n");
+
         HashSet<VariableDescriptor> initializedIfVarsLocal = new HashSet<>();
         HashSet<VariableDescriptor> initializedElseVarsLocal = new HashSet<>();
 
@@ -725,12 +736,12 @@ public class TableGenerator {
         Iterator<VariableDescriptor> k = this.initializedIfVars.iterator();
         Iterator<VariableDescriptor> l = this.initializedElseVars.iterator();
         while (k.hasNext()) {
-            System.out.println("if");
+            System.out.println("Possible if WARNING\n");
             VariableDescriptor ifVar = k.next();
             ifVar.setNonInitializedInFunction();
         }
         while (l.hasNext()) {
-            System.out.println("else");
+            System.out.println("Possible else WARNING\n");
             VariableDescriptor elseVar = l.next();
             elseVar.setNonInitializedInFunction();
         }
