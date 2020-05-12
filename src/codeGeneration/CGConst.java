@@ -1,5 +1,6 @@
 package codeGeneration;
 import llir.ArithmeticOperation;
+import llir.ConditionalOperation;
 import symbols.Type;
 import symbols.TypeDescriptor;
 
@@ -13,6 +14,7 @@ public class CGConst {
     public static HashMap<Type, String> load;
     public static HashMap<Type, String> returnTypes;
     public static HashMap<ArithmeticOperation, String> arithmeticOperators;
+    public static HashMap<ConditionalOperation, String> conditionalOperators;
 
     static {
         types = new HashMap<>();
@@ -25,7 +27,6 @@ public class CGConst {
         arithmeticOperators.put(SUBTRACTION, "\tisub");
         arithmeticOperators.put(MULTIPLICATION, "\timul");
         arithmeticOperators.put(DIVISION, "\tidiv");
-
 
         types.put(Type.INT, "I");
         types.put(Type.BOOLEAN, "Z");
