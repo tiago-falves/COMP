@@ -711,6 +711,14 @@ public class TableGenerator {
                 System.out.println("Chamada a um else statement");
                 System.out.println("if size: "+this.initializedIfVars.size());
                 System.out.println("else size: "+this.initializedElseVars.size());
+
+                Iterator<VariableDescriptor> it = this.initializedIfVars.iterator();
+                while (it.hasNext()) {
+                    VariableDescriptor var = it.next();
+                    if (var.isInitializedInIf())
+                        var.setNonInitialized();
+                }
+
                 continue;
             } else{
                 this.semanticError.printError(statementNode, "Unknown symbol "+statementNode.getId());
