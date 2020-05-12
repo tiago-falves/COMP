@@ -15,6 +15,7 @@ public class TableGenerator {
     private boolean initializedWarning;
     private HashSet<VariableDescriptor> initializedIfVars = new HashSet<>();
     private HashSet<VariableDescriptor> initializedElseVars = new HashSet<>();
+    private HashSet<VariableDescriptor> possibleWarningVars = new HashSet<>();
 
     public TableGenerator(SimpleNode rootNode) {
         this(rootNode, false);
@@ -420,6 +421,7 @@ public class TableGenerator {
         } else if(variableAndStatementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
             inspectIfStatement(variableAndStatementNode, functionDescriptor.getBodyTable());
             setVarsInitialized(functionDescriptor.getBodyTable());
+            setVarsNonInitialized(functionDescriptor.getBodyTable());
             this.initializedIfVars.clear();
             this.initializedElseVars.clear();
         }else{
@@ -509,8 +511,7 @@ public class TableGenerator {
                         variableDescriptor.setInitializedInIf();
                     }
                 }
-                if (!isIf)
-                    variableDescriptor.setInitialized();
+                variableDescriptor.setInitialized();
                 this.llirPopulator.setAssignmentVariable(new LLIRVariable(variableDescriptor));
             }
 
@@ -626,6 +627,7 @@ public class TableGenerator {
             } else if(statementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
                 inspectIfStatement(statementNode, blockDescriptor.getLocalTable());
                 setVarsInitialized(blockDescriptor.getLocalTable());
+                setVarsNonInitialized(blockDescriptor.getLocalTable());
                 this.initializedIfVars.clear();
                 this.initializedElseVars.clear();
             }else{
@@ -685,9 +687,24 @@ public class TableGenerator {
                 
                 inspectIfStatement(statementNode, blockDescriptor.getLocalTable(), found_else);
                 
-                if (found_else)
-                    this.initializedElseVars.addAll(initializedIfVarsLocal);
-                else this.initializedIfVars.addAll(initializedElseVarsLocal);
+                //if (found_else) {
+                    Iterator<VariableDescriptor> it = this.initializedElseVars.iterator();
+                    while (it.hasNext()) {
+                        VariableDescriptor var = it.next();
+                        if (var.isInitializedInIf())
+                            var.setNonInitialized();
+                    }
+                    this.initializedElseVars.addAll(initializedElseVarsLocal);
+                //}
+                //else {
+                    it = this.initializedIfVars.iterator();
+                    while (it.hasNext()) {
+                        VariableDescriptor var = it.next();
+                        if (var.isInitializedInIf())
+                            var.setNonInitialized();
+                    }
+                    this.initializedIfVars.addAll(initializedIfVarsLocal);
+                //}
 
             } else if(statementNode.getId() == JavammTreeConstants.JJTELSE && !found_else){
                 found_else = true;
@@ -714,17 +731,6 @@ public class TableGenerator {
         Iterator<VariableDescriptor> i = this.initializedIfVars.iterator();
         while (i.hasNext()) {
             VariableDescriptor ifVar = i.next();
-            //TODO verify this
-            //Iterator<VariableDescriptor> j = this.initializedElseVars.iterator();
-            //while (j.hasNext()) {
-                //VariableDescriptor elseVar = j.next();
-                //if (ifVar.getName().equals(elseVar.getName())) {
-                    //initializedVarsLocal.add(ifVar);
-                    //i.remove();
-                    //j.remove();
-                    //break;
-                //}
-            //}
             if (this.initializedElseVars.contains(ifVar)) {
                 i.remove();
                 this.initializedElseVars.remove(ifVar);
@@ -738,12 +744,14 @@ public class TableGenerator {
         while (k.hasNext()) {
             System.out.println("Possible if WARNING\n");
             VariableDescriptor ifVar = k.next();
-            ifVar.setNonInitializedInFunction();
+            this.possibleWarningVars.add(ifVar);
+            //ifVar.setNonInitializedInFunction();
         }
         while (l.hasNext()) {
             System.out.println("Possible else WARNING\n");
             VariableDescriptor elseVar = l.next();
-            elseVar.setNonInitializedInFunction();
+            this.possibleWarningVars.add(elseVar);
+            //elseVar.setNonInitializedInFunction();
         }
 
         this.initializedElseVars = initializedIfVarsLocal;
@@ -1620,11 +1628,30 @@ public class TableGenerator {
         while(it.hasNext()) {
             VariableDescriptor var = it.next();
             List<Descriptor> descriptors = symbolsTable.getDescriptor(var.getName());
+            if (descriptors == null)
+                return;
             for (int i = 0; i < descriptors.size(); i++) {
                 Descriptor desc = descriptors.get(i);
                 if (desc.getClass() == VariableDescriptor.class) {
                     VariableDescriptor variable = (VariableDescriptor)desc;
                     variable.setInitialized();
+                }
+            }
+        } 
+    }
+
+    private void setVarsNonInitialized(SymbolsTable symbolsTable) throws SemanticErrorException {
+        Iterator<VariableDescriptor> it = this.possibleWarningVars.iterator();
+        while(it.hasNext()) {
+            VariableDescriptor var = it.next();
+            List<Descriptor> descriptors = symbolsTable.getDescriptor(var.getName());
+            if (descriptors == null)
+                return;
+            for (int i = 0; i < descriptors.size(); i++) {
+                Descriptor desc = descriptors.get(i);
+                if (desc.getClass() == VariableDescriptor.class) {
+                    VariableDescriptor variable = (VariableDescriptor)desc;
+                    variable.setNonInitializedInFunction();
                 }
             }
         } 
