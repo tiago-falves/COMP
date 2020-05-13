@@ -118,6 +118,18 @@ public class LLIRPopulator {
         this.llirStack.push(returnLLIR);
     }
 
+    public void popNegation(){
+
+        if(peek() instanceof LLIRExpression){
+            LLIRNode node = llirStack.pop();
+
+            if(peek() instanceof LLIRNegation){
+                ((LLIRNegation)peek()).setExpression((LLIRExpression) node);
+            }else{
+                llirStack.push(node);
+            }
+        }
+    }
     public void popExpression(){
 
         //In case of a simple Assignment
@@ -133,17 +145,19 @@ public class LLIRPopulator {
             if(peek() instanceof LLIRAssignment){
                 ((LLIRAssignment)peek()).setExpression((LLIRExpression) node);
             }
+            if(peek() instanceof LLIRNegation){
+                ((LLIRNegation)peek()).setExpression((LLIRExpression) node);
+            }
         }
-
         //In case of a complex assignment
-        while (peek() instanceof LLIRArithmetic || peek() instanceof LLIRExpression || peek() instanceof LLIRConditional){
+        while (peek() instanceof LLIRArithmetic || peek() instanceof LLIRExpression || peek() instanceof LLIRConditional || peek() instanceof LLIRNegation){
             LLIRExpression actual = (LLIRExpression) this.llirStack.pop();
 
             if (peek() instanceof LLIRArithmetic){
                 LLIRArithmetic previous = (LLIRArithmetic) peek();
                 previous.setRightExpression(actual);
             }
-            if (peek() instanceof LLIRConditional){
+            else if (peek() instanceof LLIRConditional){
                 LLIRConditional previous = (LLIRConditional) peek();
                 previous.setRightExpression(actual);
             }
@@ -151,6 +165,10 @@ public class LLIRPopulator {
                 LLIRAssignment previous = (LLIRAssignment) peek();
                 previous.setExpression(actual);
                 break;
+            }
+            else if (peek() instanceof LLIRNegation){
+                LLIRNegation previous = (LLIRNegation) peek();
+                previous.setExpression(actual);
             }
             else {
                 this.llirStack.push(actual);
@@ -301,6 +319,8 @@ public class LLIRPopulator {
                 stack += "Method Call\n";
             }else if(node instanceof LLIRImport){
                 stack += "Import\n";
+            }else if(node instanceof LLIRNegation){
+                stack += "Negation\n";
             }else if(node instanceof LLIRExpression){
                 stack += "Expression\n";
             }else if(node instanceof LLIRReturn){

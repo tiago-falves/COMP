@@ -1246,10 +1246,8 @@ public class TableGenerator {
                         return null;
                     }
 
-                    //CONDITIONAL !
-                    if(llirPopulator.lastIsLLIRExpression()) this.llirPopulator.addConditional(new LLIRConditional());
-                    this.llirPopulator.addOperator(node.getId());
-
+                    //NEGATION !
+                    this.llirPopulator.addExpression(new LLIRNegation());
                     break;
                 }
                 case JavammTreeConstants.JJTLESS: {
@@ -1300,11 +1298,10 @@ public class TableGenerator {
                     break;
                 }
             }
+            this.llirPopulator.popNegation();
         }
 
         this.llirPopulator.popExpression();
-
-
         return type;
     }
 

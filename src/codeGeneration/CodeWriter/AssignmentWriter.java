@@ -47,6 +47,11 @@ public class AssignmentWriter {
             this.code += conditionalWriter.getCode(); 
         }
 
+        else if(expression instanceof LLIRNegation){
+            NegationWriter negationWriter = new NegationWriter((LLIRNegation)expression, name);
+            this.code += negationWriter.getCode();
+        }
+
         else if (expression instanceof LLIRMethodCall) {
             MethodCallWriter methodCallWriter = new MethodCallWriter((LLIRMethodCall) expression);
             this.code += methodCallWriter.getCode();

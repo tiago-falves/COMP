@@ -26,16 +26,12 @@ public class ConditionalWriter {
             case LESS_THAN:
 
                 this.code += "\t" + "if_icmpge notLess_" + conditionalGotoNumber + "\n";
-                this.code += "\t" + CGConst.TRUE_VALUE + "\n";
+                this.code += CGConst.TRUE_VALUE + "\n";
                 this.code += "\t" + "goto endLess_" + conditionalGotoNumber + "\n";
                 this.code += "notLess_" + conditionalGotoNumber + ":" + "\n";
-                this.code += "\t" + CGConst.FALSE_VALUE + "\n";
+                this.code += CGConst.FALSE_VALUE + "\n";
                 this.code += "endLess_" + conditionalGotoNumber + ":";
                 conditionalGotoNumber++;
-                break;
-            case NEGATION:
-                this.code += "\t" + CGConst.TRUE_VALUE + "\n";
-                this.code += "\t" + "ixor";
                 break;
         }
         this.code += "\n";
@@ -67,6 +63,10 @@ public class ConditionalWriter {
         else if (expression instanceof LLIRBoolean) {
             BooleanWriter booleanWriter = new BooleanWriter((LLIRBoolean)expression, name);
             result += booleanWriter.getCode();
+        }
+        else if(expression instanceof LLIRNegation){
+            NegationWriter negationWriter = new NegationWriter((LLIRNegation)expression, name);
+            result += negationWriter.getCode();
         }
 
         return result;

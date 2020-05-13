@@ -39,6 +39,14 @@ public class ExpressionWriter {
             this.code += methodCallWriter.getCode();
 
         }
+        else if (expression instanceof LLIRConditional){
+            ConditionalWriter conditionalWriter = new ConditionalWriter((LLIRConditional) expression, name);
+            this.code += conditionalWriter.getCode();
+        }
+        else if (expression instanceof LLIRNegation){
+            NegationWriter negationWriter = new NegationWriter((LLIRNegation)expression, name);
+            this.code += negationWriter.getCode();
+        }
     }
 
     public String getCode(){
