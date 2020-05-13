@@ -24,6 +24,7 @@ public class ConditionalWriter {
                 this.code += "\tiand";
                 break;
             case LESS_THAN:
+
                 this.code += "\t" + "if_icmpge notLess_" + conditionalGotoNumber + "\n";
                 this.code += "\t" + CGConst.TRUE_VALUE + "\n";
                 this.code += "\t" + "goto endLess_" + conditionalGotoNumber + "\n";

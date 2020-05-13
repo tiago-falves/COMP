@@ -1257,7 +1257,6 @@ public class TableGenerator {
                         this.semanticError.printError(node, "CAN'T COMPARE " + type + " WITH OPERATOR <");
                         return null;
                     }
-                    
                     //CONDITIONAL <
                     if(llirPopulator.lastIsLLIRExpression()) this.llirPopulator.addConditional(new LLIRConditional());
                     this.llirPopulator.addOperator(node.getId());
@@ -1268,6 +1267,7 @@ public class TableGenerator {
                         return null;
                     }
 
+                    this.llirPopulator.popExpression();
                     return "boolean";
                 }
                 case JavammTreeConstants.JJTDOT: {
@@ -1302,11 +1302,7 @@ public class TableGenerator {
             }
         }
 
-        this.llirPopulator.popArithmetics();
-
-
-
-
+        this.llirPopulator.popExpression();
 
 
         return type;

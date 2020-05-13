@@ -118,7 +118,7 @@ public class LLIRPopulator {
         this.llirStack.push(returnLLIR);
     }
 
-    public void popArithmetics(){
+    public void popExpression(){
 
         //In case of a simple Assignment
         if(peek() instanceof LLIRExpression){
@@ -295,6 +295,8 @@ public class LLIRPopulator {
                 stack += "Assignment\n";
             }else if(node instanceof LLIRArithmetic){
                 stack += "Arithmetic\n";
+            }else if(node instanceof LLIRConditional){
+                stack += "Conditional\n";
             }else if (node instanceof LLIRMethodCall) {
                 stack += "Method Call\n";
             }else if(node instanceof LLIRImport){
