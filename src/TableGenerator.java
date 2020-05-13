@@ -680,16 +680,13 @@ public class TableGenerator {
             } else if(statementNode.getId() == JavammTreeConstants.JJTWHILESTATEMENT){
                 inspectWhileStatement(statementNode, blockDescriptor.getLocalTable());
             } else if(statementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
-
-                HashSet<VariableDescriptor> initializedIfVarsLocal = new HashSet<>();
-                HashSet<VariableDescriptor> initializedElseVarsLocal = new HashSet<>();
                 
-                initializedElseVarsLocal = this.initializedElseVars;
+                HashSet<VariableDescriptor> initializedElseVarsLocal = new HashSet<>(this.initializedElseVars);
                 System.out.println("Before if statement");
                 System.out.println("else size: "+this.initializedElseVars.size());
                 System.out.println("else local size: "+initializedElseVarsLocal.size());
                 this.initializedElseVars.clear();
-                initializedIfVarsLocal = this.initializedIfVars;
+                HashSet<VariableDescriptor> initializedIfVarsLocal = new HashSet<>(this.initializedIfVars);
                 System.out.println("if size: "+this.initializedIfVars.size());
                 System.out.println("if local: "+initializedIfVarsLocal.size());
                 this.initializedIfVars.clear();
