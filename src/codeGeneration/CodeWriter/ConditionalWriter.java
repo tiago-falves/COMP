@@ -5,16 +5,39 @@ import codeGeneration.FunctionBody;
 import llir.*;
 import symbols.Type;
 
+import static llir.ConditionalOperation.*;
+
 public class ConditionalWriter {
     private String code;
     private LLIRConditional conditional;
+
+    private static int conditionalGotoNumber = 0;
 
     public ConditionalWriter(LLIRConditional conditional, String name){
         this.code  = "";
         this.conditional = conditional;
         this.code += generateCode(conditional.getLeftExpression(),name);     // left
         this.code += generateCode(conditional.getRightExpression(),name);    // right
-        this.code += CGConst.arithmeticOperators.get(conditional.getOperation()) + "\n";
+
+        switch(conditional.getOperation()){
+            case AND:
+                this.code += "\tiand";
+                break;
+            case LESS_THAN:
+                this.code += "\t" + "if_icmpge notLess_" + conditionalGotoNumber + "\n";
+                this.code += "\t" + CGConst.TRUE_VALUE + "\n";
+                this.code += "\t" + "goto endLess_" + conditionalGotoNumber + "\n";
+                this.code += "notLess_" + conditionalGotoNumber + ":" + "\n";
+                this.code += "\t" + CGConst.FALSE_VALUE + "\n";
+                this.code += "endLess_" + conditionalGotoNumber + ":";
+                conditionalGotoNumber++;
+                break;
+            case NEGATION:
+                this.code += "\t" + CGConst.TRUE_VALUE + "\n";
+                this.code += "\t" + "ixor";
+                break;
+        }
+        this.code += "\n";
     }
 
     private String generateCode(LLIRExpression expression,String name){
@@ -39,6 +62,10 @@ public class ConditionalWriter {
         else if (expression instanceof LLIRParenthesis) {
             ExpressionWriter expressionWriter = new ExpressionWriter(((LLIRParenthesis) expression).getExpression(),name);
             result += expressionWriter.getCode();
+        }
+        else if (expression instanceof LLIRBoolean) {
+            BooleanWriter booleanWriter = new BooleanWriter((LLIRBoolean)expression, name);
+            result += booleanWriter.getCode();
         }
 
         return result;

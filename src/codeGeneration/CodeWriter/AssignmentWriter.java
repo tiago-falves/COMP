@@ -42,6 +42,11 @@ public class AssignmentWriter {
             this.code += arithmeticWriter.getCode();
         }
 
+        else if(expression instanceof LLIRConditional) {
+            ConditionalWriter conditionalWriter = new ConditionalWriter((LLIRConditional) expression, name);
+            this.code += conditionalWriter.getCode(); 
+        }
+
         else if (expression instanceof LLIRMethodCall) {
             MethodCallWriter methodCallWriter = new MethodCallWriter((LLIRMethodCall) expression);
             this.code += methodCallWriter.getCode();

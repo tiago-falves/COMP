@@ -14,7 +14,6 @@ public class CGConst {
     public static HashMap<Type, String> load;
     public static HashMap<Type, String> returnTypes;
     public static HashMap<ArithmeticOperation, String> arithmeticOperators;
-    public static HashMap<ConditionalOperation, String> conditionalOperators;
 
     static {
         types = new HashMap<>();
