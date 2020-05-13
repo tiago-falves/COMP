@@ -41,7 +41,6 @@ public class TableGenerator {
 
     public void build() throws SemanticErrorException {
         int i = 0;
-        // System.out.println(rootNode.jjtGetNumChildren());
         while(i < rootNode.jjtGetNumChildren()) {
             SimpleNode currentNode = (SimpleNode) rootNode.jjtGetChild(i);
 
@@ -501,7 +500,6 @@ public class TableGenerator {
             if(typeDescriptor.getClass() == VariableDescriptor.class){
                 VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
                 if (!variableDescriptor.isInitialized() || !variableDescriptor.wasInitializedPreviously()) {
-                    System.out.println("Line Statement: "+isElse);
                     if (isElse) {
                         this.initializedElseVars.add(variableDescriptor);
                         variableDescriptor.setInitializedInIf();
@@ -668,9 +666,6 @@ public class TableGenerator {
         BlockDescriptor blockDescriptor = new BlockDescriptor(statementParentTable);
         
         statementParentTable.addSymbol("if", blockDescriptor);
-        System.out.println("Chamada a um if statement");
-        System.out.println("if size: "+this.initializedIfVars.size());
-        System.out.println("else size: "+this.initializedElseVars.size());
         boolean found_else = false;
         for(int i = 1; i < ifNode.jjtGetNumChildren(); i++){
             SimpleNode statementNode = (SimpleNode) ifNode.jjtGetChild(i);
@@ -682,48 +677,32 @@ public class TableGenerator {
             } else if(statementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
                 
                 HashSet<VariableDescriptor> initializedElseVarsLocal = new HashSet<>(this.initializedElseVars);
-                System.out.println("Before if statement");
-                System.out.println("else size: "+this.initializedElseVars.size());
-                System.out.println("else local size: "+initializedElseVarsLocal.size());
                 this.initializedElseVars.clear();
                 HashSet<VariableDescriptor> initializedIfVarsLocal = new HashSet<>(this.initializedIfVars);
-                System.out.println("if size: "+this.initializedIfVars.size());
-                System.out.println("if local: "+initializedIfVarsLocal.size());
                 this.initializedIfVars.clear();
                 
                 inspectIfStatement(statementNode, blockDescriptor.getLocalTable(), found_else);
                 
-                System.out.println("After if statement");
-                //if (found_else) {
-                    this.initializedElseVars.addAll(initializedElseVarsLocal);
-                    System.out.println("else size: "+this.initializedElseVars.size());
-                    System.out.println("else local size: "+initializedElseVarsLocal.size());
-                    Iterator<VariableDescriptor> it = this.initializedElseVars.iterator();
-                    while (it.hasNext()) {
-                        VariableDescriptor var = it.next();
-                        if (var.isInitializedInIf() || var.wasInitializedPreviously()) {
-                            var.setNonInitialized();
-                        }
+                this.initializedElseVars.addAll(initializedElseVarsLocal);
+                Iterator<VariableDescriptor> it = this.initializedElseVars.iterator();
+                while (it.hasNext()) {
+                    VariableDescriptor var = it.next();
+                    if (var.isInitializedInIf() || var.wasInitializedPreviously()) {
+                        var.setNonInitialized();
                     }
-                //}
-                //else {
-                    this.initializedIfVars.addAll(initializedIfVarsLocal);
-                    System.out.println("if size: "+this.initializedIfVars.size());
-                    System.out.println("if local size: "+initializedIfVarsLocal.size());
-                    it = this.initializedIfVars.iterator();
-                    while (it.hasNext()) {
-                        VariableDescriptor var = it.next();
-                        if (var.isInitializedInIf() || var.wasInitializedPreviously()) {
-                            var.setNonInitialized();
-                        }
+                }
+            
+                this.initializedIfVars.addAll(initializedIfVarsLocal);
+                it = this.initializedIfVars.iterator();
+                while (it.hasNext()) {
+                    VariableDescriptor var = it.next();
+                    if (var.isInitializedInIf() || var.wasInitializedPreviously()) {
+                        var.setNonInitialized();
                     }
-                //}
+                }
 
             } else if(statementNode.getId() == JavammTreeConstants.JJTELSE && !found_else){
                 found_else = true;
-                System.out.println("Chamada a um else statement");
-                System.out.println("if size: "+this.initializedIfVars.size());
-                System.out.println("else size: "+this.initializedElseVars.size());
 
                 Iterator<VariableDescriptor> it = this.initializedIfVars.iterator();
                 while (it.hasNext()) {
@@ -742,9 +721,6 @@ public class TableGenerator {
     }
 
     private void handleIfVarsInitializations(boolean isElse) throws SemanticErrorException {
-        System.out.println("Starting validation");
-        System.out.println("if size: "+this.initializedIfVars.size());
-        System.out.println("else size: "+this.initializedElseVars.size()+"\n");
 
         HashSet<VariableDescriptor> initializedIfVarsLocal = new HashSet<>();
         HashSet<VariableDescriptor> initializedElseVarsLocal = new HashSet<>();
@@ -763,12 +739,10 @@ public class TableGenerator {
         Iterator<VariableDescriptor> k = this.initializedIfVars.iterator();
         Iterator<VariableDescriptor> l = this.initializedElseVars.iterator();
         while (k.hasNext()) {
-            System.out.println("Possible if WARNING\n");
             VariableDescriptor ifVar = k.next();
             this.possibleWarningVars.add(ifVar);
         }
         while (l.hasNext()) {
-            System.out.println("Possible else WARNING\n");
             VariableDescriptor elseVar = l.next();
             this.possibleWarningVars.add(elseVar);
         }
