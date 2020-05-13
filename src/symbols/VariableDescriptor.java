@@ -4,6 +4,7 @@ public class VariableDescriptor extends NamedTypeDescriptor{
     boolean isInitialized;
     boolean isInitializedInIf;
     boolean isInitializedInFunction;
+    boolean wasInitializedPreviously;
 
     public VariableDescriptor(Type type) {
         super(type);
@@ -11,12 +12,14 @@ public class VariableDescriptor extends NamedTypeDescriptor{
         this.isInitialized = false;
         this.isInitializedInIf = false;
         this.isInitializedInFunction = true;
+        this.wasInitializedPreviously = false;
     }
 
     public VariableDescriptor() {
         super(Type.VOID);
         this.isInitializedInIf = false;
         this.isInitializedInFunction = true;
+        this.wasInitializedPreviously = false;
     }
 
     public void setInitialized() {
@@ -25,6 +28,7 @@ public class VariableDescriptor extends NamedTypeDescriptor{
 
     public void setNonInitialized() {
         this.isInitialized = false;
+        setNonInitializedPreviously();
     }
 
     public void setInitializedInIf() {
@@ -39,6 +43,14 @@ public class VariableDescriptor extends NamedTypeDescriptor{
         this.isInitializedInFunction = false;
     }
 
+    public void setInitializedPreviously() {
+        this.wasInitializedPreviously = true;
+    }
+
+    public void setNonInitializedPreviously() {
+        this.wasInitializedPreviously = false;
+    }
+
     public boolean isInitialized(){
         return isInitialized;
     }
@@ -49,6 +61,10 @@ public class VariableDescriptor extends NamedTypeDescriptor{
 
     public boolean isInitializedInFunction(){
         return isInitializedInFunction;
+    }
+
+    public boolean wasInitializedPreviously(){
+        return wasInitializedPreviously;
     }
 
     public void print(String prefix) {

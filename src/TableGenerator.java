@@ -500,7 +500,7 @@ public class TableGenerator {
 
             if(typeDescriptor.getClass() == VariableDescriptor.class){
                 VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
-                if (!variableDescriptor.isInitialized()) {
+                if (!variableDescriptor.isInitialized() || !variableDescriptor.wasInitializedPreviously()) {
                     System.out.println("Line Statement: "+isElse);
                     if (isElse) {
                         this.initializedElseVars.add(variableDescriptor);
@@ -510,6 +510,8 @@ public class TableGenerator {
                         this.initializedIfVars.add(variableDescriptor);
                         variableDescriptor.setInitializedInIf();
                     }
+                    if (isIf)
+                        variableDescriptor.setInitializedPreviously();
                 }
                 variableDescriptor.setInitialized();
                 this.llirPopulator.setAssignmentVariable(new LLIRVariable(variableDescriptor));
@@ -566,7 +568,7 @@ public class TableGenerator {
 
             if(typeDescriptor.getClass() == VariableDescriptor.class){
                 VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
-                if (!variableDescriptor.isInitialized()) {
+                if (!variableDescriptor.isInitialized() || !variableDescriptor.wasInitializedPreviously()) {
                     if (isElse) {
                         this.initializedElseVars.add(variableDescriptor);
                         variableDescriptor.setInitializedInIf();
@@ -575,6 +577,8 @@ public class TableGenerator {
                         this.initializedIfVars.add(variableDescriptor);
                         variableDescriptor.setInitializedInIf();
                     }
+                    if (isIf)
+                        variableDescriptor.setInitializedPreviously();
                 }
                 variableDescriptor.setInitialized();
             }
@@ -681,29 +685,41 @@ public class TableGenerator {
                 HashSet<VariableDescriptor> initializedElseVarsLocal = new HashSet<>();
                 
                 initializedElseVarsLocal = this.initializedElseVars;
+                System.out.println("Before if statement");
+                System.out.println("else size: "+this.initializedElseVars.size());
+                System.out.println("else local size: "+initializedElseVarsLocal.size());
                 this.initializedElseVars.clear();
                 initializedIfVarsLocal = this.initializedIfVars;
+                System.out.println("if size: "+this.initializedIfVars.size());
+                System.out.println("if local: "+initializedIfVarsLocal.size());
                 this.initializedIfVars.clear();
                 
                 inspectIfStatement(statementNode, blockDescriptor.getLocalTable(), found_else);
                 
+                System.out.println("After if statement");
                 //if (found_else) {
+                    this.initializedElseVars.addAll(initializedElseVarsLocal);
+                    System.out.println("else size: "+this.initializedElseVars.size());
+                    System.out.println("else local size: "+initializedElseVarsLocal.size());
                     Iterator<VariableDescriptor> it = this.initializedElseVars.iterator();
                     while (it.hasNext()) {
                         VariableDescriptor var = it.next();
-                        if (var.isInitializedInIf())
+                        if (var.isInitializedInIf() || var.wasInitializedPreviously()) {
                             var.setNonInitialized();
+                        }
                     }
-                    this.initializedElseVars.addAll(initializedElseVarsLocal);
                 //}
                 //else {
+                    this.initializedIfVars.addAll(initializedIfVarsLocal);
+                    System.out.println("if size: "+this.initializedIfVars.size());
+                    System.out.println("if local size: "+initializedIfVarsLocal.size());
                     it = this.initializedIfVars.iterator();
                     while (it.hasNext()) {
                         VariableDescriptor var = it.next();
-                        if (var.isInitializedInIf())
+                        if (var.isInitializedInIf() || var.wasInitializedPreviously()) {
                             var.setNonInitialized();
+                        }
                     }
-                    this.initializedIfVars.addAll(initializedIfVarsLocal);
                 //}
 
             } else if(statementNode.getId() == JavammTreeConstants.JJTELSE && !found_else){
@@ -715,7 +731,7 @@ public class TableGenerator {
                 Iterator<VariableDescriptor> it = this.initializedIfVars.iterator();
                 while (it.hasNext()) {
                     VariableDescriptor var = it.next();
-                    if (var.isInitializedInIf())
+                    if (var.isInitializedInIf() || var.wasInitializedPreviously())
                         var.setNonInitialized();
                 }
 
@@ -753,13 +769,11 @@ public class TableGenerator {
             System.out.println("Possible if WARNING\n");
             VariableDescriptor ifVar = k.next();
             this.possibleWarningVars.add(ifVar);
-            //ifVar.setNonInitializedInFunction();
         }
         while (l.hasNext()) {
             System.out.println("Possible else WARNING\n");
             VariableDescriptor elseVar = l.next();
             this.possibleWarningVars.add(elseVar);
-            //elseVar.setNonInitializedInFunction();
         }
 
         this.initializedElseVars = initializedIfVarsLocal;
