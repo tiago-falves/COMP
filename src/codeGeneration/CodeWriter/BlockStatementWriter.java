@@ -25,6 +25,10 @@ public abstract class BlockStatementWriter {
             MethodCallWriter methodCallWriter = new MethodCallWriter((LLIRMethodCall) node);
             result += methodCallWriter.getCode();
         }
+        else if (node instanceof LLIRImport){
+            ImportWriter importWriter = new ImportWriter((LLIRImport) node);
+            result += importWriter.getCode();
+        }
         else if (node instanceof LLIRIfElseBlock) {
             IfElseWriter ifElseWriter = new IfElseWriter((LLIRIfElseBlock) node,name);
             result += ifElseWriter.getCode();

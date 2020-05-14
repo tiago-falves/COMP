@@ -12,8 +12,9 @@ public class WhileWriter extends BlockStatementWriter {
         
         int localWhileNumber = whileNumber;
         whileNumber++;
-        this.code  = "while_" + localWhileNumber + ":\n";
         this.block = block;
+
+        this.code = "";
         
         this.code += "while_" + localWhileNumber + ":" + "\n";
 
