@@ -148,7 +148,6 @@ public class TableGenerator {
 
         for(int i = 0; i < functionsNodes.size(); i++){
             inspectFunctionBody(functionsNodes.get(i), functions.get(i));
-
         } 
     }
 
@@ -657,7 +656,13 @@ public class TableGenerator {
                 this.semanticError.printError(statementNode, "Unknown symbol "+statementNode.getId());
             }
         }
+
         this.llirPopulator.popIfElseBlock();
+        this.llirPopulator.printStack();
+
+        this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
+
+        //this.llirPopulator.addStatement(currentFunctionDescriptor);
 
     }
 

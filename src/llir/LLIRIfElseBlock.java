@@ -13,8 +13,6 @@ public class LLIRIfElseBlock extends LLIRNode{
 
 
 
-
-
     public LLIRIfElseBlock(){
         ifExpression = null;
         ifNodes = new ArrayList<>();
@@ -32,9 +30,13 @@ public class LLIRIfElseBlock extends LLIRNode{
         ifNodes.add(node);
     }
     public void addNode(LLIRNode node){
-        if(!this.foundElse)
+        System.out.println(node);
+        if(!this.foundElse){
             addIfNode(node);
-        else addElseNode(node);
+        }
+        else {
+            addElseNode(node);
+        }
     }
 
     public void addElseNode(LLIRNode node){

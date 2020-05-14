@@ -3,7 +3,7 @@ package llir;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LLIRWhileBlock {
+public class LLIRWhileBlock extends LLIRNode {
     private LLIRExpression whileExpression;
     private List<LLIRNode> whileNodes;
 

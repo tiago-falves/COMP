@@ -21,19 +21,17 @@ class Simple {
         int zos;
         int zes;
         zas = 3;
-        zos = 5;
-        zes = 4 * 2;
 
-        /*if(true && false){
+        if(true && false){
             zas = 4;
             zas = 3;
         }
         else{
             zas = 6;
             simple = new Simple();
-        }*/
+        }
 
-
+        zas = 3;
 
 	}
 	public int add(int a, int b){

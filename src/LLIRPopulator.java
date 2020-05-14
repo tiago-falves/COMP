@@ -205,10 +205,11 @@ public class LLIRPopulator {
 
     public void addStatement(FunctionDescriptor currentFunctionDescriptor){
         LLIRNode node = this.llirStack.pop();
-        if (peek() instanceof LLIRIfElseBlock && this.llirStack.size() > 0){
+        if (peek() instanceof LLIRIfElseBlock){
             LLIRIfElseBlock ifElseBlock = (LLIRIfElseBlock) peek();
-            if (!ifElseBlock.isFinishedElse())
+            if (!ifElseBlock.isFinishedElse()){
                 ifElseBlock.addNode(node);
+            }
             else currentFunctionDescriptor.addLLIRNode(node);
 
         } else {
@@ -345,15 +346,14 @@ public class LLIRPopulator {
     }
 
     public void printStack(){
-        String stack = "";
 
+        String stack = "";
         Stack<LLIRNode> copy = (Stack<LLIRNode>) this.llirStack.clone();
-        int size = copy.size();
         while (!copy.empty()){
             LLIRNode node  =copy.pop();
             stack += getNodeString(node);
         }
-        System.out.println("STACK " + size +"\n\n" + stack);
+        System.out.println("STACK\n\n" + stack);
 
     }
 
