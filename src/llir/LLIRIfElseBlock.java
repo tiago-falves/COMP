@@ -3,7 +3,7 @@ package llir;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LLIRIfElseBlock {
+public class LLIRIfElseBlock extends LLIRNode {
     public LLIRExpression ifExpression;
     public List<LLIRNode> ifNodes;
     public List<LLIRNode> elseNodes;
