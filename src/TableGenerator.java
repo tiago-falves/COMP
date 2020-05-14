@@ -601,6 +601,10 @@ public class TableGenerator {
     }
 
     public void inspectWhileStatement(SimpleNode whileNode, SymbolsTable statementParentTable) throws SemanticErrorException {
+        inspectWhileStatement(whileNode, statementParentTable, false);
+    }
+
+    public void inspectWhileStatement(SimpleNode whileNode, SymbolsTable statementParentTable, boolean insideIf) throws SemanticErrorException {
         if(whileNode.jjtGetNumChildren() == 0){
             this.semanticError.printError(whileNode, "While needs to have an expression.");
             return;
@@ -634,10 +638,12 @@ public class TableGenerator {
                 inspectWhileStatement(statementNode, blockDescriptor.getLocalTable());
             } else if(statementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
                 inspectIfStatement(statementNode, blockDescriptor.getLocalTable());
-                setVarsInitialized(blockDescriptor.getLocalTable());
-                setVarsNonInitialized(blockDescriptor.getLocalTable());
-                this.initializedIfVars.clear();
-                this.initializedElseVars.clear();
+                if (!insideIf) {
+                    setVarsInitialized(blockDescriptor.getLocalTable());
+                    setVarsNonInitialized(blockDescriptor.getLocalTable());
+                    this.initializedIfVars.clear();
+                    this.initializedElseVars.clear();
+                }
             }else{
                 this.semanticError.printError(statementNode, "Unknown symbol");
             }
@@ -679,7 +685,7 @@ public class TableGenerator {
             if (statementNode.getId() == JavammTreeConstants.JJTLINESTATEMENT ){
                 inspectLineStatement(statementNode, blockDescriptor.getLocalTable(), true, found_else);
             } else if(statementNode.getId() == JavammTreeConstants.JJTWHILESTATEMENT){
-                inspectWhileStatement(statementNode, blockDescriptor.getLocalTable());
+                inspectWhileStatement(statementNode, blockDescriptor.getLocalTable(), true);
             } else if(statementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
                 
                 HashSet<VariableDescriptor> initializedElseVarsLocal = new HashSet<>(this.initializedElseVars);
@@ -697,7 +703,7 @@ public class TableGenerator {
                         var.setNonInitialized();
                     }
                 }
-            
+                
                 this.initializedIfVars.addAll(initializedIfVarsLocal);
                 it = this.initializedIfVars.iterator();
                 while (it.hasNext()) {
@@ -727,7 +733,6 @@ public class TableGenerator {
     }
 
     private void handleIfVarsInitializations(boolean isElse) throws SemanticErrorException {
-
         HashSet<VariableDescriptor> initializedIfVarsLocal = new HashSet<>();
         HashSet<VariableDescriptor> initializedElseVarsLocal = new HashSet<>();
 
@@ -753,8 +758,9 @@ public class TableGenerator {
             this.possibleWarningVars.add(elseVar);
         }
 
-        this.initializedElseVars = initializedIfVarsLocal;
-        this.initializedIfVars = initializedElseVarsLocal;
+        if (isElse)
+            this.initializedElseVars = initializedElseVarsLocal;
+        else this.initializedIfVars = initializedIfVarsLocal;
     }
 
     private String inspectArrayAccess(SimpleNode statementNode, SymbolsTable symbolsTable, int initialChild) throws SemanticErrorException {
