@@ -204,12 +204,14 @@ public class LLIRPopulator {
     }
 
     public void addStatement(FunctionDescriptor currentFunctionDescriptor){
-
-        LLIRNode node =  this.llirStack.pop();
-        if (peek() instanceof LLIRIfElseBlock) {
+        LLIRNode node = this.llirStack.pop();
+        if (peek() instanceof LLIRIfElseBlock && this.llirStack.size() > 0){
             LLIRIfElseBlock ifElseBlock = (LLIRIfElseBlock) peek();
-            ifElseBlock.addIfNode(node);
-        }else{
+            if (!ifElseBlock.isFinishedElse())
+                ifElseBlock.addNode(node);
+            else currentFunctionDescriptor.addLLIRNode(node);
+
+        } else {
             currentFunctionDescriptor.addLLIRNode(node);
         }
 
@@ -227,13 +229,10 @@ public class LLIRPopulator {
     }
 
     public void popIfElseBlock(){
-        /*if(peek() instanceof LLIRNegation || peek() instanceof LLIRConditional) {
-            LLIRExpression node = (LLIRExpression) this.llirStack.pop();
-            if (peek() instanceof LLIRIfElseBlock) {
-                LLIRIfElseBlock ifElseBlock = (LLIRIfElseBlock) peek();
-                ifElseBlock.setExpression(node);
-            }
-        }*/
+        if(peek() instanceof LLIRIfElseBlock) {
+            LLIRIfElseBlock node = (LLIRIfElseBlock) this.llirStack.peek();
+            node.setFinishedElse(true);
+        }
     }
 
     public void popBlockExpression(){
@@ -327,37 +326,62 @@ public class LLIRPopulator {
         }
     }
 
+
+
+    public String getBlockStatements(){
+        String stack = "";
+        if (peek() instanceof LLIRIfElseBlock){
+            LLIRIfElseBlock ifElseBlock = (LLIRIfElseBlock) peek();
+            stack = "\tIF:\n";
+            for (LLIRNode node : ifElseBlock.getIfNodes()){
+                stack += "\t\t" + getNodeString(node);
+            }
+            stack += "\tELSE:\n";
+            for (LLIRNode node : ifElseBlock.getElseNodes()){
+                stack += "\t\t" + getNodeString(node);
+            }
+        }
+        return stack;
+    }
+
     public void printStack(){
         String stack = "";
 
         Stack<LLIRNode> copy = (Stack<LLIRNode>) this.llirStack.clone();
+        int size = copy.size();
         while (!copy.empty()){
             LLIRNode node  =copy.pop();
-            if (node instanceof LLIRAssignment){
-                stack += "Assignment\n";
-            }else if(node instanceof LLIRArithmetic){
-                stack += "Arithmetic\n";
-            }else if(node instanceof LLIRConditional) {
-                stack += "Conditional\n";
-            }else if(node instanceof LLIRIfElseBlock) {
-                stack += "IFElseBlock\n";
-            }else if(node instanceof LLIRBoolean){
-                stack += "Boolean\n";
-            }else if (node instanceof LLIRMethodCall) {
-                stack += "Method Call\n";
-            }else if(node instanceof LLIRImport){
-                stack += "Import\n";
-            }else if(node instanceof LLIRNegation){
-                stack += "Negation\n";
-            }else if(node instanceof LLIRExpression){
-                stack += "Expression\n";
-            }else if(node instanceof LLIRReturn){
-                stack += "Return\n";
-            }
+            stack += getNodeString(node);
         }
+        System.out.println("STACK " + size +"\n\n" + stack);
 
-        System.out.println("STACK\n\n" + stack);
+    }
 
+    private String getNodeString(LLIRNode node){
+        if (node instanceof LLIRAssignment){
+            return "Assignment\n";
+        }else if(node instanceof LLIRArithmetic){
+            return "Arithmetic\n";
+        }else if(node instanceof LLIRConditional) {
+            return "Conditional\n";
+        }else if(node instanceof LLIRIfElseBlock) {
+            String s = "IFElseBlock\n";
+            s += getBlockStatements();
+            return s;
+        }else if(node instanceof LLIRBoolean){
+            return "Boolean\n";
+        }else if (node instanceof LLIRMethodCall) {
+            return "Method Call\n";
+        }else if(node instanceof LLIRImport){
+            return "Import\n";
+        }else if(node instanceof LLIRNegation){
+            return "Negation\n";
+        }else if(node instanceof LLIRExpression){
+            return "Expression\n";
+        }else if(node instanceof LLIRReturn){
+            return "Return\n";
+        }
+        return "NODE\n";
     }
 
 

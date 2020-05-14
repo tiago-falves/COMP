@@ -9,6 +9,14 @@
 .method public static main([Ljava/lang/String;)V
 	.limit stack 99
 	.limit locals 99
+	iconst_3
+	istore	4
+	iconst_5
+	istore	5
+	iconst_4
+	iconst_2
+	imul
+	istore	6
 	return
 .end method
 

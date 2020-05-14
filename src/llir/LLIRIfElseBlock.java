@@ -4,14 +4,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LLIRIfElseBlock extends LLIRNode{
-    public LLIRExpression ifExpression;
-    public List<LLIRNode> ifNodes;
-    public List<LLIRNode> elseNodes;
+    private LLIRExpression ifExpression;
+    private List<LLIRNode> ifNodes;
+    private List<LLIRNode> elseNodes;
+    private boolean foundElse;
+    private boolean finishedElse;
+
+
+
+
+
 
     public LLIRIfElseBlock(){
         ifExpression = null;
         ifNodes = new ArrayList<>();
         elseNodes = new ArrayList<>();
+        this.foundElse = false;
+        this.finishedElse = false;
+
     }
 
     public void setExpression(LLIRExpression expression){
@@ -20,6 +30,11 @@ public class LLIRIfElseBlock extends LLIRNode{
 
     public void addIfNode(LLIRNode node){
         ifNodes.add(node);
+    }
+    public void addNode(LLIRNode node){
+        if(!this.foundElse)
+            addIfNode(node);
+        else addElseNode(node);
     }
 
     public void addElseNode(LLIRNode node){
@@ -36,5 +51,21 @@ public class LLIRIfElseBlock extends LLIRNode{
 
     public List<LLIRNode> getElseNodes(){
         return elseNodes;
+    }
+
+    public boolean isFinishedElse() {
+        return finishedElse;
+    }
+
+    public void setFinishedElse(boolean finishedElse) {
+        this.finishedElse = finishedElse;
+    }
+
+    public boolean isFoundElse() {
+        return foundElse;
+    }
+
+    public void setFoundElse(boolean foundElse) {
+        this.foundElse = foundElse;
     }
 }

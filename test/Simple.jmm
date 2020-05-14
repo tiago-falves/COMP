@@ -1,4 +1,4 @@
-//import ioa.println(int);
+import ioa.println(int);
 //import ioa.println(boolean);
 class Simple {
 	public static void main(String[] args) {
@@ -15,16 +15,24 @@ class Simple {
         ioa.println(a);*/
 
         boolean x;
+        Simple simple;
+
         int zas;
-        if(true && false){
-            zas = 5 *3;
-            //ioa.println(true);
+        int zos;
+        int zes;
+        zas = 3;
+        zos = 5;
+        zes = 4 * 2;
+
+        /*if(true && false){
+            zas = 4;
+            zas = 3;
         }
         else{
             zas = 6;
-            //ioa.println(false);
+            simple = new Simple();
+        }*/
 
-        }
 
 
 	}
