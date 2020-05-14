@@ -521,7 +521,7 @@ public class TableGenerator {
         else if(secondChild.getId() == JavammTreeConstants.JJTARRAY) {
             List<Descriptor> firstDescriptorList = symbolTable.getDescriptor(firstChild.jjtGetVal());
             if(firstDescriptorList == null){
-                this.semanticError.printError(firstChild, "Error: Variable "+firstChild.jjtGetVal()+" not declared");
+                this.semanticError.printError(firstChild, "Variable "+firstChild.jjtGetVal()+" not declared");
                 return;
             }
 
@@ -536,22 +536,28 @@ public class TableGenerator {
                     }
                 }
                 if(typeDescriptor == null){
-                    this.semanticError.printError(firstChild, "Error: Variable " + firstChild.jjtGetVal()+" doesn't have a type");
+                    this.semanticError.printError(firstChild, "Variable " + firstChild.jjtGetVal()+" doesn't have a type");
                     return;
                 }
+            }
+
+            if(typeDescriptor.getClass() == VariableDescriptor.class){
+                VariableDescriptor varDescriptor = (VariableDescriptor)typeDescriptor;
+                if (!varDescriptor.isInitialized() && !varDescriptor.isInitializedInIf())
+                    this.semanticError.printError(firstChild, "Array " + firstChild.jjtGetVal()+" was not initialized");
             }
 
             //Assignment
             Type type = typeDescriptor.getType();
             if(type != Type.STRING_ARRAY && type != Type.INT_ARRAY){
-                this.semanticError.printError(firstChild, "Error: Variable " + firstChild.jjtGetVal()+" is not an array");
+                this.semanticError.printError(firstChild, "Variable " + firstChild.jjtGetVal()+" is not an array");
                 return;   
             }
 
             SimpleNode arrayNode =  (SimpleNode) statementNode.jjtGetChild(1);
             String indexType = inspectExpression(arrayNode, symbolTable);
             if(!indexType.equals("int")){
-                this.semanticError.printError(statementNode, "Error: Array index must be an int");
+                this.semanticError.printError(statementNode, "Array index must be an int");
                 return;
             }
            
@@ -753,7 +759,6 @@ public class TableGenerator {
 
     private String inspectArrayAccess(SimpleNode statementNode, SymbolsTable symbolsTable, int initialChild) throws SemanticErrorException {
         SimpleNode idNode = (SimpleNode) statementNode.jjtGetChild(initialChild);
-
         List<Descriptor> descriptors = symbolsTable.getDescriptor(idNode.jjtGetVal());
 
         TypeDescriptor idDescriptor = null;
