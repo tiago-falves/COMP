@@ -20,13 +20,24 @@ class Simple {
         int zas;
         int zos;
         int zes;
+        Simple simple;
+
         zas = 3;
 
-        if(true && false){
+        if(true){
             zas = 4;
             zas = 3;
             if(true){
                 zas = 5;
+                ioa.println(zas);
+                simple = new Simple();
+                zas = simple.add(zas,zas);
+
+                if(true){
+                    zas = 3;
+                }else{
+                    zas = 4;
+                }
             }
             else{
                 zas = 2;
