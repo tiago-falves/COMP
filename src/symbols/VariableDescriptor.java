@@ -25,6 +25,7 @@ public class VariableDescriptor extends NamedTypeDescriptor{
     public void setInitialized() {
         this.isInitialized = true;
         setInitializedPreviously();
+        setInitializedInFunction();
     }
 
     public void setNonInitialized() {
