@@ -24,7 +24,14 @@ class Simple {
 
         zas = 0;
 
-        while(zas < 10){
+        while(zas < 5){
+            zas = zas +1;
+            ioa.println(zas);
+        }
+
+        zas = 5;
+
+        /*while(zas < 10){
 
             if(true){
                 zas = 1;
@@ -48,7 +55,7 @@ class Simple {
                 zas = 5;
                 simple = new Simple();
             }
-        }
+        }*/
 
         zas = zas +1;
 

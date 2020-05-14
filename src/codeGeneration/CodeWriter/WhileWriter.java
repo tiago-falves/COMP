@@ -14,7 +14,7 @@ public class WhileWriter extends BlockStatementWriter {
         whileNumber++;
         this.code  = "while_" + localWhileNumber + ":\n";
         this.block = block;
-        /*
+        
         this.code += "while_" + localWhileNumber + ":" + "\n";
 
         this.code += generateCode(block.getExpression(), name);
@@ -28,7 +28,7 @@ public class WhileWriter extends BlockStatementWriter {
         this.code += "endWhile_" + localWhileNumber + ":" + "\n";
 
         localWhileNumber++;
-    */}
+    }
 
     public String getCode(){
         return this.code;

@@ -202,22 +202,25 @@ public class LLIRPopulator {
     }
 
     public void addStatement(FunctionDescriptor currentFunctionDescriptor){
-        LLIRNode node = this.llirStack.pop();
-        if (peek() instanceof LLIRIfElseBlock) {
-            LLIRIfElseBlock ifElseBlock = (LLIRIfElseBlock) peek();
-            if (!ifElseBlock.isFinishedElse()) {
-                ifElseBlock.addNode(node);
-                return;
+        if(!llirStack.empty()) {
+            LLIRNode node = this.llirStack.pop();
+            if (peek() instanceof LLIRIfElseBlock) {
+                LLIRIfElseBlock ifElseBlock = (LLIRIfElseBlock) peek();
+                if (!ifElseBlock.isFinishedElse()) {
+                    ifElseBlock.addNode(node);
+                    return;
+                }
+            } else if (peek() instanceof LLIRWhileBlock) {
+                LLIRWhileBlock whileBlock = (LLIRWhileBlock) peek();
+                if (!whileBlock.isFinished()) {
+                    whileBlock.addNode(node);
+                    return;
+                }
             }
-        }else if (peek() instanceof LLIRWhileBlock) {
-            LLIRWhileBlock whileBlock = (LLIRWhileBlock) peek();
-            if (!whileBlock.isFinished()) {
-                whileBlock.addNode(node);
-                return;
-            }
+            currentFunctionDescriptor.addLLIRNode(node);
         }
 
-        currentFunctionDescriptor.addLLIRNode(node);
+
 
 
     }
@@ -344,11 +347,11 @@ public class LLIRPopulator {
         String stack = "";
         stack = identation +  "IF:\n";
         for (LLIRNode node : ifElseBlock.getIfNodes()){
-            stack += identation + getNodeString(node,identation + "\t");
+            stack += identation + getNodeString(node,identation + "  ");
         }
         stack +=identation + identation + "ELSE:\n";
         for (LLIRNode node : ifElseBlock.getElseNodes()){
-            stack += identation + getNodeString(node,identation + "\t");
+            stack += identation + getNodeString(node,identation + "  ");
         }
         return stack;
     }
@@ -356,7 +359,7 @@ public class LLIRPopulator {
     public String getBlockStatements(LLIRWhileBlock whileBlock,String identation){
         String stack = "";
         for (LLIRNode node : whileBlock.getNodes()){
-            stack += identation + getNodeString(node,identation + "\t");
+            stack += identation + getNodeString(node,identation + "  ");
         }
         return stack;
     }

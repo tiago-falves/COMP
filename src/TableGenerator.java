@@ -557,6 +557,7 @@ public class TableGenerator {
             this.llirPopulator.addMethodCall(new LLIRMethodCall());
             inspectFunctionCall(statementNode, symbolTable);
 
+
             //If empty add tu function Descriptor
             if (llirPopulator.getLlirStack().size() == 1){
                 //this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
@@ -609,8 +610,6 @@ public class TableGenerator {
                 this.semanticError.printError(statementNode, "Unknown symbol");
             }
         }
-        this.llirPopulator.printStack();
-
 
         this.llirPopulator.addStatement(currentFunctionDescriptor);
 
