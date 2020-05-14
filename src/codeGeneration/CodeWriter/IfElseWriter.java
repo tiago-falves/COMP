@@ -8,32 +8,35 @@ import llir.*;
 import symbols.Type;
 
 public class IfElseWriter {
-    /*private String code;
+    private String code;
     private LLIRIfElseBlock block;
 
     private static int ifNumber = 0;
 
     public IfElseWriter(LLIRIfElseBlock block, String name){
+        int localIfNumber = ifNumber;
+        ifNumber++;
+
         this.code  = "";
         this.block = block;
         
         //If expression
         this.code += generateCode(block.getExpression(),name);
 
-        this.code += "\t" + "ifeq else_" + ifNumber + "\n";
+        this.code += "\t" + "ifeq else_" + localIfNumber + "\n";
 
         this.code += generateNodesCode(block.getIfNodes(), name);
         
-        this.code += "\t" + "goto endIf_" + ifNumber + "\n";
+        this.code += "\t" + "goto endIf_" + localIfNumber + "\n";
 
         //Else
-        this.code += "else_" + ifNumber + ":" + "\n";
+        this.code += "else_" + localIfNumber + ":" + "\n";
 
         this.code += generateNodesCode(block.getElseNodes(), name);
 
-        this.code += "endIf_" + ifNumber + ":" + "\n";
+        this.code += "endIf_" + localIfNumber + ":" + "\n";
 
-        ifNumber++;
+        localIfNumber++;
     }
 
     private String generateNodesCode(List<LLIRNode> nodes, String name){
@@ -63,12 +66,24 @@ public class IfElseWriter {
             WhileWriter whileWriter = new WhileWriter((LLIRWhileBlock) node, name);
             result += whileWriter.getCode();
         }
+        else if (node instanceof LLIRConditional){
+            ConditionalWriter conditionalWriter = new ConditionalWriter((LLIRConditional)node, name);
+            result += conditionalWriter.getCode();
+        }
+        else if (node instanceof LLIRNegation){
+            NegationWriter negationWriter = new NegationWriter((LLIRNegation)node, name);
+            result += negationWriter.getCode();
+        }
+        else if (node instanceof LLIRBoolean){
+            BooleanWriter booleanWriter = new BooleanWriter((LLIRBoolean) node, name);
+            result += booleanWriter.getCode();
+        }
 
         return result;
     }
 
     public String getCode(){
         return this.code;
-    }*/
+    }
 
 }

@@ -66,6 +66,10 @@ public class FunctionBody {
                 ImportWriter importWriter = new ImportWriter((LLIRImport) node);
                 generatedCode += importWriter.getCode();
             }
+            else if (node instanceof LLIRIfElseBlock){
+                IfElseWriter ifElseWriter = new IfElseWriter((LLIRIfElseBlock) node, "");
+                generatedCode += ifElseWriter.getCode();
+            }
             else if (node instanceof LLIRReturn) {
                 ReturnWriter returnWriter = new ReturnWriter((LLIRReturn) node);
                 generatedCode += returnWriter.getCode();

@@ -8,30 +8,34 @@ import llir.*;
 import symbols.Type;
 
 public class WhileWriter {
-    /*private String code;
-    private LLIRWhileBlock block;
+    private String code;
+    /*private LLIRWhileBlock block;
 
     private static int whileNumber = 0;
-
+*/
     public WhileWriter(LLIRWhileBlock block, String name){
+  /*      
+        int localWhileNumber = whileNumber;
+        whileNumber++;
+
         this.code  = "";
         this.block = block;
         
-        this.code += "while_" + whileNumber + ":" + "\n";
+        this.code += "while_" + localWhileNumber + ":" + "\n";
 
         this.code += generateCode(block.getExpression(), name);
 
-        this.code += "\t" + "ifeq endWhile_" + whileNumber + "\n";
+        this.code += "\t" + "ifeq endWhile_" + localWhileNumber + "\n";
 
         this.code += generateNodesCode(block.getNodes(), name);
 
-        this.code += "\t" + "goto while_" + whileNumber + "\n";
+        this.code += "\t" + "goto while_" + localWhileNumber + "\n";
 
-        this.code += "endWhile_" + whileNumber + ":" + "\n";
+        this.code += "endWhile_" + localWhileNumber + ":" + "\n";
 
-        whileNumber++;
-    }
-
+        localWhileNumber++;
+    */}
+/*
     private String generateNodesCode(List<LLIRNode> nodes, String name){
         String result = new String();
         for(int i = 0; i < nodes.size(); i++){
@@ -59,12 +63,16 @@ public class WhileWriter {
             WhileWriter whileWriter = new WhileWriter((LLIRWhileBlock) node, name);
             result += whileWriter.getCode();
         }
+        else if (node instanceof LLIRBoolean){
+            BooleanWriter booleanWriter = new BooleanWriter((LLIRBoolean) node, name);
+            result += booleanWriter.getCode();
+        }
 
         return result;
     }
-
+*/
     public String getCode(){
         return this.code;
-    }*/
+    }//*/
 
 }

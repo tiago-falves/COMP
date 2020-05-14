@@ -658,11 +658,10 @@ public class TableGenerator {
         }
 
         this.llirPopulator.popIfElseBlock();
-        this.llirPopulator.printStack();
+        
+        //this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
 
-        this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
-
-        //this.llirPopulator.addStatement(currentFunctionDescriptor);
+        this.llirPopulator.addStatement(currentFunctionDescriptor);
 
     }
 
@@ -879,7 +878,7 @@ public class TableGenerator {
                     methodCall.setMethodName(functionDescriptor.getName());
                     methodCall.setParametersTable(parametersTable);
                     methodCall.setReturnType(functionDescriptor.getType());
-                    //Falta adicionar as parameters expressions
+                    //TODO Falta adicionar as parameters expressions
 
                 }
 

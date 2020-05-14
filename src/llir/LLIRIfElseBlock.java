@@ -11,8 +11,6 @@ public class LLIRIfElseBlock extends LLIRNode{
     private boolean finishedElse;
 
 
-
-
     public LLIRIfElseBlock(){
         ifExpression = null;
         ifNodes = new ArrayList<>();
@@ -26,17 +24,17 @@ public class LLIRIfElseBlock extends LLIRNode{
         ifExpression = expression;
     }
 
-    public void addIfNode(LLIRNode node){
-        ifNodes.add(node);
-    }
     public void addNode(LLIRNode node){
-        System.out.println(node);
         if(!this.foundElse){
-            addIfNode(node);
+            this.addIfNode(node);
         }
         else {
-            addElseNode(node);
+            this.addElseNode(node);
         }
+    }
+
+    public void addIfNode(LLIRNode node){
+        ifNodes.add(node);
     }
 
     public void addElseNode(LLIRNode node){
