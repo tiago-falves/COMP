@@ -22,33 +22,35 @@ class Simple {
         int zes;
         Simple simple;
 
-        zas = 3;
+        zas = 0;
 
-        if(true){
-            zas = 4;
-            zas = 3;
+        while(zas < 10){
+
             if(true){
-                zas = 5;
-                ioa.println(zas);
-                simple = new Simple();
-                zas = simple.add(zas,zas);
-
+                zas = 1;
                 if(true){
-                    zas = 3;
-                }else{
+                    zas = 1;
+                    ioa.println(zas);
+                    simple = new Simple();
+                    zas = simple.add(zas,zas);
+
+                    if(true){
+                        zas = 2;
+                    }else{
+                        zas = 3;
+                    }
+                }
+                else{
                     zas = 4;
                 }
             }
             else{
-                zas = 2;
+                zas = 5;
+                simple = new Simple();
             }
         }
-        else{
-            zas = 6;
-            simple = new Simple();
-        }
 
-        zas = 3;
+        zas = zas +1;
 
 	}
 	public int add(int a, int b){

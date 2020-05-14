@@ -9,51 +9,12 @@
 .method public static main([Ljava/lang/String;)V
 	.limit stack 99
 	.limit locals 99
-	iconst_3
+	iconst_0
 	istore	4
-	iconst_1
-	ifeq else_0
-	iconst_4
-	istore	4
-	iconst_3
-	istore	4
-	iconst_1
-	ifeq else_1
-	iconst_5
-	istore	4
-	new Simple
-	dup
-	invokespecial Simple/<init>()V
-	astore_3
-	aload_3
+while_0:
 	iload	4
-	iload	4
-	invokevirtual Simple/add(II)I
-	istore	4
 	iconst_1
-	ifeq else_2
-	iconst_3
-	istore	4
-	goto endIf_2
-else_2:
-	iconst_4
-	istore	4
-endIf_2:
-	goto endIf_1
-else_1:
-	iconst_2
-	istore	4
-endIf_1:
-	goto endIf_0
-else_0:
-	bipush	6
-	istore	4
-	new Simple
-	dup
-	invokespecial Simple/<init>()V
-	astore_3
-endIf_0:
-	iconst_3
+	iadd
 	istore	4
 	return
 .end method

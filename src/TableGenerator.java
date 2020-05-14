@@ -579,6 +579,8 @@ public class TableGenerator {
             return;
         }
 
+        this.llirPopulator.addLLIR(new LLIRWhileBlock());
+
         String expressionType = inspectExpression(whileExpression, statementParentTable);
         if(expressionType == null){
             this.semanticError.printError(whileExpression, "Can't process while statement due to invalid expression");
@@ -587,6 +589,8 @@ public class TableGenerator {
             this.semanticError.printError(whileExpression, "While expression must evaluate to a boolean");
             return;
         }
+        this.llirPopulator.popBlockExpression();
+
 
         BlockDescriptor blockDescriptor = new BlockDescriptor(statementParentTable);
         
@@ -605,11 +609,18 @@ public class TableGenerator {
                 this.semanticError.printError(statementNode, "Unknown symbol");
             }
         }
+        this.llirPopulator.printStack();
+
+
+        this.llirPopulator.addStatement(currentFunctionDescriptor);
+
+
+
     }
 
     public void inspectIfStatement(SimpleNode ifNode, SymbolsTable statementParentTable) throws SemanticErrorException {
         LLIRIfElseBlock ifElseBlock = new LLIRIfElseBlock();
-        this.llirPopulator.addIfBlock(ifElseBlock);
+        this.llirPopulator.addLLIR(ifElseBlock);
 
         if(ifNode.jjtGetNumChildren() == 0){
             this.semanticError.printError(ifNode, "If needs to have an expression.");
@@ -657,8 +668,8 @@ public class TableGenerator {
             }
         }
 
-        this.llirPopulator.popIfElseBlock();
-        this.llirPopulator.printStack();
+        this.llirPopulator.popBlock();
+
 
         this.llirPopulator.addStatement(currentFunctionDescriptor);
 
