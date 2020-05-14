@@ -658,6 +658,7 @@ public class TableGenerator {
         }
 
         this.llirPopulator.popIfElseBlock();
+        this.llirPopulator.printStack();
         
         //this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
 

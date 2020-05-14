@@ -329,18 +329,15 @@ public class LLIRPopulator {
 
 
 
-    public String getBlockStatements(){
+    public String getBlockStatements(LLIRIfElseBlock ifElseBlock){
         String stack = "";
-        if (peek() instanceof LLIRIfElseBlock){
-            LLIRIfElseBlock ifElseBlock = (LLIRIfElseBlock) peek();
-            stack = "\tIF:\n";
-            for (LLIRNode node : ifElseBlock.getIfNodes()){
-                stack += "\t\t" + getNodeString(node);
-            }
-            stack += "\tELSE:\n";
-            for (LLIRNode node : ifElseBlock.getElseNodes()){
-                stack += "\t\t" + getNodeString(node);
-            }
+        stack = "\tIF:\n";
+        for (LLIRNode node : ifElseBlock.getIfNodes()){
+            stack += "\t\t" + getNodeString(node);
+        }
+        stack += "\tELSE:\n";
+        for (LLIRNode node : ifElseBlock.getElseNodes()){
+            stack += "\t\t" + getNodeString(node);
         }
         return stack;
     }
@@ -366,7 +363,7 @@ public class LLIRPopulator {
             return "Conditional\n";
         }else if(node instanceof LLIRIfElseBlock) {
             String s = "IFElseBlock\n";
-            s += getBlockStatements();
+            s += getBlockStatements((LLIRIfElseBlock) node);
             return s;
         }else if(node instanceof LLIRBoolean){
             return "Boolean\n";

@@ -25,6 +25,12 @@ class Simple {
         if(true && false){
             zas = 4;
             zas = 3;
+            if(true){
+                zas = 5;
+            }
+            else{
+                zas = 2;
+            }
         }
         else{
             zas = 6;
