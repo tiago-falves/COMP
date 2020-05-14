@@ -1,7 +1,8 @@
-import ioa.println(int);
+//import ioa.println(int);
+//import ioa.println(boolean);
 class Simple {
 	public static void main(String[] args) {
-        int a;
+        /*int a;
         int b;
         Simple simple;
         int c;
@@ -11,7 +12,21 @@ class Simple {
 
         simple = new Simple();
         c = simple.add(a,b); //Aqui que aload e que se deve fazer?
-        ioa.println(a);
+        ioa.println(a);*/
+
+        boolean x;
+        int zas;
+        if(true && false){
+            zas = 5 *3;
+            //ioa.println(true);
+        }
+        else{
+            zas = 6;
+            //ioa.println(false);
+
+        }
+
+
 	}
 	public int add(int a, int b){
 		return a+b;

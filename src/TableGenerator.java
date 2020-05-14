@@ -416,7 +416,9 @@ public class TableGenerator {
         } else if(variableAndStatementNode.getId() == JavammTreeConstants.JJTWHILESTATEMENT){
             inspectWhileStatement(variableAndStatementNode, functionDescriptor.getBodyTable());
         } else if(variableAndStatementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
+            this.llirPopulator.addIfBlock(new LLIRIfElseBlock());
             inspectIfStatement(variableAndStatementNode, functionDescriptor.getBodyTable());
+            this.llirPopulator.popIfElseBlock();
         }else{
             this.semanticError.printError(variableAndStatementNode, "Unknown symbol");
         }
@@ -487,13 +489,16 @@ public class TableGenerator {
 
 
 
+
             if(typeDescriptor.getClass() == VariableDescriptor.class){
                 VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
                 variableDescriptor.setInitialized();
                 this.llirPopulator.setAssignmentVariable(new LLIRVariable(variableDescriptor));
             }
 
-            this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
+            this.llirPopulator.addStatement(currentFunctionDescriptor);
+
+
 
         }
         else if(secondChild.getId() == JavammTreeConstants.JJTARRAY) {
@@ -554,7 +559,8 @@ public class TableGenerator {
             inspectFunctionCall(statementNode, symbolTable);
             //If empty add tu function Descriptor
             if (llirPopulator.getLlirStack().size() == 1){
-                this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
+                //this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
+                this.llirPopulator.addStatement(currentFunctionDescriptor);
             }
 
         }
@@ -612,7 +618,10 @@ public class TableGenerator {
             return;
         }
 
-        String expressionType = inspectExpression(ifExpression, statementParentTable); 
+        String expressionType = inspectExpression(ifExpression, statementParentTable);
+
+        this.llirPopulator.popBlockExpression();
+
         if(expressionType == null){
             this.semanticError.printError(ifExpression, "Can't process if statement due to invalid expression");
             return;
@@ -642,6 +651,7 @@ public class TableGenerator {
                 this.semanticError.printError(statementNode, "Unknown symbol "+statementNode.getId());
             }
         }
+        this.llirPopulator.printStack();
     }
 
     private String inspectArrayAccess(SimpleNode statementNode, SymbolsTable symbolsTable, int initialChild) throws SemanticErrorException {
@@ -790,7 +800,10 @@ public class TableGenerator {
 
                 this.llirPopulator.addImport(new LLIRImport(importDescriptor));
 
-                if(empty) this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
+                if(empty){
+                    //this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
+                    this.llirPopulator.addStatement(currentFunctionDescriptor);
+                }
 
                 ArrayList<String> importIdentifiers = importDescriptor.getIdentifiers();
 

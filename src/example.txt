@@ -6,11 +6,11 @@ public class ioa {
        1: invokespecial #1                  // Method java/lang/Object."<init>":()V
        4: return
 
-  public static void println(int);
+  public static void println(boolean);
     Code:
        0: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
        3: iload_0
-       4: invokedynamic #3,  0              // InvokeDynamic #0:makeConcatWithConstants:(I)Ljava/lang/String;
+       4: invokedynamic #3,  0              // InvokeDynamic #0:makeConcatWithConstants:(Z)Ljava/lang/String;
        9: invokevirtual #4                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
       12: return
 }
