@@ -21,8 +21,6 @@ public class MethodCallWriter {
             this.code = LOAD + variableIndex + "\n";
         }
 
-
-
         this.code += getParameters(methodCall);
         this.code += INSTRUCTION;
 

@@ -354,6 +354,7 @@ public class TableGenerator {
             SimpleNode child = (SimpleNode) mainNode.jjtGetChild(i);
             inspectVariableAndStatement(child, functionDescriptor);
         }
+
     }
 
     public void inspectReturn(SimpleNode node, FunctionDescriptor functionDescriptor) throws SemanticErrorException {
@@ -487,13 +488,16 @@ public class TableGenerator {
 
 
 
+
             if(typeDescriptor.getClass() == VariableDescriptor.class){
                 VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
                 variableDescriptor.setInitialized();
                 this.llirPopulator.setAssignmentVariable(new LLIRVariable(variableDescriptor));
             }
 
-            this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
+            this.llirPopulator.addStatement(currentFunctionDescriptor);
+
+
 
         }
         else if(secondChild.getId() == JavammTreeConstants.JJTARRAY) {
@@ -552,10 +556,14 @@ public class TableGenerator {
             //Function call
             this.llirPopulator.addMethodCall(new LLIRMethodCall());
             inspectFunctionCall(statementNode, symbolTable);
+
+
             //If empty add tu function Descriptor
             if (llirPopulator.getLlirStack().size() == 1){
-                this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
+                //this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
+                this.llirPopulator.addStatement(currentFunctionDescriptor);
             }
+
 
         }
     }
@@ -572,6 +580,8 @@ public class TableGenerator {
             return;
         }
 
+        this.llirPopulator.addLLIR(new LLIRWhileBlock());
+
         String expressionType = inspectExpression(whileExpression, statementParentTable);
         if(expressionType == null){
             this.semanticError.printError(whileExpression, "Can't process while statement due to invalid expression");
@@ -580,6 +590,8 @@ public class TableGenerator {
             this.semanticError.printError(whileExpression, "While expression must evaluate to a boolean");
             return;
         }
+        this.llirPopulator.popBlockExpression();
+
 
         BlockDescriptor blockDescriptor = new BlockDescriptor(statementParentTable);
         
@@ -598,9 +610,17 @@ public class TableGenerator {
                 this.semanticError.printError(statementNode, "Unknown symbol");
             }
         }
+
+        this.llirPopulator.addStatement(currentFunctionDescriptor);
+
+
+
     }
 
     public void inspectIfStatement(SimpleNode ifNode, SymbolsTable statementParentTable) throws SemanticErrorException {
+        LLIRIfElseBlock ifElseBlock = new LLIRIfElseBlock();
+        this.llirPopulator.addLLIR(ifElseBlock);
+
         if(ifNode.jjtGetNumChildren() == 0){
             this.semanticError.printError(ifNode, "If needs to have an expression.");
             return;
@@ -612,7 +632,10 @@ public class TableGenerator {
             return;
         }
 
-        String expressionType = inspectExpression(ifExpression, statementParentTable); 
+        String expressionType = inspectExpression(ifExpression, statementParentTable);
+
+        this.llirPopulator.popBlockExpression();
+
         if(expressionType == null){
             this.semanticError.printError(ifExpression, "Can't process if statement due to invalid expression");
             return;
@@ -636,12 +659,19 @@ public class TableGenerator {
             } else if(statementNode.getId() == JavammTreeConstants.JJTIFSTATEMENT){
                 inspectIfStatement(statementNode, blockDescriptor.getLocalTable());
             } else if(statementNode.getId() == JavammTreeConstants.JJTELSE && !found_else){
+                ifElseBlock.setFoundElse(true);
                 found_else = true;
                 continue;
             } else{
                 this.semanticError.printError(statementNode, "Unknown symbol "+statementNode.getId());
             }
         }
+
+        this.llirPopulator.popBlock();
+
+
+        this.llirPopulator.addStatement(currentFunctionDescriptor);
+
     }
 
     private String inspectArrayAccess(SimpleNode statementNode, SymbolsTable symbolsTable, int initialChild) throws SemanticErrorException {
@@ -790,7 +820,12 @@ public class TableGenerator {
 
                 this.llirPopulator.addImport(new LLIRImport(importDescriptor));
 
-                if(empty) this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
+                if(empty){
+                    //this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
+                    this.llirPopulator.addStatement(currentFunctionDescriptor);
+                }
+
+
 
                 ArrayList<String> importIdentifiers = importDescriptor.getIdentifiers();
 
@@ -852,7 +887,7 @@ public class TableGenerator {
                     methodCall.setMethodName(functionDescriptor.getName());
                     methodCall.setParametersTable(parametersTable);
                     methodCall.setReturnType(functionDescriptor.getType());
-                    //Falta adicionar as parameters expressions
+                    //TODO Falta adicionar as parameters expressions
 
                 }
 
@@ -1039,13 +1074,7 @@ public class TableGenerator {
 
                     break;
                 }
-                case JavammTreeConstants.JJTTRUE: {
-                    // Adding boolean to the LLIR Assignment node, if applicable
-                    //ARITHMETIC
-
-                    //arithmetics.get(arithmetics.size()-1).setExpression(currentMethodCall);
-
-                }
+                case JavammTreeConstants.JJTTRUE:
                 case JavammTreeConstants.JJTFALSE: {
                     if(type == null){
                         type = "boolean";
@@ -1054,9 +1083,8 @@ public class TableGenerator {
                         return null;
                     }
 
-                    //ARITHMETIC
-                    //arithmetics.get(arithmetics.size()-1).setExpression(new llir.LLIRBoolean(false));
-
+                    //CONDITIONAL
+                    this.llirPopulator.addExpression(new llir.LLIRBoolean(node.getId() == JavammTreeConstants.JJTTRUE ? true : false));
 
                     break;
                 }
@@ -1193,6 +1221,11 @@ public class TableGenerator {
                         this.semanticError.printError(node, "OPERATION && IS INCOMPATIBLE WITH " + type);
                         return null;
                     }
+                    
+                    //CONDITIONAL &&
+                    if(llirPopulator.lastIsLLIRExpression()) this.llirPopulator.addConditional(new LLIRConditional());
+                    this.llirPopulator.addOperator(node.getId());
+
                     break;
                 }
                 case JavammTreeConstants.JJTNEW: {
@@ -1247,6 +1280,9 @@ public class TableGenerator {
                         this.semanticError.printError(node, "OPERATION ! IS INCOMPATIBLE WITH " + type);
                         return null;
                     }
+
+                    //NEGATION !
+                    this.llirPopulator.addExpression(new LLIRNegation());
                     break;
                 }
                 case JavammTreeConstants.JJTLESS: {
@@ -1254,13 +1290,17 @@ public class TableGenerator {
                         this.semanticError.printError(node, "CAN'T COMPARE " + type + " WITH OPERATOR <");
                         return null;
                     }
-                    
+                    //CONDITIONAL <
+                    if(llirPopulator.lastIsLLIRExpression()) this.llirPopulator.addConditional(new LLIRConditional());
+                    this.llirPopulator.addOperator(node.getId());
+
                     String otherType = inspectExpression(argumentNode, symbolsTable, i+1);
                     if(!otherType.equals("int")){
                         this.semanticError.printError(node, "CAN'T COMPARE " + otherType + " WITH OPERATOR <");
                         return null;
                     }
 
+                    this.llirPopulator.popExpression();
                     return "boolean";
                 }
                 case JavammTreeConstants.JJTDOT: {
@@ -1293,11 +1333,9 @@ public class TableGenerator {
                     break;
                 }
             }
+            this.llirPopulator.popNegation();
         }
-
-        this.llirPopulator.popArithmetics();
-
-
+        this.llirPopulator.popExpression();
 
 
 
