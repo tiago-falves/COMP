@@ -501,19 +501,21 @@ public class TableGenerator {
 
         }
         else if(secondChild.getId() == JavammTreeConstants.JJTARRAY) {
+
+
             List<Descriptor> firstDescriptorList = symbolTable.getDescriptor(firstChild.jjtGetVal());
             if(firstDescriptorList == null){
                 this.semanticError.printError(firstChild, "Error: Variable "+firstChild.jjtGetVal()+" not declared");
                 return;
             }
 
-            TypeDescriptor typeDescriptor = null;
+            NamedTypeDescriptor typeDescriptor = null;
             if(firstDescriptorList.size() == 1){
-                typeDescriptor = (TypeDescriptor) firstDescriptorList.get(0);
+                typeDescriptor = (NamedTypeDescriptor) firstDescriptorList.get(0);
             }else{
                 for(int i = 0; i < firstDescriptorList.size(); i++){
                     if(firstDescriptorList.get(i).getClass() == VariableDescriptor.class){
-                        typeDescriptor = (TypeDescriptor) firstDescriptorList.get(i);
+                        typeDescriptor = (NamedTypeDescriptor) firstDescriptorList.get(i);
                         break;
                     }
                 }
@@ -524,11 +526,16 @@ public class TableGenerator {
             }
 
             //Assignment
+
+            //this.llirPopulator.addAssignment(new LLIRAssignment());
             Type type = typeDescriptor.getType();
             if(type != Type.STRING_ARRAY && type != Type.INT_ARRAY){
                 this.semanticError.printError(firstChild, "Error: Variable " + firstChild.jjtGetVal()+" is not an array");
                 return;   
             }
+
+            //this.llirPopulator.setAssignmentVariable(new LLIRVariable(typeDescriptor));
+
 
             SimpleNode arrayNode =  (SimpleNode) statementNode.jjtGetChild(1);
             String indexType = inspectExpression(arrayNode, symbolTable);
@@ -545,6 +552,8 @@ public class TableGenerator {
             }
 
             inspectAssignment(statementNode, symbolTable, typeString, 3);
+
+            //this.llirPopulator.popBeforeAssignment();
 
             if(typeDescriptor.getClass() == VariableDescriptor.class){
                 VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
@@ -679,15 +688,18 @@ public class TableGenerator {
 
         List<Descriptor> descriptors = symbolsTable.getDescriptor(idNode.jjtGetVal());
 
-        TypeDescriptor idDescriptor = null;
+        NamedTypeDescriptor idDescriptor = null;
         for(int i = 0; i < descriptors.size(); i++){
             Descriptor d = descriptors.get(i);
             if(d.getClass() == FunctionParameterDescriptor.class || d.getClass() == VariableDescriptor.class){
-                idDescriptor = (TypeDescriptor) d;
+                idDescriptor = (NamedTypeDescriptor) d;
                 if(idDescriptor.getType() != Type.INT_ARRAY && idDescriptor.getType() != Type.STRING_ARRAY){
                     this.semanticError.printError(idNode, "CAN ONLY ACCESS ARRAYS OF INT OR STRING");
                     return null;
                 }
+                this.llirPopulator.addVariable(new LLIRVariable(idDescriptor));
+
+
                 break;
             }
         }
@@ -1158,7 +1170,8 @@ public class TableGenerator {
                             i += 3; // Jump function identifiers
                         
                             continue;
-                        } else if(nextNode.getId() == JavammTreeConstants.JJTARRAY){    
+                        } else if(nextNode.getId() == JavammTreeConstants.JJTARRAY){
+                            this.llirPopulator.addLLIR(new LLIRArrayAccess());
                             String arrayType = inspectArrayAccess(argumentNode, symbolsTable, i);
                             if(type == null){
                                 type = arrayType;
@@ -1248,9 +1261,7 @@ public class TableGenerator {
                         //Popular array instantiation
                         this.llirPopulator.addLLIR(new LLIRArrayInstantiation());
 
-                        this.llirPopulator.printStack();
                         String indexType = inspectExpression(arrayNode, symbolsTable);
-                        this.llirPopulator.printStack();
 
 
                         this.llirPopulator.popArrayInstantiation();

@@ -47,6 +47,18 @@ public class LLIRPopulator {
         this.llirStack.push(expression);
     }
 
+    /*public void setAssignmentVariable(LLIRExpression variable){
+        if (this.peek() instanceof LLIRAssignment){
+            LLIRAssignment assignment = (LLIRAssignment) this.peek();
+            if(this.peek() instanceof  LLIRVariable)
+                assignment.setVariable((LLIRVariable) variable);
+            else if(this.peek() instanceof  LLIRArrayAccess){
+
+            }
+        }
+
+    }*/
+
     public void setAssignmentVariable(LLIRVariable variable){
         if (this.peek() instanceof LLIRAssignment){
             LLIRAssignment assignment = (LLIRAssignment) this.peek();
@@ -108,6 +120,14 @@ public class LLIRPopulator {
         }
 
         this.llirStack.push(conditional);
+    }
+
+    public void addVariable(LLIRVariable variable){
+        if(peek() instanceof LLIRArrayAccess ){
+            LLIRArrayAccess arrayAccess = (LLIRArrayAccess) peek();
+            arrayAccess.setArray(variable);
+        }
+
     }
 
     public void addReturn(LLIRReturn returnLLIR){
@@ -406,8 +426,12 @@ public class LLIRPopulator {
             return s;
         }else if(node instanceof LLIRBoolean) {
             return identation + "Boolean\n";
+        }else if(node instanceof LLIRInteger) {
+            return identation + "Integer\n";
         }else if(node instanceof LLIRArrayInstantiation){
             return identation +"Array Instantiation\n";
+        }else if(node instanceof LLIRArrayAccess){
+            return identation +"Array Access\n";
         }else if (node instanceof LLIRMethodCall) {
             return identation +"Method Call\n";
         }else if(node instanceof LLIRImport){

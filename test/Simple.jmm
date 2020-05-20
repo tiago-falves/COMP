@@ -5,18 +5,21 @@ class Simple {
         int a;
         boolean b;
         int[] newField;
-        //Simple simple;
-        //simple = new Simple();
-        //b = true && false;
-        //a=3 * simple.add(1,1) * (4-2);
+        Simple simple;
+        simple = new Simple();
+        b = true && false;
+        a=3 * simple.add(1,1) * (4-2);
         //a = simple.add(1,1) + 4;
         //newField = new int[simple.add(1,1)];
-        //newField = new int[5 * 4* 3];
-        //newField[1] = 0;
+        newField = new int[5];
+        newField[1] = 0;
+
+        newField[0] = 1;
 
 
         if(true){
             newField = new int[5 * 4* 3];
+            ioa.println(3);
         }
         else{
             newField = new int[5 * 4* 3];
