@@ -6,13 +6,13 @@ public class IntOperationWriter {
     private String code;
     private LLIRExpression expression;
 
-    public IntOperationWriter(LLIRExpression expression, String name){
+    public IntOperationWriter(LLIRExpression expression){
         this.code  = "";
         this.expression = expression;
-        this.code += generateCode(expression,name);
+        this.code += generateCode(expression);
     }
 
-    private String generateCode(LLIRExpression expression,String name){
+    private String generateCode(LLIRExpression expression){
         String result = new String();
         if(expression instanceof LLIRInteger) {
             IntegerWriter integerWriter = new IntegerWriter((LLIRInteger) expression);
@@ -23,7 +23,7 @@ public class IntOperationWriter {
             result += variableWriter.getCode();
         }
         else if (expression instanceof LLIRArithmetic) {
-            ArithmeticWriter arithmeticWriter = new ArithmeticWriter((LLIRArithmetic) expression,name);
+            ArithmeticWriter arithmeticWriter = new ArithmeticWriter((LLIRArithmetic) expression);
             result += arithmeticWriter.getCode();
         }
         else if (expression instanceof LLIRMethodCall) {
@@ -31,7 +31,7 @@ public class IntOperationWriter {
             result += methodCallWriter.getCode();
         }
         else if (expression instanceof LLIRParenthesis) {
-            ExpressionWriter expressionWriter = new ExpressionWriter(((LLIRParenthesis) expression).getExpression(),name);
+            ExpressionWriter expressionWriter = new ExpressionWriter(((LLIRParenthesis) expression).getExpression());
             result += expressionWriter.getCode();
         }
 

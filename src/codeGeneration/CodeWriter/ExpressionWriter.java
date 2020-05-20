@@ -8,7 +8,7 @@ import java.util.List;
 public class ExpressionWriter {
 
     private String code;
-    public ExpressionWriter(LLIRExpression expression,String name){
+    public ExpressionWriter(LLIRExpression expression){
         this.code  = "";
 
 
@@ -30,7 +30,7 @@ public class ExpressionWriter {
             ArithmeticTransformer transformer = new ArithmeticTransformer((LLIRArithmetic) expression);
             LLIRArithmetic transformed = transformer.transform();
 
-            ArithmeticWriter arithmeticWriter = new ArithmeticWriter(transformed,name);
+            ArithmeticWriter arithmeticWriter = new ArithmeticWriter(transformed);
             this.code += arithmeticWriter.getCode();
         }
 
@@ -40,14 +40,14 @@ public class ExpressionWriter {
 
         }
         else if (expression instanceof LLIRConditional){
-            ConditionalWriter conditionalWriter = new ConditionalWriter((LLIRConditional) expression, name);
+            ConditionalWriter conditionalWriter = new ConditionalWriter((LLIRConditional) expression);
             this.code += conditionalWriter.getCode();
         }
         else if (expression instanceof LLIRNegation){
-            NegationWriter negationWriter = new NegationWriter((LLIRNegation)expression, name);
+            NegationWriter negationWriter = new NegationWriter((LLIRNegation)expression);
             this.code += negationWriter.getCode();
         }else if (expression instanceof LLIRParenthesis) {
-            ExpressionWriter expressionWriter = new ExpressionWriter(((LLIRParenthesis) expression).getExpression(),name);
+            ExpressionWriter expressionWriter = new ExpressionWriter(((LLIRParenthesis) expression).getExpression());
             this.code += expressionWriter.getCode();
         }
     }

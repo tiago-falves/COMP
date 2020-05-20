@@ -9,16 +9,16 @@ public class NegationWriter {
     private String code;
     private LLIRNegation negation;
 
-    public NegationWriter(LLIRNegation negation, String name){
+    public NegationWriter(LLIRNegation negation){
         this.code  = "";
         this.negation = negation;
-        this.code += generateCode(negation.getExpression(),name);    
+        this.code += generateCode(negation.getExpression());
         this.code += CGConst.TRUE_VALUE + "\n";
         this.code += "\t" + "ixor";
         this.code += "\n";
     }
 
-    private String generateCode(LLIRExpression expression,String name){
+    private String generateCode(LLIRExpression expression){
 
         String result = new String();
         if(expression instanceof LLIRVariable) {
@@ -30,7 +30,7 @@ public class NegationWriter {
             result += methodCallWriter.getCode();
         }
         else if (expression instanceof LLIRParenthesis) {
-            ExpressionWriter expressionWriter = new ExpressionWriter(((LLIRParenthesis) expression).getExpression(),name);
+            ExpressionWriter expressionWriter = new ExpressionWriter(((LLIRParenthesis) expression).getExpression());
             result += expressionWriter.getCode();
         }
         else if (expression instanceof LLIRBoolean) {
