@@ -59,6 +59,18 @@ public class LLIRPopulator {
 
     }
 
+    public void popArrayAcessExpression(){
+        if(lastIsLLIRExpression()){
+            LLIRExpression expression =(LLIRExpression) this.llirStack.pop();
+            if(peek() instanceof  LLIRArrayAccess){
+                System.out.println("ZAAAAAAAAAAS");
+                LLIRArrayAccess acess = (LLIRArrayAccess) this.llirStack.peek();
+                acess.setAccess(expression);
+            }
+
+        }
+    }
+
     public void setAssignmentVariable(LLIRVariable variable){
         if (this.peek() instanceof LLIRAssignment){
             LLIRAssignment assignment = (LLIRAssignment) this.peek();

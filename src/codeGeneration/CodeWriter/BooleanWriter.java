@@ -11,7 +11,7 @@ import static codeGeneration.FunctionBody.*;
 public class BooleanWriter {
     private String code;
 
-    public BooleanWriter(LLIRBoolean llirBoolean, String name){
+    public BooleanWriter(LLIRBoolean llirBoolean){
         this.code = new String();
 
         boolean value = llirBoolean.getValue();

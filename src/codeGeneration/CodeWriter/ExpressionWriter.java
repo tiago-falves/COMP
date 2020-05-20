@@ -13,11 +13,11 @@ public class ExpressionWriter {
 
 
         if(expression instanceof LLIRInteger) {
-            IntegerWriter integerWriter = new IntegerWriter((LLIRInteger) expression,name);
+            IntegerWriter integerWriter = new IntegerWriter((LLIRInteger) expression);
             this.code += integerWriter.getCode();
         }
         else if (expression instanceof LLIRBoolean) {
-            BooleanWriter booleanWriter = new BooleanWriter((LLIRBoolean) expression,name);
+            BooleanWriter booleanWriter = new BooleanWriter((LLIRBoolean) expression);
             this.code += booleanWriter.getCode();
 
         }
@@ -46,6 +46,9 @@ public class ExpressionWriter {
         else if (expression instanceof LLIRNegation){
             NegationWriter negationWriter = new NegationWriter((LLIRNegation)expression, name);
             this.code += negationWriter.getCode();
+        }else if (expression instanceof LLIRParenthesis) {
+            ExpressionWriter expressionWriter = new ExpressionWriter(((LLIRParenthesis) expression).getExpression(),name);
+            this.code += expressionWriter.getCode();
         }
     }
 

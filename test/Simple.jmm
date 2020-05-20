@@ -1,27 +1,24 @@
-import ioa.println(int[]);
-//import ioa.println(int);
+//import ioa.println(int[]);
+import ioa.println(int);
 //import ioa.println(boolean);
 class Simple {
 	public static void main(String[] args) {
         int a;
         boolean b;
         int[] newField;
-        Simple simple;
-        simple = new Simple();
-        b = true && false;
-        a=3 * simple.add(1,1) * (4-2);
-        //a = simple.add(1,1) + 4;
+        //Simple simple;
+        //simple = new Simple();
+        //b = true && false;
+        //a=3 * simple.add(1,1) * (4-2);
+        a = simple.add(1,1) + 4;
         //newField = new int[simple.add(1,1)];
         newField = new int[5];
-        newField[1] = 0;
-        newField[0] = 1;
+        //newField[1] = 4*3 +2;
+        //newField[0] = 1;
 
-        if(true){
-            newField = new int[simple.add(1, 2)];
-        }
-        else{
-            //newField = new int[5 * 4* 3];
-        }
+        ioa.println(a);
+
+
 
         //ioa.println(a);
 

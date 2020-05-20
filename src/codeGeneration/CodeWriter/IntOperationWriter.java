@@ -15,7 +15,7 @@ public class IntOperationWriter {
     private String generateCode(LLIRExpression expression,String name){
         String result = new String();
         if(expression instanceof LLIRInteger) {
-            IntegerWriter integerWriter = new IntegerWriter((LLIRInteger) expression,name);
+            IntegerWriter integerWriter = new IntegerWriter((LLIRInteger) expression);
             result += integerWriter.getCode();
         }
         else if(expression instanceof LLIRVariable) {

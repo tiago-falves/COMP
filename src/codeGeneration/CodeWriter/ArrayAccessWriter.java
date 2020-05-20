@@ -12,13 +12,13 @@ public class ArrayAccessWriter {
     public ArrayAccessWriter(LLIRArrayAccess arrayAccess, String name){
         this.code = "";
         this.arrayAccess = arrayAccess;
-        this.code += generateArrayCode(arrayAccess.getArray(), name);
+        this.code += generateArrayCode(arrayAccess.getArray());
 
 
         this.code += generateAccessCode(arrayAccess.getAccess(), name);
     }
 
-    public String generateArrayCode(LLIRExpression expression,String name) {
+    public String generateArrayCode(LLIRExpression expression) {
         String result = new String();
         if (expression instanceof LLIRMethodCall) {
             MethodCallWriter methodCallWriter = new MethodCallWriter((LLIRMethodCall) expression);

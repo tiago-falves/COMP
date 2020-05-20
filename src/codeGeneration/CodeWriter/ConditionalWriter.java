@@ -40,8 +40,11 @@ public class ConditionalWriter {
     private String generateCode(LLIRExpression expression,String name){
 
         String result = new String();
-        if(expression instanceof LLIRInteger) {
-            IntegerWriter integerWriter = new IntegerWriter((LLIRInteger) expression,name);
+
+        ExpressionWriter expressionWriter = new ExpressionWriter(expression,name);
+        result += expressionWriter.getCode();
+        /*if(expression instanceof LLIRInteger) {
+            IntegerWriter integerWriter = new IntegerWriter((LLIRInteger) expression);
             result += integerWriter.getCode();
         }
         else if(expression instanceof LLIRVariable) {
@@ -61,13 +64,13 @@ public class ConditionalWriter {
             result += expressionWriter.getCode();
         }
         else if (expression instanceof LLIRBoolean) {
-            BooleanWriter booleanWriter = new BooleanWriter((LLIRBoolean)expression, name);
+            BooleanWriter booleanWriter = new BooleanWriter((LLIRBoolean)expression);
             result += booleanWriter.getCode();
         }
         else if(expression instanceof LLIRNegation){
             NegationWriter negationWriter = new NegationWriter((LLIRNegation)expression, name);
             result += negationWriter.getCode();
-        }
+        }*/
 
         return result;
     }

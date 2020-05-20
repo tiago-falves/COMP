@@ -8,7 +8,7 @@ import symbols.Type;
 public class IntegerWriter {
     private String code;
 
-    public IntegerWriter(LLIRInteger integer,String name){
+    public IntegerWriter(LLIRInteger integer){
         String generatedCode = new String();
 
         int value = integer.getValue();

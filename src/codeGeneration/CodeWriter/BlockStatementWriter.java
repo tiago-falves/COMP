@@ -46,7 +46,7 @@ public abstract class BlockStatementWriter {
             result += negationWriter.getCode();
         }
         else if (node instanceof LLIRBoolean){
-            BooleanWriter booleanWriter = new BooleanWriter((LLIRBoolean) node, name);
+            BooleanWriter booleanWriter = new BooleanWriter((LLIRBoolean) node);
             result += booleanWriter.getCode();
         }
         else if (node instanceof LLIRVariable){

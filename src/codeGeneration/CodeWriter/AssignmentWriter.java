@@ -8,25 +8,49 @@ import symbols.Type;
 public class AssignmentWriter {
 
     private String code;
+    private LLIRAssignment assignment;
+    private boolean isArrayAccess;
 
     public AssignmentWriter(LLIRAssignment assignment) {
 
-
-        boolean isArrayAccess = false;
+        isArrayAccess = false;
         this.code  = "";
+        this.assignment = assignment;
+
 
         String name = assignment.getVariable().getVariable().getName();
+
+        System.out.println(name);
+
+
+        Type type = getAssignmentExpression(name);
+
+        // get the instruction to store
+        if(isArrayAccess){
+            this.code += "\tiastore\n";
+        }else{
+
+            this.code += CGConst.store.get(type);
+            // assign to the correct variable
+            String variableIndex = FunctionBody.getVariableIndexString(name);
+            this.code = this.code + variableIndex + "\n";
+        }
+        FunctionBody.currentOperationIndex = 0;
+
+    }
+
+    public Type getAssignmentExpression(String name){
         LLIRExpression expression = assignment.getExpression();
         Type type = Type.INT;
 
         if(expression instanceof LLIRInteger) {
-            IntegerWriter integerWriter = new IntegerWriter((LLIRInteger) expression,name);
+            IntegerWriter integerWriter = new IntegerWriter((LLIRInteger) expression);
             this.code += integerWriter.getCode();
             type = Type.INT;
         }
         else if (expression instanceof LLIRBoolean) {
 
-            BooleanWriter booleanWriter = new BooleanWriter((LLIRBoolean) expression,name);
+            BooleanWriter booleanWriter = new BooleanWriter((LLIRBoolean) expression);
             this.code += booleanWriter.getCode();
             type = Type.BOOLEAN;
 
@@ -46,7 +70,7 @@ public class AssignmentWriter {
 
         else if(expression instanceof LLIRConditional) {
             ConditionalWriter conditionalWriter = new ConditionalWriter((LLIRConditional) expression, name);
-            this.code += conditionalWriter.getCode(); 
+            this.code += conditionalWriter.getCode();
         }
 
         else if(expression instanceof LLIRNegation){
@@ -75,19 +99,7 @@ public class AssignmentWriter {
             isArrayAccess = true;
         }
 
-        // get the instruction to store
-        if(isArrayAccess){
-            this.code += "\tiastore\n";
-        }else{
-
-            this.code += CGConst.store.get(type);
-            // assign to the correct variable
-            String variableIndex = FunctionBody.getVariableIndexString(name);
-            this.code = this.code + variableIndex + "\n";
-        }
-        FunctionBody.currentOperationIndex = 0;
-
-
+        return type;
     }
 
     public String getCode(){

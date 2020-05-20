@@ -538,14 +538,16 @@ public class TableGenerator {
 
             //Assignment
 
-            //this.llirPopulator.addAssignment(new LLIRAssignment());
+            this.llirPopulator.addAssignment(new LLIRAssignment());
             Type type = typeDescriptor.getType();
             if(type != Type.STRING_ARRAY && type != Type.INT_ARRAY){
                 this.semanticError.printError(firstChild, "Error: Variable " + firstChild.jjtGetVal()+" is not an array");
                 return;   
             }
+            LLIRArrayAccess arrayAccess = new LLIRArrayAccess();
+            arrayAccess.setVariable(typeDescriptor);
 
-            //this.llirPopulator.setAssignmentVariable(new LLIRVariable(typeDescriptor));
+            this.llirPopulator.addExpression(arrayAccess);
 
 
             SimpleNode arrayNode =  (SimpleNode) statementNode.jjtGetChild(1);
@@ -554,7 +556,12 @@ public class TableGenerator {
                 this.semanticError.printError(statementNode, "Error: Array index must be an int");
                 return;
             }
-           
+
+            this.llirPopulator.popArrayAcessExpression();
+
+            this.llirPopulator.setAssignmentVariable((LLIRArrayAccess) this.llirPopulator.popLLIR());
+
+
             String typeString;
             if(type == Type.STRING_ARRAY){
                 typeString = "String";
@@ -564,7 +571,8 @@ public class TableGenerator {
 
             inspectAssignment(statementNode, symbolTable, typeString, 3);
 
-            //this.llirPopulator.popBeforeAssignment();
+            this.llirPopulator.popBeforeAssignment();
+
 
             if(typeDescriptor.getClass() == VariableDescriptor.class){
                 VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;

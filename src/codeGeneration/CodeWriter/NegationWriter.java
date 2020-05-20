@@ -34,7 +34,7 @@ public class NegationWriter {
             result += expressionWriter.getCode();
         }
         else if (expression instanceof LLIRBoolean) {
-            BooleanWriter booleanWriter = new BooleanWriter((LLIRBoolean)expression, name);
+            BooleanWriter booleanWriter = new BooleanWriter((LLIRBoolean)expression);
             result += booleanWriter.getCode();
         }
 
