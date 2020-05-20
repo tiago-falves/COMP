@@ -13,11 +13,11 @@ public class ConditionalWriter {
 
     private static int conditionalGotoNumber = 0;
 
-    public ConditionalWriter(LLIRConditional conditional, String name){
+    public ConditionalWriter(LLIRConditional conditional){
         this.code  = "";
         this.conditional = conditional;
-        this.code += generateCode(conditional.getLeftExpression(),name);     // left
-        this.code += generateCode(conditional.getRightExpression(),name);    // right
+        this.code += generateCode(conditional.getLeftExpression());     // left
+        this.code += generateCode(conditional.getRightExpression());    // right
 
         switch(conditional.getOperation()){
             case AND:
@@ -37,11 +37,11 @@ public class ConditionalWriter {
         this.code += "\n";
     }
 
-    private String generateCode(LLIRExpression expression,String name){
+    private String generateCode(LLIRExpression expression){
 
         String result = new String();
 
-        ExpressionWriter expressionWriter = new ExpressionWriter(expression,name);
+        ExpressionWriter expressionWriter = new ExpressionWriter(expression);
         result += expressionWriter.getCode();
         /*if(expression instanceof LLIRInteger) {
             IntegerWriter integerWriter = new IntegerWriter((LLIRInteger) expression);

@@ -43,7 +43,7 @@ public class ImportWriter {
 
         List<LLIRExpression> parameters = importLLIR.getParametersExpressions();
         for (LLIRExpression expression : parameters){
-            ExpressionWriter expressionWriter = new ExpressionWriter(expression,"NAME");
+            ExpressionWriter expressionWriter = new ExpressionWriter(expression);
             result += expressionWriter.getCode();
 
         }

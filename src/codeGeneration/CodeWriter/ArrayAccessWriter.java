@@ -9,13 +9,13 @@ public class ArrayAccessWriter {
     private String code;
     private LLIRArrayAccess arrayAccess;
 
-    public ArrayAccessWriter(LLIRArrayAccess arrayAccess, String name){
+    public ArrayAccessWriter(LLIRArrayAccess arrayAccess){
         this.code = "";
         this.arrayAccess = arrayAccess;
         this.code += generateArrayCode(arrayAccess.getArray());
 
 
-        this.code += generateAccessCode(arrayAccess.getAccess(), name);
+        this.code += generateAccessCode(arrayAccess.getAccess());
     }
 
     public String generateArrayCode(LLIRExpression expression) {
@@ -32,9 +32,9 @@ public class ArrayAccessWriter {
         return result;
     }
 
-    public String generateAccessCode(LLIRExpression expression, String name) {
+    public String generateAccessCode(LLIRExpression expression) {
          String result = new String();
-         IntOperationWriter intOperationWriter = new IntOperationWriter(expression,name);
+         IntOperationWriter intOperationWriter = new IntOperationWriter(expression);
          result = intOperationWriter.getCode();
 
         return result;

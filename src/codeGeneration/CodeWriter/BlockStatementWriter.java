@@ -38,11 +38,11 @@ public abstract class BlockStatementWriter {
             result += whileWriter.getCode();
         }
         else if (node instanceof LLIRConditional){
-            ConditionalWriter conditionalWriter = new ConditionalWriter((LLIRConditional)node, name);
+            ConditionalWriter conditionalWriter = new ConditionalWriter((LLIRConditional)node);
             result += conditionalWriter.getCode();
         }
         else if (node instanceof LLIRNegation){
-            NegationWriter negationWriter = new NegationWriter((LLIRNegation)node, name);
+            NegationWriter negationWriter = new NegationWriter((LLIRNegation)node);
             result += negationWriter.getCode();
         }
         else if (node instanceof LLIRBoolean){

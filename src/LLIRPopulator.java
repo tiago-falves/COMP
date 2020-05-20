@@ -50,9 +50,9 @@ public class LLIRPopulator {
     public void setAssignmentVariable(LLIRExpression variable){
         if (this.peek() instanceof LLIRAssignment){
             LLIRAssignment assignment = (LLIRAssignment) this.peek();
-            if(this.peek() instanceof  LLIRVariable)
+            if(variable instanceof  LLIRVariable)
                 assignment.setVariable((LLIRVariable) variable);
-            else if(this.peek() instanceof  LLIRArrayAccess){
+            else if(variable instanceof LLIRArrayAccess){
                 assignment.setVariable((LLIRArrayAccess) variable);
             }
         }

@@ -559,6 +559,8 @@ public class TableGenerator {
 
             this.llirPopulator.popArrayAcessExpression();
 
+            this.llirPopulator.printStack();
+
             this.llirPopulator.setAssignmentVariable((LLIRArrayAccess) this.llirPopulator.popLLIR());
 
 

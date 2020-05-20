@@ -9,6 +9,10 @@
 .method public static main([Ljava/lang/String;)V
 	.limit stack 99
 	.limit locals 99
+	new Simple
+	dup
+	invokespecial Simple/<init>()V
+	astore	5
 	aload	5
 	iconst_1
 	iconst_1
@@ -16,11 +20,20 @@
 	iconst_4
 	iadd
 	istore_2
-	iconst_5
+	aload	5
+	iconst_1
+	iconst_1
+	invokevirtual Simple/add(II)I
 	newarray int
 	astore	4
 	iload_2
 	invokestatic ioa/println(I)V
+	iconst_4
+	iconst_3
+	imul
+	iconst_2
+	iadd
+	istore	4
 	return
 .end method
 

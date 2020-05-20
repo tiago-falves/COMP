@@ -3,6 +3,7 @@ package codeGeneration.CodeWriter;
 import codeGeneration.CGConst;
 import codeGeneration.FunctionBody;
 import llir.*;
+import symbols.NamedTypeDescriptor;
 import symbols.Type;
 
 public class AssignmentWriter {
@@ -17,13 +18,9 @@ public class AssignmentWriter {
         this.code  = "";
         this.assignment = assignment;
 
-
         String name = assignment.getVariable().getVariable().getName();
 
-        System.out.println(name);
-
-
-        Type type = getAssignmentExpression(name);
+        Type type = getAssignmentExpression();
 
         // get the instruction to store
         if(isArrayAccess){
@@ -39,7 +36,7 @@ public class AssignmentWriter {
 
     }
 
-    public Type getAssignmentExpression(String name){
+    public Type getAssignmentExpression(){
         LLIRExpression expression = assignment.getExpression();
         Type type = Type.INT;
 
@@ -64,17 +61,17 @@ public class AssignmentWriter {
             ArithmeticTransformer transformer = new ArithmeticTransformer((LLIRArithmetic) expression);
             LLIRArithmetic transformed = transformer.transform();
 
-            ArithmeticWriter arithmeticWriter = new ArithmeticWriter(transformed,name);
+            ArithmeticWriter arithmeticWriter = new ArithmeticWriter(transformed);
             this.code += arithmeticWriter.getCode();
         }
 
         else if(expression instanceof LLIRConditional) {
-            ConditionalWriter conditionalWriter = new ConditionalWriter((LLIRConditional) expression, name);
+            ConditionalWriter conditionalWriter = new ConditionalWriter((LLIRConditional) expression);
             this.code += conditionalWriter.getCode();
         }
 
         else if(expression instanceof LLIRNegation){
-            NegationWriter negationWriter = new NegationWriter((LLIRNegation)expression, name);
+            NegationWriter negationWriter = new NegationWriter((LLIRNegation)expression);
             this.code += negationWriter.getCode();
         }
 
@@ -93,7 +90,7 @@ public class AssignmentWriter {
         }
 
         else if (expression instanceof LLIRArrayAccess) {
-            ArrayAccessWriter arrayAccessWriter = new ArrayAccessWriter((LLIRArrayAccess) expression,name);
+            ArrayAccessWriter arrayAccessWriter = new ArrayAccessWriter((LLIRArrayAccess) expression);
             this.code += arrayAccessWriter.getCode();
             type = Type.INT_ARRAY;
             isArrayAccess = true;
