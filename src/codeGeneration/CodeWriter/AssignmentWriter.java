@@ -77,7 +77,7 @@ public class AssignmentWriter {
 
         // get the instruction to store
         if(isArrayAccess){
-            this.code += "i" + CGConst.store.get(type) + "\n";
+            this.code += "\tiastore\n";
         }else{
 
             this.code += CGConst.store.get(type);

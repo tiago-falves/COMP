@@ -1,6 +1,6 @@
 package llir;
 
-public class LLIRArrayAccess extends LLIRExpression {
+public class LLIRArrayAccess extends LLIRVariableAndArray {
     private LLIRExpression array;
     private LLIRExpression access;
 

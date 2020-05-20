@@ -47,17 +47,17 @@ public class LLIRPopulator {
         this.llirStack.push(expression);
     }
 
-    /*public void setAssignmentVariable(LLIRExpression variable){
+    public void setAssignmentVariable(LLIRExpression variable){
         if (this.peek() instanceof LLIRAssignment){
             LLIRAssignment assignment = (LLIRAssignment) this.peek();
             if(this.peek() instanceof  LLIRVariable)
                 assignment.setVariable((LLIRVariable) variable);
             else if(this.peek() instanceof  LLIRArrayAccess){
-
+                assignment.setVariable((LLIRArrayAccess) variable);
             }
         }
 
-    }*/
+    }
 
     public void setAssignmentVariable(LLIRVariable variable){
         if (this.peek() instanceof LLIRAssignment){
@@ -102,18 +102,6 @@ public class LLIRPopulator {
         this.llirStack.push(arithmetic);
     }
 
-//TODO -----------------------------------------------------
-    public void addAccess(LLIRArrayAccess arrayAccess){
-        if (peek() instanceof LLIRArrayAccess) {
-            //arrayAccess.setArray((LLIRArrayAccess)this.llirStack.pop().getArray());
-            //this.llirStack.push(arrayAccess);
-        }
-    }
-
-    public void addArrayAccess(LLIRArrayAccess arrayAccess){
-        this.llirStack.push(arrayAccess);
-    }
-//---------------------------------------------------------
     public void addConditional(LLIRConditional conditional){
         if(peek() instanceof LLIRExpression){
             conditional.setLeftExpression((LLIRExpression) this.llirStack.pop());

@@ -3,14 +3,14 @@ package llir;
 import symbols.VariableDescriptor;
 
 public class LLIRAssignment extends LLIRNode {
-    LLIRVariable variable;
+    LLIRVariableAndArray variable;
     LLIRExpression expression;
 
     public LLIRAssignment() {
         
     }
 
-    public LLIRAssignment(LLIRVariable var, LLIRExpression expr) {
+    public LLIRAssignment(LLIRVariableAndArray var, LLIRExpression expr) {
         this.variable = var;
         this.expression = expr;
     }
@@ -18,14 +18,14 @@ public class LLIRAssignment extends LLIRNode {
     /**
      * @return the variable
      */
-    public LLIRVariable getVariable() {
+    public LLIRVariableAndArray getVariable() {
         return variable;
     }
 
     /**
      * @param variable the variable to set
      */
-    public void setVariable(LLIRVariable variable) {
+    public void setVariable(LLIRVariableAndArray variable) {
         this.variable = variable;
     }
 

@@ -5,6 +5,9 @@ import symbols.NamedTypeDescriptor;
 public class LLIRVariableAndArray extends LLIRExpression {
     public NamedTypeDescriptor variable;
 
+    public LLIRVariableAndArray() {
+    }
+
     public LLIRVariableAndArray(NamedTypeDescriptor variable) {
         this.variable = variable;
     }

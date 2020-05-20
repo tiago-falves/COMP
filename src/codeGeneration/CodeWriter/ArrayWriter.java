@@ -2,7 +2,6 @@ package codeGeneration.CodeWriter;
 
 import codeGeneration.CGConst;
 import codeGeneration.FunctionBody;
-import llir.LLIRArray;
 import llir.LLIRVariable;
 import symbols.Type;
 
