@@ -14,7 +14,6 @@ class Simple {
         //newField = new int[5 * 4* 3];
         //newField[1] = 0;
 
-
 	}
 	public int add(int a, int b){
 		return a+b;
