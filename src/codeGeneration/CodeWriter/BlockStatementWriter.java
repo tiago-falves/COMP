@@ -49,6 +49,10 @@ public abstract class BlockStatementWriter {
             BooleanWriter booleanWriter = new BooleanWriter((LLIRBoolean) node, name);
             result += booleanWriter.getCode();
         }
+        else if (node instanceof LLIRVariable){
+            VariableWriter variableWriter = new VariableWriter((LLIRVariable) node);
+            result += variableWriter.getCode();
+        }
 
         return result;
     }

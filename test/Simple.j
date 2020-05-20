@@ -28,7 +28,17 @@
 	iconst_3
 	imul
 	istore_2
-	istore	4
+	iload_3
+	ifeq else_0
+	iload_2
+	invokestatic ioa/println(I)V
+	goto endIf_0
+else_0:
+endIf_0:
+	iload_2
+	iconst_1
+	iadd
+	istore_2
 	iload_2
 	invokestatic ioa/println(I)V
 	return
