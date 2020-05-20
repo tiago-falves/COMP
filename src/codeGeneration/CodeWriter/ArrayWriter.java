@@ -2,6 +2,7 @@ package codeGeneration.CodeWriter;
 
 import codeGeneration.CGConst;
 import codeGeneration.FunctionBody;
+import llir.LLIRArray;
 import symbols.Type;
 
 public class ArrayWriter {
@@ -19,7 +20,7 @@ public class ArrayWriter {
         FunctionBody.currentOperationIndex = 0;
 
         String arrayIndex = FunctionBody.getVariableIndexString(array.getArray().getName());
-        this.code = this.code + variableIndex + "\n";
+        this.code = this.code + arrayIndex + "\n";
     }
 
     public String getCode(){

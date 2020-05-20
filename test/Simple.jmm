@@ -2,62 +2,15 @@ import ioa.println(int);
 //import ioa.println(boolean);
 class Simple {
 	public static void main(String[] args) {
-        /*int a;
+        int a;
         int b;
-        Simple simple;
-        int c;
-        a = 30; //Esta nao devia ser a segunda variavel por causa dos arguments? Deve fazer s ecaso especial para o main?
-        b = 0 - 10;
-        a = a + b;
+        int[] newField;
+        a = 5;
+        newField = new int[a];
 
-        simple = new Simple();
-        c = simple.add(a,b); //Aqui que aload e que se deve fazer?
-        ioa.println(a);*/
 
-        boolean x;
-        Simple simple;
 
-        int zas;
-        int zos;
-        int zes;
-        Simple simple;
 
-        zas = 0;
-
-        while(zas < 5){
-            zas = zas +1;
-            ioa.println(zas);
-        }
-
-        zas = 5;
-
-        /*while(zas < 10){
-
-            if(true){
-                zas = 1;
-                if(true){
-                    zas = 1;
-                    ioa.println(zas);
-                    simple = new Simple();
-                    zas = simple.add(zas,zas);
-
-                    if(true){
-                        zas = 2;
-                    }else{
-                        zas = 3;
-                    }
-                }
-                else{
-                    zas = 4;
-                }
-            }
-            else{
-                zas = 5;
-                simple = new Simple();
-            }
-        }*/
-
-        zas = zas +1;
 
 	}
 	public int add(int a, int b){

@@ -93,8 +93,8 @@ public class LLIRPopulator {
 //TODO -----------------------------------------------------
     public void addAccess(LLIRArrayAccess arrayAccess){
         if (peek() instanceof LLIRArrayAccess) {
-            arrayAccess.setArray((LLIRArrayAccess)this.llirStack.pop().getArray());
-            this.llirStack.push(arrayAccess);
+            //arrayAccess.setArray((LLIRArrayAccess)this.llirStack.pop().getArray());
+            //this.llirStack.push(arrayAccess);
         }
     }
 

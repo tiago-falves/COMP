@@ -2,8 +2,7 @@ package codeGeneration.CodeWriter;
 
 import codeGeneration.CGConst;
 import codeGeneration.FunctionBody;
-import llir.LLIRInteger;
-import llir.LLIRArrayAccess;
+import llir.*;
 import symbols.Type;
 
 public class ArrayAccessWriter {
@@ -17,7 +16,7 @@ public class ArrayAccessWriter {
         this.code += generateAccessCode(arrayAccess.getAccess(), name);
     }
 
-    public String generateArrayCode(LLIRExpression expression, name) {
+    public String generateArrayCode(LLIRExpression expression,String name) {
         String result = new String();
         if (expression instanceof LLIRMethodCall) {
             MethodCallWriter methodCallWriter = new MethodCallWriter((LLIRMethodCall) expression);
@@ -53,6 +52,7 @@ public class ArrayAccessWriter {
             ExpressionWriter expressionWriter = new ExpressionWriter(((LLIRParenthesis) expression).getExpression(),name);
             result += expressionWriter.getCode();
         }
+        return result;
     }
 
     public String getCode(){

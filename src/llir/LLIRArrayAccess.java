@@ -13,10 +13,6 @@ public class LLIRArrayAccess extends LLIRExpression {
         this.array = array;
     }
 
-    public LLIRArrayAccess(LLIRExpression access) {
-        this.access = access;
-    }
-
     /**
      * @return the access
      */
