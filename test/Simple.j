@@ -9,10 +9,28 @@
 .method public static main([Ljava/lang/String;)V
 	.limit stack 99
 	.limit locals 99
-	iconst_5
+	new Simple
+	dup
+	invokespecial Simple/<init>()V
+	astore	5
+	iconst_1
+	iconst_0
+	iand
+	istore_3
+	aload	5
+	iconst_1
+	iconst_1
+	invokevirtual Simple/add(II)I
+	iconst_4
+	iconst_2
+	isub
+	imul
+	iconst_3
+	imul
 	istore_2
-	iload_2
 	istore	4
+	iload_2
+	invokestatic ioa/println(I)V
 	return
 .end method
 

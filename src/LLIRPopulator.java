@@ -145,8 +145,10 @@ public class LLIRPopulator {
                 ((LLIRNegation)peek()).setExpression((LLIRExpression) node);
             }
         }
+
         //In case of a complex assignment
-        while (peek() instanceof LLIRArithmetic || peek() instanceof LLIRExpression || peek() instanceof LLIRConditional || peek() instanceof LLIRNegation){
+        //Isto estava aqui um
+        while (peek() instanceof LLIRArithmetic || peek() instanceof LLIRConditional || peek() instanceof LLIRNegation){
             LLIRExpression actual = (LLIRExpression) this.llirStack.pop();
 
             if (peek() instanceof LLIRArithmetic){
@@ -157,11 +159,7 @@ public class LLIRPopulator {
                 LLIRConditional previous = (LLIRConditional) peek();
                 previous.setRightExpression(actual);
             }
-            else if (peek() instanceof LLIRAssignment){
-                LLIRAssignment previous = (LLIRAssignment) peek();
-                previous.setExpression(actual);
-                break;
-            }
+
             /*else if (peek() instanceof LLIRIfElseBlock){
                 LLIRIfElseBlock previous = (LLIRIfElseBlock) peek();
                 previous.setExpression(actual);
@@ -193,6 +191,15 @@ public class LLIRPopulator {
             if(peek() instanceof  LLIRReturn){
                 LLIRReturn returnLLIR = (LLIRReturn) peek();
                 returnLLIR.setExpression(expression);
+            }
+        }
+    }
+    public void popArrayInstantiation(){
+        if(lastIsLLIRExpression()){
+            LLIRExpression expression = (LLIRExpression) this.llirStack.pop();
+            if(peek() instanceof  LLIRArrayInstantiation){
+                LLIRArrayInstantiation arrayInst = (LLIRArrayInstantiation) peek();
+                arrayInst.setSize(expression);
             }
         }
     }
@@ -345,12 +352,6 @@ public class LLIRPopulator {
         }
     }
 
-    public void addClassInstantiation(LLIRClassVariableInstantiation variable){
-        if (peek() instanceof LLIRAssignment){
-            LLIRAssignment assignment = (LLIRAssignment) peek();
-            assignment.setExpression(variable);
-        }
-    }
 
 
 
@@ -403,8 +404,10 @@ public class LLIRPopulator {
             String s = identation + "While\n";
             s += identation + getBlockStatements((LLIRWhileBlock) node,identation);
             return s;
-        }else if(node instanceof LLIRBoolean){
-            return identation +"Boolean\n";
+        }else if(node instanceof LLIRBoolean) {
+            return identation + "Boolean\n";
+        }else if(node instanceof LLIRArrayInstantiation){
+            return identation +"Array Instantiation\n";
         }else if (node instanceof LLIRMethodCall) {
             return identation +"Method Call\n";
         }else if(node instanceof LLIRImport){

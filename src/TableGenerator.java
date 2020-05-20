@@ -1244,8 +1244,16 @@ public class TableGenerator {
                         }
                         
                         SimpleNode arrayNode = (SimpleNode) argumentNode.jjtGetChild(initialChild+2);
-                    
+
+                        //Popular array instantiation
+                        this.llirPopulator.addLLIR(new LLIRArrayInstantiation());
+
+                        this.llirPopulator.printStack();
                         String indexType = inspectExpression(arrayNode, symbolsTable);
+                        this.llirPopulator.printStack();
+
+
+                        this.llirPopulator.popArrayInstantiation();
 
                         if(indexType == null){
                             this.semanticError.printError(arrayNode, "Array index must be an int");

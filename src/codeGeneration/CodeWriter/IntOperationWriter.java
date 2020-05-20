@@ -1,28 +1,20 @@
 package codeGeneration.CodeWriter;
 
-import codeGeneration.CGConst;
-import codeGeneration.FunctionBody;
 import llir.*;
-import symbols.Type;
 
-public class ArithmeticWriter {
+public class IntOperationWriter {
     private String code;
-    private LLIRArithmetic arithmetic;
+    private LLIRExpression expression;
 
-    public ArithmeticWriter(LLIRArithmetic arithmetic, String name){
+    public IntOperationWriter(LLIRExpression expression, String name){
         this.code  = "";
-        this.arithmetic = arithmetic;
-        this.code += generateCode(arithmetic.getLeftExpression(),name);     // left
-        this.code += generateCode(arithmetic.getRightExpression(),name);    // right
-        this.code += CGConst.arithmeticOperators.get(arithmetic.getOperation()) + "\n";
+        this.expression = expression;
+        this.code += generateCode(expression,name);
     }
 
     private String generateCode(LLIRExpression expression,String name){
 
-        IntOperationWriter intOperationWriter = new IntOperationWriter(expression,name);
-        return intOperationWriter.getCode();
-
-        /*String result = new String();
+        String result = new String();
         if(expression instanceof LLIRInteger) {
             IntegerWriter integerWriter = new IntegerWriter((LLIRInteger) expression,name);
             result += integerWriter.getCode();
@@ -44,7 +36,7 @@ public class ArithmeticWriter {
             result += expressionWriter.getCode();
         }
 
-        return result;*/
+        return result;
     }
 
     public String getCode(){

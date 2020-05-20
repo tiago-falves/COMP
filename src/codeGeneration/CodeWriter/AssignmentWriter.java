@@ -60,6 +60,10 @@ public class AssignmentWriter {
             ClassVariableInstantiationWriter classVariableWriter = new ClassVariableInstantiationWriter((LLIRClassVariableInstantiation) expression);
             this.code += classVariableWriter.getCode();
             type = Type.CLASS;
+        } else if (expression instanceof LLIRArrayInstantiation) {
+            ArrayInstantiationWriter arrayInstantiationWriter = new ArrayInstantiationWriter((LLIRArrayInstantiation) expression);
+            this.code += arrayInstantiationWriter.getCode();
+            type = Type.CLASS;
         }
 
         // get the instruction to store

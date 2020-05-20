@@ -4,19 +4,15 @@ import symbols.ClassDescriptor;
 import symbols.Type;
 
 public class LLIRArrayInstantiation extends LLIRExpression {
-    private Type type;
+    private Type type = Type.INT_ARRAY;
     private LLIRExpression size;
 
-    public LLIRArrayInstantiation(Type type, LLIRExpression size) {
-        this.type = type;
-        this.size = size;
-    }
 
-    public Type getName() {
+    public Type getType() {
         return type;
     }
 
-    public void setName(Type type) {
+    public void setType(Type type) {
         this.type = type;
     }
 
