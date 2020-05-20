@@ -13,6 +13,8 @@ public class ArrayAccessWriter {
         this.code = "";
         this.arrayAccess = arrayAccess;
         this.code += generateArrayCode(arrayAccess.getArray(), name);
+
+
         this.code += generateAccessCode(arrayAccess.getAccess(), name);
     }
 
@@ -22,8 +24,8 @@ public class ArrayAccessWriter {
             MethodCallWriter methodCallWriter = new MethodCallWriter((LLIRMethodCall) expression);
             result += methodCallWriter.getCode();
         }
-        else if (expression instanceof LLIRArray) {
-            ArrayWriter arrayWriter = new ArrayWriter((LLIRArray) expression);
+        else if (expression instanceof LLIRVariable) {
+            VariableWriter arrayWriter = new VariableWriter((LLIRVariable) expression);
             result += arrayWriter.getCode();
         }
 
@@ -32,26 +34,9 @@ public class ArrayAccessWriter {
 
     public String generateAccessCode(LLIRExpression expression, String name) {
          String result = new String();
-        if(expression instanceof LLIRInteger) {
-            IntegerWriter integerWriter = new IntegerWriter((LLIRInteger) expression,name);
-            result += integerWriter.getCode();
-        }
-        else if(expression instanceof LLIRVariable) {
-            VariableWriter variableWriter = new VariableWriter((LLIRVariable) expression);
-            result += variableWriter.getCode();
-        }
-        else if (expression instanceof LLIRArithmetic) {
-            ArithmeticWriter arithmeticWriter = new ArithmeticWriter((LLIRArithmetic) expression,name);
-            result += arithmeticWriter.getCode();
-        }
-        else if (expression instanceof LLIRMethodCall) {
-            MethodCallWriter methodCallWriter = new MethodCallWriter((LLIRMethodCall) expression);
-            result += methodCallWriter.getCode();
-        }
-        else if (expression instanceof LLIRParenthesis) {
-            ExpressionWriter expressionWriter = new ExpressionWriter(((LLIRParenthesis) expression).getExpression(),name);
-            result += expressionWriter.getCode();
-        }
+         IntOperationWriter intOperationWriter = new IntOperationWriter(expression,name);
+         result = intOperationWriter.getCode();
+
         return result;
     }
 

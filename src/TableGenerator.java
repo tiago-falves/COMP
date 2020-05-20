@@ -1373,8 +1373,6 @@ public class TableGenerator {
             }
         }
 
-
-
     }
 
     private String inspectClassInstantiation(SimpleNode node, SymbolsTable symbolsTable) throws SemanticErrorException {

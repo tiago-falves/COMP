@@ -3,12 +3,13 @@ package codeGeneration.CodeWriter;
 import codeGeneration.CGConst;
 import codeGeneration.FunctionBody;
 import llir.LLIRArray;
+import llir.LLIRVariable;
 import symbols.Type;
 
 public class ArrayWriter {
     private String code;
 
-    public ArrayWriter(LLIRArray array){
+    public ArrayWriter(LLIRVariable array){
         this.code = "";
 
         //TODO check this
@@ -19,7 +20,7 @@ public class ArrayWriter {
         //TODO check this
         FunctionBody.currentOperationIndex = 0;
 
-        String arrayIndex = FunctionBody.getVariableIndexString(array.getArray().getName());
+        String arrayIndex = FunctionBody.getVariableIndexString(array.getVariable().getName());
         this.code = this.code + arrayIndex + "\n";
     }
 

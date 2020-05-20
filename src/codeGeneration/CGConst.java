@@ -36,6 +36,7 @@ public class CGConst {
         store.put(Type.INT, "\tistore");
         store.put(Type.BOOLEAN, "\tistore");
         store.put(Type.CLASS, "\tastore");
+        store.put(Type.INT_ARRAY, "\tastore");
 
         load.put(Type.INT, "\tiload");
         load.put(Type.BOOLEAN, "\tiload_");

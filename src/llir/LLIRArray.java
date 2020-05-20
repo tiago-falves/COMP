@@ -23,5 +23,4 @@ public class LLIRArray extends LLIRExpression {
         return array;
     }
 
-
 }

@@ -10,7 +10,9 @@ public class AssignmentWriter {
     private String code;
 
     public AssignmentWriter(LLIRAssignment assignment) {
-        
+
+
+        boolean isArrayAccess = false;
         this.code  = "";
 
         String name = assignment.getVariable().getVariable().getName();
@@ -63,16 +65,28 @@ public class AssignmentWriter {
         } else if (expression instanceof LLIRArrayInstantiation) {
             ArrayInstantiationWriter arrayInstantiationWriter = new ArrayInstantiationWriter((LLIRArrayInstantiation) expression);
             this.code += arrayInstantiationWriter.getCode();
-            type = Type.CLASS;
+            type = Type.INT_ARRAY;
+        }
+
+        else if (expression instanceof LLIRArrayAccess) {
+            ArrayAccessWriter arrayAccessWriter = new ArrayAccessWriter((LLIRArrayAccess) expression,name);
+            this.code += arrayAccessWriter.getCode();
+            type = Type.INT_ARRAY;
+            isArrayAccess = true;
         }
 
         // get the instruction to store
-        this.code += CGConst.store.get(type);
+        if(isArrayAccess){
+            this.code += "i" + CGConst.store.get(type) + "\n";
+        }else{
+
+            this.code += CGConst.store.get(type);
+            // assign to the correct variable
+            String variableIndex = FunctionBody.getVariableIndexString(name);
+            this.code = this.code + variableIndex + "\n";
+        }
         FunctionBody.currentOperationIndex = 0;
 
-        // assign to the correct variable
-        String variableIndex = FunctionBody.getVariableIndexString(name);
-        this.code = this.code + variableIndex + "\n";
 
     }
 
