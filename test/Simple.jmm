@@ -4,19 +4,10 @@ import ioa.println(int);
 class Simple {
 	public static void main(String[] args) {
         int a;
-        boolean b;
         int[] newField;
-        Simple simple;
-        simple = new Simple();
-        //b = true && false;
-        //a=3 * simple.add(1,1) * (4-2);
-        a = simple.add(1,1) + 4;
-        newField = new int[simple.add(1,1)];
-        //newField = new int[5];
-        newField[1] = 4*3 +2;
-        //newField[0] = 1;
-
-        ioa.println(a);
+        newField = new int[5];
+        newField[1] = 5;
+        a = newField[1];
 
 
 

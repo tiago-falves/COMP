@@ -546,6 +546,7 @@ public class TableGenerator {
             }
             LLIRArrayAccess arrayAccess = new LLIRArrayAccess();
             arrayAccess.setVariable(typeDescriptor);
+            arrayAccess.setArray(new LLIRVariable(typeDescriptor));
 
             this.llirPopulator.addExpression(arrayAccess);
 
@@ -558,8 +559,6 @@ public class TableGenerator {
             }
 
             this.llirPopulator.popArrayAcessExpression();
-
-            this.llirPopulator.printStack();
 
             this.llirPopulator.setAssignmentVariable((LLIRArrayAccess) this.llirPopulator.popLLIR());
 
@@ -580,6 +579,9 @@ public class TableGenerator {
                 VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
                 variableDescriptor.setInitialized();
             }
+
+            this.llirPopulator.addStatement(currentFunctionDescriptor);
+
             //TODO Add case where variable is a FunctionParameterDescriptor -> useful in the code generation
         }
         else{
@@ -1196,8 +1198,14 @@ public class TableGenerator {
                         
                             continue;
                         } else if(nextNode.getId() == JavammTreeConstants.JJTARRAY){
+
+                            this.llirPopulator.printStack();
+
                             this.llirPopulator.addLLIR(new LLIRArrayAccess());
                             String arrayType = inspectArrayAccess(argumentNode, symbolsTable, i);
+                            this.llirPopulator.popArrayAcessExpression();
+
+                            this.llirPopulator.printStack();
                             if(type == null){
                                 type = arrayType;
                             }else if(!type.equals(arrayType)){

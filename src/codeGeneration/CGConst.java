@@ -41,7 +41,7 @@ public class CGConst {
         load.put(Type.INT, "\tiload");
         load.put(Type.BOOLEAN, "\tiload_");
         load.put(Type.STRING_ARRAY, "\taload_");
-        load.put(Type.INT_ARRAY, "\taload_");
+        load.put(Type.INT_ARRAY, "\taload");
         load.put(Type.STRING, "\taload_");
         load.put(Type.CLASS, "\taload");
 

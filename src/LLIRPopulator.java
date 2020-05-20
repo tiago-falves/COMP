@@ -63,7 +63,6 @@ public class LLIRPopulator {
         if(lastIsLLIRExpression()){
             LLIRExpression expression =(LLIRExpression) this.llirStack.pop();
             if(peek() instanceof  LLIRArrayAccess){
-                System.out.println("ZAAAAAAAAAAS");
                 LLIRArrayAccess acess = (LLIRArrayAccess) this.llirStack.peek();
                 acess.setAccess(expression);
             }

@@ -11,6 +11,7 @@ public class AssignmentWriter {
     private String code;
     private LLIRAssignment assignment;
     private boolean isArrayAccess;
+    private  Type type;
 
     public AssignmentWriter(LLIRAssignment assignment) {
 
@@ -20,7 +21,9 @@ public class AssignmentWriter {
 
         String name = assignment.getVariable().getVariable().getName();
 
-        Type type = getAssignmentExpression();
+        getVariableCode();
+
+        type = getAssignmentExpression();
 
         // get the instruction to store
         if(isArrayAccess){
@@ -97,6 +100,19 @@ public class AssignmentWriter {
         }
 
         return type;
+    }
+
+
+    private void getVariableCode(){
+
+        LLIRVariableAndArray variableAndArray = assignment.getVariable();
+        if(variableAndArray instanceof LLIRArrayAccess){
+            ArrayAccessWriter arrayAccessWriter = new ArrayAccessWriter((LLIRArrayAccess) variableAndArray);
+            this.code += arrayAccessWriter.getCode();
+            isArrayAccess = true;
+
+        }
+
     }
 
     public String getCode(){

@@ -14,7 +14,7 @@ public class VariableWriter {
 
         FunctionBody.currentOperationIndex++;
 
-        this.code += CGConst.load.get(Type.INT);
+        this.code += CGConst.load.get(variable.getVariable().getType());
 
         FunctionBody.currentOperationIndex = 0;
 
