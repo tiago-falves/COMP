@@ -1,4 +1,5 @@
-import ioa.println(int);
+import ioa.println(int[]);
+//import ioa.println(int);
 //import ioa.println(boolean);
 class Simple {
 	public static void main(String[] args) {
@@ -13,16 +14,13 @@ class Simple {
         //newField = new int[simple.add(1,1)];
         newField = new int[5];
         newField[1] = 0;
-
         newField[0] = 1;
 
-
         if(true){
-            newField = new int[5 * 4* 3];
-            ioa.println(3);
+            newField = new int[simple.add(1, 2)];
         }
         else{
-            newField = new int[5 * 4* 3];
+            //newField = new int[5 * 4* 3];
         }
 
         //ioa.println(a);

@@ -13,7 +13,6 @@ public class IntOperationWriter {
     }
 
     private String generateCode(LLIRExpression expression,String name){
-
         String result = new String();
         if(expression instanceof LLIRInteger) {
             IntegerWriter integerWriter = new IntegerWriter((LLIRInteger) expression,name);

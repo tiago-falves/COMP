@@ -1275,9 +1275,7 @@ public class TableGenerator {
 
                         //Popular array instantiation
                         this.llirPopulator.addLLIR(new LLIRArrayInstantiation());
-
                         String indexType = inspectExpression(arrayNode, symbolsTable);
-
 
                         this.llirPopulator.popArrayInstantiation();
 

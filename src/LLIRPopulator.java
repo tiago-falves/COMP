@@ -152,6 +152,9 @@ public class LLIRPopulator {
             if(peek() instanceof LLIRNegation){
                 ((LLIRNegation)peek()).setExpression((LLIRExpression) node);
             }
+            if(peek() instanceof LLIRArrayInstantiation){
+                ((LLIRArrayInstantiation)peek()).setSize((LLIRExpression)node);
+            }
         }
 
         //In case of a complex assignment
@@ -208,6 +211,9 @@ public class LLIRPopulator {
             if(peek() instanceof  LLIRArrayInstantiation){
                 LLIRArrayInstantiation arrayInst = (LLIRArrayInstantiation) peek();
                 arrayInst.setSize(expression);
+            }else if(peek() instanceof LLIRAssignment){
+                LLIRAssignment assignment = (LLIRAssignment) peek();
+                assignment.setExpression(expression);
             }
         }
     }

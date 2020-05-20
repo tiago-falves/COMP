@@ -33,24 +33,14 @@
 	astore	4
 	iconst_1
 	ifeq else_0
-	iconst_5
-	iconst_4
-	iconst_3
-	imul
-	imul
+	aload	5
+	iconst_1
+	iconst_2
+	invokevirtual Simple/add(II)I
 	newarray int
 	astore	4
-	iconst_3
-	invokestatic ioa/println(I)V
 	goto endIf_0
 else_0:
-	iconst_5
-	iconst_4
-	iconst_3
-	imul
-	imul
-	newarray int
-	astore	4
 endIf_0:
 	return
 .end method
