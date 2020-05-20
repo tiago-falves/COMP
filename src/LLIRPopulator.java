@@ -84,13 +84,24 @@ public class LLIRPopulator {
 
 
     public void addArithmetic(LLIRArithmetic arithmetic){
-
         if(peek() instanceof LLIRExpression){
             arithmetic.setLeftExpression((LLIRExpression) this.llirStack.pop());
         }
         this.llirStack.push(arithmetic);
     }
 
+//TODO -----------------------------------------------------
+    public void addAccess(LLIRArrayAccess arrayAccess){
+        if (peek() instanceof LLIRArrayAccess) {
+            arrayAccess.setArray((LLIRArrayAccess)this.llirStack.pop().getArray());
+            this.llirStack.push(arrayAccess);
+        }
+    }
+
+    public void addArrayAccess(LLIRArrayAccess arrayAccess){
+        this.llirStack.push(arrayAccess);
+    }
+//---------------------------------------------------------
     public void addConditional(LLIRConditional conditional){
         if(peek() instanceof LLIRExpression){
             conditional.setLeftExpression((LLIRExpression) this.llirStack.pop());

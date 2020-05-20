@@ -1,7 +1,6 @@
 package llir;
 
 import symbols.NamedTypeDescriptor;
-import symbols.VariableDescriptor;
 
 public class LLIRArray extends LLIRExpression {
     public NamedTypeDescriptor array;
@@ -18,7 +17,7 @@ public class LLIRArray extends LLIRExpression {
     }
 
     /**
-     * @return the variable
+     * @return the array
      */
     public NamedTypeDescriptor getArray() {
         return array;

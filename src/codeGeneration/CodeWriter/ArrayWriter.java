@@ -13,7 +13,7 @@ public class ArrayWriter {
         //TODO check this
         FunctionBody.currentOperationIndex++;
 
-        this.code += CGConst.load.get(Type.INT_ARRAy);
+        this.code += CGConst.load.get(Type.INT_ARRAY);
 
         //TODO check this
         FunctionBody.currentOperationIndex = 0;
