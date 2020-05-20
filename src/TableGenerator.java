@@ -13,6 +13,7 @@ public class TableGenerator {
     LLIRMethodCall currentMethodCall;
     private String className;
     private boolean initializedWarning;
+    private boolean insideStaticMethod;
 
     public TableGenerator(SimpleNode rootNode) {
         this(rootNode, false);
@@ -26,6 +27,7 @@ public class TableGenerator {
         this.llirPopulator = new LLIRPopulator();
         this.className = null;
         this.initializedWarning = initializedWarning;
+        this.insideStaticMethod = false;
     }
 
     public SymbolsTable getTable() {
@@ -339,10 +341,14 @@ public class TableGenerator {
 
         //check if is main or usual method
         if (child.getId() == JavammTreeConstants.JJTMAINDECLARATION) {
+            insideStaticMethod = true;
             inspectMainBody(child, functionDescriptor);
+            insideStaticMethod = false;
         }
         else if (child.getId() == JavammTreeConstants.JJTMETHODHEADER) {
+            insideStaticMethod = functionDescriptor.isStatic();
             inspectMethodBody(functionNode, functionDescriptor);
+            insideStaticMethod = false;
         }
     }
 
@@ -433,6 +439,11 @@ public class TableGenerator {
         
         if(firstChild.getId() != JavammTreeConstants.JJTIDENTIFIER && firstChild.getId() != JavammTreeConstants.JJTTHIS){
             this.semanticError.printError(firstChild, "First Node of Line Statement must be an Identifier");
+            return;
+        }
+
+        if(firstChild.getId() == JavammTreeConstants.JJTTHIS && this.insideStaticMethod){
+            this.semanticError.printError(firstChild, "Non-static variable this cannot be referenced from a static context");
             return;
         }
 
@@ -1101,7 +1112,11 @@ public class TableGenerator {
                     break;
                 }
                 case JavammTreeConstants.JJTTHIS: {
-
+                    if(this.insideStaticMethod){
+                        this.semanticError.printError(node, "Non-static variable this cannot be referenced from a static context");
+                        return null;
+                    }
+                    
                     this.llirPopulator.addMethodCall(new LLIRMethodCall());
 
                     String functionType = inspectFunctionCall(argumentNode, symbolsTable, i+2);
