@@ -96,7 +96,7 @@ public class AssignmentWriter {
             ArrayAccessWriter arrayAccessWriter = new ArrayAccessWriter((LLIRArrayAccess) expression);
             this.code += arrayAccessWriter.getCode();
             type = Type.INT_ARRAY;
-            isArrayAccess = true;
+
         }
 
         return type;
