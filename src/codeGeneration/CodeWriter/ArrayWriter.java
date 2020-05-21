@@ -14,16 +14,17 @@ public class ArrayWriter {
         //TODO check this
         FunctionBody.currentOperationIndex++;
 
-        this.code += CGConst.load.get(Type.INT_ARRAY);
+        this.code += "\tiaload\n";
 
         //TODO check this
-        FunctionBody.currentOperationIndex = 0;
+        //FunctionBody.currentOperationIndex = 0;
 
-        String arrayIndex = FunctionBody.getVariableIndexString(array.getVariable().getName());
-        this.code = this.code + arrayIndex + "\n";
+        //String arrayIndex = FunctionBody.getVariableIndexString(array.getVariable().getName());
+        //this.code = this.code + arrayIndex + "\n";
     }
 
     public String getCode(){
         return this.code;
     }
 }
+

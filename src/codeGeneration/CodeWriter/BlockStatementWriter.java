@@ -40,7 +40,7 @@ public abstract class BlockStatementWriter {
         else if (node instanceof LLIRConditional){
             ConditionalWriter conditionalWriter = new ConditionalWriter((LLIRConditional)node);
             result += conditionalWriter.getCode();
-        }
+        }//TODO Acho que estes nao podem estar aqui
         else if (node instanceof LLIRNegation){
             NegationWriter negationWriter = new NegationWriter((LLIRNegation)node);
             result += negationWriter.getCode();

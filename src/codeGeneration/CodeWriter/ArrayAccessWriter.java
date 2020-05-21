@@ -15,6 +15,7 @@ public class ArrayAccessWriter {
         this.code += generateArrayCode(arrayAccess.getArray());
         System.out.println(arrayAccess.getAccess());
         this.code += generateAccessCode(arrayAccess.getAccess());
+        //this.code += "\tiaload\n";
     }
 
     public String generateArrayCode(LLIRExpression expression) {
@@ -24,7 +25,6 @@ public class ArrayAccessWriter {
             result += methodCallWriter.getCode();
         }
         else if (expression instanceof LLIRVariable) {
-            System.out.println("GANDA ZAS");
             VariableWriter arrayWriter = new VariableWriter((LLIRVariable) expression);
             result += arrayWriter.getCode();
         }else{

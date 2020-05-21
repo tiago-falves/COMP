@@ -18,7 +18,7 @@
 	iastore
 	aload_3
 	iconst_1
-	iastore
+	astore_2
 	return
 .end method
 

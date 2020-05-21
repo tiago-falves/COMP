@@ -50,6 +50,10 @@ public class ExpressionWriter {
             ExpressionWriter expressionWriter = new ExpressionWriter(((LLIRParenthesis) expression).getExpression());
             this.code += expressionWriter.getCode();
         }
+        else if (expression instanceof LLIRArrayAccess) {
+            ArrayAccessWriter arrayAcessWriter = new ArrayAccessWriter(((LLIRArrayAccess) expression));
+            this.code += arrayAcessWriter.getCode();
+        }
     }
 
     public String getCode(){

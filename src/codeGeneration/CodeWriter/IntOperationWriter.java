@@ -33,6 +33,9 @@ public class IntOperationWriter {
         else if (expression instanceof LLIRParenthesis) {
             ExpressionWriter expressionWriter = new ExpressionWriter(((LLIRParenthesis) expression).getExpression());
             result += expressionWriter.getCode();
+        }else if(expression instanceof  LLIRArrayAccess){
+            ArrayAccessWriter arrayAccessWriter = new ArrayAccessWriter((LLIRArrayAccess) expression);
+            result += arrayAccessWriter;
         }
 
         return result;
