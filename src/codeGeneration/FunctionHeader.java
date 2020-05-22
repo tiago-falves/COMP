@@ -10,8 +10,6 @@ public class FunctionHeader {
     private String methodName;
     private String methodDescriptor;
     private String returnType;
-    private String STACK_LIMIT = "\t.limit stack 99";
-    private String LOCALS_LIMIT = "\t.limit locals 99";
     private FunctionParameters functionParameters;
     private FunctionDescriptor functionDescriptor;
 
@@ -39,7 +37,6 @@ public class FunctionHeader {
             generatedCode = ".method public static main([Ljava/lang/String;)V\n";
         }
 
-        generatedCode += STACK_LIMIT + "\n" + LOCALS_LIMIT + "\n";
         return generatedCode;
     }
 

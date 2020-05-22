@@ -13,15 +13,11 @@ public class ClassVariableInstantiationWriter {
     public ClassVariableInstantiationWriter(LLIRClassVariableInstantiation variable){
         this.code = "";
 
-        FunctionBody.currentOperationIndex++;
+        //FunctionBody.incStack();
 
         this.code += NEW + variable.getClassDescriptor().getName() + "\n";
         this.code += DUP;
         this.code += INSTRUCTION + variable.getClassDescriptor().getName() + "/<init>()V\n";
-
-        FunctionBody.currentOperationIndex = 0;
-
-
     }
 
     public String getCode(){

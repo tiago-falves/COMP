@@ -21,8 +21,7 @@ public class BooleanWriter {
         else {
             this.code += CGConst.FALSE_VALUE + "\n";
         }
-        currentOperationIndex++;
-
+        FunctionBody.incStack();
     }
 
     public String getCode(){

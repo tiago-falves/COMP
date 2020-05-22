@@ -11,13 +11,8 @@ public class ArrayWriter {
     public ArrayWriter(LLIRVariable array){
         this.code = "";
 
-        //TODO check this
-        FunctionBody.currentOperationIndex++;
-
         this.code += "\tiaload\n";
-
-        //TODO check this
-        //FunctionBody.currentOperationIndex = 0;
+        FunctionBody.incStack();
 
         //String arrayIndex = FunctionBody.getVariableIndexString(array.getVariable().getName());
         //this.code = this.code + arrayIndex + "\n";

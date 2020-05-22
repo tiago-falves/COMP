@@ -17,7 +17,7 @@ public class IntegerWriter {
         } else {
             generatedCode += "\tbipush\t" + value + "\n";
         }
-        FunctionBody.currentOperationIndex++;
+        FunctionBody.incStack();
 
         this.code = generatedCode;
     }
