@@ -1,6 +1,5 @@
 package codeGeneration.CodeWriter;
 
-import codeGeneration.CGConst;
 import codeGeneration.FunctionBody;
 import llir.*;
 import symbols.Type;
@@ -14,7 +13,10 @@ public class ArrayAccessWriter {
         this.arrayAccess = arrayAccess;
         this.code += generateArrayCode(arrayAccess.getArray());
         this.code += generateAccessCode(arrayAccess.getAccess());
-        if(isLoad) this.code += "\tiaload\n";
+        if(isLoad){
+            this.code += "\tiaload\n";
+            FunctionBody.incStack();
+        }
     }
 
     public String generateArrayCode(LLIRExpression expression) {

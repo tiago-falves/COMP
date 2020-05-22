@@ -36,6 +36,7 @@ public class AssignmentWriter {
             String variableIndex = FunctionBody.getVariableIndexString(name);
             this.code = this.code + variableIndex + "\n";
         }
+        FunctionBody.decStack(1);
     }
 
     public Type getAssignmentExpression(){

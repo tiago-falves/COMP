@@ -15,6 +15,7 @@ public class ArithmeticWriter {
         this.code += generateCode(arithmetic.getLeftExpression());     // left
         this.code += generateCode(arithmetic.getRightExpression());    // right
         this.code += CGConst.arithmeticOperators.get(arithmetic.getOperation()) + "\n";
+        FunctionBody.decStack(1);
     }
 
     private String generateCode(LLIRExpression expression){

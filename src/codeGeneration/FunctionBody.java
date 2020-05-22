@@ -15,16 +15,16 @@ public class FunctionBody {
     private FunctionDescriptor functionDescriptor;
     public static LinkedHashMap<String, Integer> variableToIndex;
     public static int currentVariableIndex;
-    public static int maxStack;
-    public static int totalStack;
-    private String STACK_LIMIT = "\t.limit stack 99";
+    public static int maxStack = 0;
+    public static int totalStack = 0;
+    private String STACK_LIMIT = "\t.limit stack ";
     private final String LOCALS_LIMIT;
     
     public FunctionBody(FunctionDescriptor functionDescriptor, LinkedHashMap<String, Integer> variableToIndex) {
         this.functionDescriptor = functionDescriptor;
         this.variableToIndex = variableToIndex;
         this.currentVariableIndex = variableToIndex.size();
-        this.LOCALS_LIMIT = "\t.limit locals " + ((functionDescriptor.isStatic()?0:1) + functionDescriptor.getParametersTable().getSize() + functionDescriptor.getBodyTable().getSize());
+        this.LOCALS_LIMIT = "\t.limit locals " + (1 + functionDescriptor.getParametersTable().getSize() + functionDescriptor.getBodyTable().getSize());
         totalStack = 0;
         maxStack = 0;
     }
@@ -97,7 +97,7 @@ public class FunctionBody {
         }
         if(!foundReturn) generatedCode += "\treturn\n";
         
-        return STACK_LIMIT + "\n" + LOCALS_LIMIT + "\n" + generatedCode;
+        return STACK_LIMIT + maxStack + "\n" + LOCALS_LIMIT + "\n" + generatedCode;
     }
 
 

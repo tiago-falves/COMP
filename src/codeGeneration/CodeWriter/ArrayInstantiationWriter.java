@@ -18,7 +18,6 @@ public class ArrayInstantiationWriter {
         this.code += NEWARRAY;
 
         FunctionBody.incStack();
-
     }
 
     public String getCode(){
