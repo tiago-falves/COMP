@@ -8,7 +8,7 @@
 
 .method public static main([Ljava/lang/String;)V
 	.limit stack 99
-	.limit locals 99
+	.limit locals 3
 	iconst_5
 	newarray int
 	astore_3
@@ -24,7 +24,7 @@
 
 .method public add(II)I
 	.limit stack 99
-	.limit locals 99
+	.limit locals 3
 	iload_1
 	iload_2
 	iadd

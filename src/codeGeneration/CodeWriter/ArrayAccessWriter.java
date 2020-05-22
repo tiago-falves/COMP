@@ -13,7 +13,6 @@ public class ArrayAccessWriter {
         this.code = "";
         this.arrayAccess = arrayAccess;
         this.code += generateArrayCode(arrayAccess.getArray());
-        System.out.println(arrayAccess.getAccess());
         this.code += generateAccessCode(arrayAccess.getAccess());
         //this.code += "\tiaload\n";
     }

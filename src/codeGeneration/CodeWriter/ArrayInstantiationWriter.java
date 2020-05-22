@@ -17,7 +17,7 @@ public class ArrayInstantiationWriter {
         this.code += integerWriter.getCode();
         this.code += NEWARRAY;
 
-        FunctionBody.currentOperationIndex++;
+        FunctionBody.incStack();
 
     }
 

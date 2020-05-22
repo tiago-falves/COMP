@@ -15,14 +15,30 @@ public class FunctionBody {
     private FunctionDescriptor functionDescriptor;
     public static LinkedHashMap<String, Integer> variableToIndex;
     public static int currentVariableIndex;
-    public static int currentOperationIndex = 0;
+    public static int maxStack;
+    public static int totalStack;
+    private String STACK_LIMIT = "\t.limit stack 99";
+    private final String LOCALS_LIMIT;
     
     public FunctionBody(FunctionDescriptor functionDescriptor, LinkedHashMap<String, Integer> variableToIndex) {
         this.functionDescriptor = functionDescriptor;
         this.variableToIndex = variableToIndex;
         this.currentVariableIndex = variableToIndex.size();
+        this.LOCALS_LIMIT = "\t.limit locals " + ((functionDescriptor.isStatic()?0:1) + functionDescriptor.getParametersTable().getSize() + functionDescriptor.getBodyTable().getSize());
+        totalStack = 0;
+        maxStack = 0;
     }
 
+    public static void incStack(){
+        totalStack++;
+        if(totalStack > maxStack){
+            maxStack = totalStack;
+        }
+    }
+    
+    public static void decStack(int value){
+        totalStack -= value;
+    }
 
     private void pushVariables(){
 
@@ -51,7 +67,6 @@ public class FunctionBody {
         boolean foundReturn = false;
 
         String generatedCode = new String();
-
         pushVariables();
 
         for(LLIRNode node : this.functionDescriptor.getFunctionBody()) {
@@ -82,7 +97,7 @@ public class FunctionBody {
         }
         if(!foundReturn) generatedCode += "\treturn\n";
         
-        return generatedCode;
+        return STACK_LIMIT + "\n" + LOCALS_LIMIT + "\n" + generatedCode;
     }
 
 
