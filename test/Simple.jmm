@@ -5,13 +5,13 @@ class Simple {
 	public static void main(String[] args) {
         int a;
         int[] newField;
+        //Simple simple;
+        //simple = new Simple();
         newField = new int[5];
         newField[1] = 5;
         a = newField[1];
 
-
-
-        //ioa.println(a);
+        ioa.println(a);
 
 	}
 	public int add(int a, int b){

@@ -51,7 +51,7 @@ public class ExpressionWriter {
             this.code += expressionWriter.getCode();
         }
         else if (expression instanceof LLIRArrayAccess) {
-            ArrayAccessWriter arrayAcessWriter = new ArrayAccessWriter(((LLIRArrayAccess) expression));
+            ArrayAccessWriter arrayAcessWriter = new ArrayAccessWriter(((LLIRArrayAccess) expression),true);
             this.code += arrayAcessWriter.getCode();
         }
     }

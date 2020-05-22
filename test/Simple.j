@@ -18,7 +18,10 @@
 	iastore
 	aload_3
 	iconst_1
-	astore_2
+	iaload
+	istore_2
+	iload_2
+	invokestatic ioa/println(I)V
 	return
 .end method
 
