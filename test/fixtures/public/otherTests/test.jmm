@@ -1,0 +1,41 @@
+import static ioPlus.printHelloWorld(void) void;
+class HelloWorld {
+
+	public static void main(String[] args) {
+		int x;
+		int y;
+		int z;
+
+		ioPlus.printHelloWorld();
+		if (true) {
+			if (true) {
+				x = 0;
+				if (true) {
+					x = 0;
+				}
+				else {
+					x = 0;
+				}
+			}
+			else {
+				if (true) {
+				}
+				else {
+					x = 2;
+				}
+			}
+		}
+		else {
+			if (true) {
+				x = 0;
+			}
+			else {
+				x = 3;
+			}
+		}
+
+		y = x+1;
+
+	}
+
+}

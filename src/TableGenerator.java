@@ -16,6 +16,7 @@ public class TableGenerator {
     private HashSet<VariableDescriptor> initializedIfVars = new HashSet<>();
     private HashSet<VariableDescriptor> initializedElseVars = new HashSet<>();
     private HashSet<VariableDescriptor> possibleWarningVars = new HashSet<>();
+    private boolean insideStaticMethod;
 
     public TableGenerator(SimpleNode rootNode) {
         this(rootNode, false);
@@ -29,6 +30,7 @@ public class TableGenerator {
         this.llirPopulator = new LLIRPopulator();
         this.className = null;
         this.initializedWarning = initializedWarning;
+        this.insideStaticMethod = false;
     }
 
     public SymbolsTable getTable() {
@@ -341,10 +343,14 @@ public class TableGenerator {
 
         //check if is main or usual method
         if (child.getId() == JavammTreeConstants.JJTMAINDECLARATION) {
+            insideStaticMethod = true;
             inspectMainBody(child, functionDescriptor);
+            insideStaticMethod = false;
         }
         else if (child.getId() == JavammTreeConstants.JJTMETHODHEADER) {
+            insideStaticMethod = functionDescriptor.isStatic();
             inspectMethodBody(functionNode, functionDescriptor);
+            insideStaticMethod = false;
         }
     }
 
@@ -356,6 +362,7 @@ public class TableGenerator {
             SimpleNode child = (SimpleNode) mainNode.jjtGetChild(i);
             inspectVariableAndStatement(child, functionDescriptor);
         }
+
     }
 
     public void inspectReturn(SimpleNode node, FunctionDescriptor functionDescriptor) throws SemanticErrorException {
@@ -445,6 +452,11 @@ public class TableGenerator {
             return;
         }
 
+        if(firstChild.getId() == JavammTreeConstants.JJTTHIS && this.insideStaticMethod){
+            this.semanticError.printError(firstChild, "Non-static variable this cannot be referenced from a static context");
+            return;
+        }
+
         SimpleNode secondChild = (SimpleNode) statementNode.jjtGetChild(1);
 
         if(secondChild.getId() == JavammTreeConstants.JJTEQUAL){
@@ -497,6 +509,7 @@ public class TableGenerator {
 
 
 
+
             if(typeDescriptor.getClass() == VariableDescriptor.class){
                 VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
                 if (!variableDescriptor.isInitialized() || !variableDescriptor.wasInitializedPreviously()) {
@@ -515,23 +528,27 @@ public class TableGenerator {
                 this.llirPopulator.setAssignmentVariable(new LLIRVariable(variableDescriptor));
             }
 
-            this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
+            this.llirPopulator.addStatement(currentFunctionDescriptor);
+
+
 
         }
         else if(secondChild.getId() == JavammTreeConstants.JJTARRAY) {
+
+
             List<Descriptor> firstDescriptorList = symbolTable.getDescriptor(firstChild.jjtGetVal());
             if(firstDescriptorList == null){
                 this.semanticError.printError(firstChild, "Variable "+firstChild.jjtGetVal()+" not declared");
                 return;
             }
 
-            TypeDescriptor typeDescriptor = null;
+            NamedTypeDescriptor typeDescriptor = null;
             if(firstDescriptorList.size() == 1){
-                typeDescriptor = (TypeDescriptor) firstDescriptorList.get(0);
+                typeDescriptor = (NamedTypeDescriptor) firstDescriptorList.get(0);
             }else{
                 for(int i = 0; i < firstDescriptorList.size(); i++){
                     if(firstDescriptorList.get(i).getClass() == VariableDescriptor.class){
-                        typeDescriptor = (TypeDescriptor) firstDescriptorList.get(i);
+                        typeDescriptor = (NamedTypeDescriptor) firstDescriptorList.get(i);
                         break;
                     }
                 }
@@ -548,11 +565,19 @@ public class TableGenerator {
             }
 
             //Assignment
+
+            this.llirPopulator.addAssignment(new LLIRAssignment());
             Type type = typeDescriptor.getType();
             if(type != Type.STRING_ARRAY && type != Type.INT_ARRAY){
                 this.semanticError.printError(firstChild, "Variable " + firstChild.jjtGetVal()+" is not an array");
                 return;   
             }
+            LLIRArrayAccess arrayAccess = new LLIRArrayAccess();
+            arrayAccess.setVariable(typeDescriptor);
+            arrayAccess.setArray(new LLIRVariable(typeDescriptor));
+
+            this.llirPopulator.addExpression(arrayAccess);
+
 
             SimpleNode arrayNode =  (SimpleNode) statementNode.jjtGetChild(1);
             String indexType = inspectExpression(arrayNode, symbolTable);
@@ -560,7 +585,12 @@ public class TableGenerator {
                 this.semanticError.printError(statementNode, "Array index must be an int");
                 return;
             }
-           
+
+            this.llirPopulator.popArrayAcessExpression();
+
+            this.llirPopulator.setAssignmentVariable((LLIRArrayAccess) this.llirPopulator.popLLIR());
+
+
             String typeString;
             if(type == Type.STRING_ARRAY){
                 typeString = "String";
@@ -569,6 +599,9 @@ public class TableGenerator {
             }
 
             inspectAssignment(statementNode, symbolTable, typeString, 3);
+
+            this.llirPopulator.popBeforeAssignment();
+
 
             if(typeDescriptor.getClass() == VariableDescriptor.class){
                 VariableDescriptor variableDescriptor = (VariableDescriptor) typeDescriptor;
@@ -586,16 +619,23 @@ public class TableGenerator {
                 }
                 variableDescriptor.setInitialized();
             }
+
+            this.llirPopulator.addStatement(currentFunctionDescriptor);
+
             //TODO Add case where variable is a FunctionParameterDescriptor -> useful in the code generation
         }
         else{
             //Function call
             this.llirPopulator.addMethodCall(new LLIRMethodCall());
             inspectFunctionCall(statementNode, symbolTable);
+
+
             //If empty add tu function Descriptor
             if (llirPopulator.getLlirStack().size() == 1){
-                this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
+                //this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
+                this.llirPopulator.addStatement(currentFunctionDescriptor);
             }
+
 
         }
     }
@@ -616,6 +656,8 @@ public class TableGenerator {
             return;
         }
 
+        this.llirPopulator.addLLIR(new LLIRWhileBlock());
+
         String expressionType = inspectExpression(whileExpression, statementParentTable);
         if(expressionType == null){
             this.semanticError.printError(whileExpression, "Can't process while statement due to invalid expression");
@@ -624,6 +666,8 @@ public class TableGenerator {
             this.semanticError.printError(whileExpression, "While expression must evaluate to a boolean");
             return;
         }
+        this.llirPopulator.popBlockExpression();
+
 
         BlockDescriptor blockDescriptor = new BlockDescriptor(statementParentTable);
         
@@ -648,6 +692,11 @@ public class TableGenerator {
                 this.semanticError.printError(statementNode, "Unknown symbol");
             }
         }
+
+        this.llirPopulator.addStatement(currentFunctionDescriptor);
+
+
+
     }
 
     public void inspectIfStatement(SimpleNode ifNode, SymbolsTable statementParentTable) throws SemanticErrorException {
@@ -655,6 +704,9 @@ public class TableGenerator {
     }
 
     public void inspectIfStatement(SimpleNode ifNode, SymbolsTable statementParentTable, boolean previousFlow) throws SemanticErrorException {
+        LLIRIfElseBlock ifElseBlock = new LLIRIfElseBlock();
+        this.llirPopulator.addLLIR(ifElseBlock);
+
         if(ifNode.jjtGetNumChildren() == 0){
             this.semanticError.printError(ifNode, "If needs to have an expression.");
             return;
@@ -666,7 +718,10 @@ public class TableGenerator {
             return;
         }
 
-        String expressionType = inspectExpression(ifExpression, statementParentTable); 
+        String expressionType = inspectExpression(ifExpression, statementParentTable);
+
+        this.llirPopulator.popBlockExpression();
+
         if(expressionType == null){
             this.semanticError.printError(ifExpression, "Can't process if statement due to invalid expression");
             return;
@@ -714,6 +769,7 @@ public class TableGenerator {
                 }
 
             } else if(statementNode.getId() == JavammTreeConstants.JJTELSE && !found_else){
+                ifElseBlock.setFoundElse(true);
                 found_else = true;
 
                 Iterator<VariableDescriptor> it = this.initializedIfVars.iterator();
@@ -761,17 +817,22 @@ public class TableGenerator {
         if (isElse)
             this.initializedElseVars = initializedElseVarsLocal;
         else this.initializedIfVars = initializedIfVarsLocal;
+        this.llirPopulator.popBlock();
+
+
+        this.llirPopulator.addStatement(currentFunctionDescriptor);
+
     }
 
     private String inspectArrayAccess(SimpleNode statementNode, SymbolsTable symbolsTable, int initialChild) throws SemanticErrorException {
         SimpleNode idNode = (SimpleNode) statementNode.jjtGetChild(initialChild);
         List<Descriptor> descriptors = symbolsTable.getDescriptor(idNode.jjtGetVal());
 
-        TypeDescriptor idDescriptor = null;
+        NamedTypeDescriptor idDescriptor = null;
         for(int i = 0; i < descriptors.size(); i++){
             Descriptor d = descriptors.get(i);
             if(d.getClass() == FunctionParameterDescriptor.class || d.getClass() == VariableDescriptor.class){
-                idDescriptor = (TypeDescriptor) d;
+                idDescriptor = (NamedTypeDescriptor) d;
                 if(idDescriptor.getType() != Type.INT_ARRAY && idDescriptor.getType() != Type.STRING_ARRAY){
                     this.semanticError.printError(idNode, "CAN ONLY ACCESS ARRAYS OF INT OR STRING");
                     return null;
@@ -782,6 +843,9 @@ public class TableGenerator {
                         System.err.println("Warning: Variable " + idNode.jjtGetVal() + " might not have been initialized\n");
                     }
                 }
+                this.llirPopulator.addVariable(new LLIRVariable(idDescriptor));
+
+
                 break;
             }
         }
@@ -889,14 +953,12 @@ public class TableGenerator {
             return null;
         }
 
-        //Assuming this function gives the correct parameters
-        //Set here function parameters
 
         List<String> parameters = inspectArguments(argumentsNode, symbolsTable);
 
 
-        llirPopulator.popArguments();
 
+        llirPopulator.popArguments();
 
 
 
@@ -921,7 +983,12 @@ public class TableGenerator {
 
                 this.llirPopulator.addImport(new LLIRImport(importDescriptor));
 
-                if(empty) this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
+                if(empty){
+                    //this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
+                    this.llirPopulator.addStatement(currentFunctionDescriptor);
+                }
+
+
 
                 ArrayList<String> importIdentifiers = importDescriptor.getIdentifiers();
 
@@ -983,7 +1050,7 @@ public class TableGenerator {
                     methodCall.setMethodName(functionDescriptor.getName());
                     methodCall.setParametersTable(parametersTable);
                     methodCall.setReturnType(functionDescriptor.getType());
-                    //Falta adicionar as parameters expressions
+                    //TODO Falta adicionar as parameters expressions
 
                 }
 
@@ -1173,13 +1240,7 @@ public class TableGenerator {
 
                     break;
                 }
-                case JavammTreeConstants.JJTTRUE: {
-                    // Adding boolean to the LLIR Assignment node, if applicable
-                    //ARITHMETIC
-
-                    //arithmetics.get(arithmetics.size()-1).setExpression(currentMethodCall);
-
-                }
+                case JavammTreeConstants.JJTTRUE:
                 case JavammTreeConstants.JJTFALSE: {
                     if(type == null){
                         type = "boolean";
@@ -1188,14 +1249,17 @@ public class TableGenerator {
                         return null;
                     }
 
-                    //ARITHMETIC
-                    //arithmetics.get(arithmetics.size()-1).setExpression(new llir.LLIRBoolean(false));
-
+                    //CONDITIONAL
+                    this.llirPopulator.addExpression(new llir.LLIRBoolean(node.getId() == JavammTreeConstants.JJTTRUE ? true : false));
 
                     break;
                 }
                 case JavammTreeConstants.JJTTHIS: {
-
+                    if(this.insideStaticMethod){
+                        this.semanticError.printError(node, "Non-static variable this cannot be referenced from a static context");
+                        return null;
+                    }
+                    
                     this.llirPopulator.addMethodCall(new LLIRMethodCall());
 
                     String functionType = inspectFunctionCall(argumentNode, symbolsTable, i+2);
@@ -1271,8 +1335,13 @@ public class TableGenerator {
                             i += 3; // Jump function identifiers
                         
                             continue;
-                        } else if(nextNode.getId() == JavammTreeConstants.JJTARRAY){    
+                        } else if(nextNode.getId() == JavammTreeConstants.JJTARRAY){
+
+
+                            this.llirPopulator.addLLIR(new LLIRArrayAccess());
                             String arrayType = inspectArrayAccess(argumentNode, symbolsTable, i);
+                            this.llirPopulator.popArrayAcessExpression();
+
                             if(type == null){
                                 type = arrayType;
                             }else if(!type.equals(arrayType)){
@@ -1337,6 +1406,11 @@ public class TableGenerator {
                         this.semanticError.printError(node, "OPERATION && IS INCOMPATIBLE WITH " + type);
                         return null;
                     }
+                    
+                    //CONDITIONAL &&
+                    if(llirPopulator.lastIsLLIRExpression()) this.llirPopulator.addConditional(new LLIRConditional());
+                    this.llirPopulator.addOperator(node.getId());
+
                     break;
                 }
                 case JavammTreeConstants.JJTNEW: {
@@ -1355,8 +1429,12 @@ public class TableGenerator {
                         }
                         
                         SimpleNode arrayNode = (SimpleNode) argumentNode.jjtGetChild(initialChild+2);
-                    
+
+                        //Popular array instantiation
+                        this.llirPopulator.addLLIR(new LLIRArrayInstantiation());
                         String indexType = inspectExpression(arrayNode, symbolsTable);
+
+                        this.llirPopulator.popArrayInstantiation();
 
                         if(indexType == null){
                             this.semanticError.printError(arrayNode, "Array index must be an int");
@@ -1391,6 +1469,9 @@ public class TableGenerator {
                         this.semanticError.printError(node, "OPERATION ! IS INCOMPATIBLE WITH " + type);
                         return null;
                     }
+
+                    //NEGATION !
+                    this.llirPopulator.addExpression(new LLIRNegation());
                     break;
                 }
                 case JavammTreeConstants.JJTLESS: {
@@ -1398,13 +1479,17 @@ public class TableGenerator {
                         this.semanticError.printError(node, "CAN'T COMPARE " + type + " WITH OPERATOR <");
                         return null;
                     }
-                    
+                    //CONDITIONAL <
+                    if(llirPopulator.lastIsLLIRExpression()) this.llirPopulator.addConditional(new LLIRConditional());
+                    this.llirPopulator.addOperator(node.getId());
+
                     String otherType = inspectExpression(argumentNode, symbolsTable, i+1);
                     if(!otherType.equals("int")){
                         this.semanticError.printError(node, "CAN'T COMPARE " + otherType + " WITH OPERATOR <");
                         return null;
                     }
 
+                    this.llirPopulator.popExpression();
                     return "boolean";
                 }
                 case JavammTreeConstants.JJTDOT: {
@@ -1437,11 +1522,9 @@ public class TableGenerator {
                     break;
                 }
             }
+            this.llirPopulator.popNegation();
         }
-
-        this.llirPopulator.popArithmetics();
-
-
+        this.llirPopulator.popExpression();
 
 
 
@@ -1470,8 +1553,6 @@ public class TableGenerator {
                 break;
             }
         }
-
-
 
     }
 

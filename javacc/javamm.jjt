@@ -514,7 +514,7 @@ void LiteralExpr4() #void : {Token t;}
     (t=<THIS>{jjtThis.jjtSetLine(t.beginLine); jjtThis.jjtSetColumn(t.beginColumn);} #This{}
         (ExprTail())*) |
     (t=<NEW>{jjtThis.jjtSetLine(t.beginLine); jjtThis.jjtSetColumn(t.beginColumn);} #New
-        NewExpr()) |
+        NewExpr() (ExprTail())*) |
     (
         LiteralExpr4Parentheses()
         (ExprTail())*) |

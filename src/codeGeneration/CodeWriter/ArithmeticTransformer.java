@@ -47,7 +47,7 @@ public class ArithmeticTransformer {
         
         while(priorityLevel < 4) {
             for(int i = 0; i < operators.size(); i++) {
-                if(priorityLevel == 1 && (operators.get(i) == ArithmeticOperation.AND || operators.get(i) == ArithmeticOperation.LESS_THAN)) {
+                /*if(priorityLevel == 1 && (operators.get(i) == ArithmeticOperation.AND || operators.get(i) == ArithmeticOperation.LESS_THAN)) {
                     List<ArithmeticOperation> leftOperations = sliceOperators(operators, 0, i);
                     List<ArithmeticOperation> rightOperations = sliceOperators(operators, i+1, operators.size());
 
@@ -72,7 +72,7 @@ public class ArithmeticTransformer {
 
 
                 }
-                else if(priorityLevel == 2 && (operators.get(i) == ArithmeticOperation.SUM || operators.get(i) == ArithmeticOperation.SUBTRACTION)) {
+                else*/ if(priorityLevel == 2 && (operators.get(i) == ArithmeticOperation.SUM || operators.get(i) == ArithmeticOperation.SUBTRACTION)) {
                     List<ArithmeticOperation> leftOperations = sliceOperators(operators, 0, i);
                     List<ArithmeticOperation> rightOperations = sliceOperators(operators, i+1, operators.size());
 

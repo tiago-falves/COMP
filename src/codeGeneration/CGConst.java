@@ -1,5 +1,6 @@
 package codeGeneration;
 import llir.ArithmeticOperation;
+import llir.ConditionalOperation;
 import symbols.Type;
 import symbols.TypeDescriptor;
 
@@ -26,7 +27,6 @@ public class CGConst {
         arithmeticOperators.put(MULTIPLICATION, "\timul");
         arithmeticOperators.put(DIVISION, "\tidiv");
 
-
         types.put(Type.INT, "I");
         types.put(Type.BOOLEAN, "Z");
         types.put(Type.INT_ARRAY, "[I");
@@ -34,12 +34,14 @@ public class CGConst {
         types.put(Type.STRING_ARRAY, "[Ljava/lang/String;"); //TODO Quase certo que isto nao esta bem
 
         store.put(Type.INT, "\tistore");
-        store.put(Type.BOOLEAN, "\tistore\t");
+        store.put(Type.BOOLEAN, "\tistore");
         store.put(Type.CLASS, "\tastore");
+        store.put(Type.INT_ARRAY, "\tastore");
 
         load.put(Type.INT, "\tiload");
         load.put(Type.BOOLEAN, "\tiload_");
         load.put(Type.STRING_ARRAY, "\taload_");
+        load.put(Type.INT_ARRAY, "\taload");
         load.put(Type.STRING, "\taload_");
         load.put(Type.CLASS, "\taload");
 

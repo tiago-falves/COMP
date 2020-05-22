@@ -12,11 +12,9 @@ public class VariableWriter {
     public VariableWriter(LLIRVariable variable){
         this.code = "";
 
-        FunctionBody.currentOperationIndex++;
+        FunctionBody.incStack();
 
-        this.code += CGConst.load.get(Type.INT);
-
-        FunctionBody.currentOperationIndex = 0;
+        this.code += CGConst.load.get(variable.getVariable().getType());
 
         String variableIndex = FunctionBody.getVariableIndexString(variable.getVariable().getName());
         this.code = this.code + variableIndex + "\n";

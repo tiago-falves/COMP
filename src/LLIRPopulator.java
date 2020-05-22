@@ -1,4 +1,5 @@
 import llir.*;
+import symbols.FunctionDescriptor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,7 @@ public class LLIRPopulator {
         this.llirStack.push(assignment);
     }
 
+
     public Stack<LLIRNode> getLlirStack() {
         return llirStack;
     }
@@ -42,19 +44,30 @@ public class LLIRPopulator {
 
     //Simple Expression
     public void addExpression(LLIRExpression expression){
-
         this.llirStack.push(expression);
+    }
 
-        /*if (llirStack.peek() instanceof LLIRAssignment){
-
-            this.llirStack.push(expression);
-            //LLIRAssignment assignment = (LLIRAssignment) llirStack.peek();
-            //assignment.setExpression(expression);
+    public void setAssignmentVariable(LLIRExpression variable){
+        if (this.peek() instanceof LLIRAssignment){
+            LLIRAssignment assignment = (LLIRAssignment) this.peek();
+            if(variable instanceof  LLIRVariable)
+                assignment.setVariable((LLIRVariable) variable);
+            else if(variable instanceof LLIRArrayAccess){
+                assignment.setVariable((LLIRArrayAccess) variable);
+            }
         }
-        if (llirStack.peek() instanceof LLIRArithmetic){
-            LLIRArithmetic arithmetic = (LLIRArithmetic) llirStack.peek();
-            arithmetic.setExpression(expression);
-        }*/
+
+    }
+
+    public void popArrayAcessExpression(){
+        if(lastIsLLIRExpression()){
+            LLIRExpression expression =(LLIRExpression) this.llirStack.pop();
+            if(peek() instanceof  LLIRArrayAccess){
+                LLIRArrayAccess acess = (LLIRArrayAccess) this.llirStack.peek();
+                acess.setAccess(expression);
+            }
+
+        }
     }
 
     public void setAssignmentVariable(LLIRVariable variable){
@@ -77,11 +90,6 @@ public class LLIRPopulator {
         }
     }
 
-    public void popMethodCall(){
-
-
-    }
-
     public void popParenthesis(){
         if (this.llirStack.empty()) return;
         LLIRExpression node = (LLIRExpression) this.llirStack.pop();
@@ -99,18 +107,45 @@ public class LLIRPopulator {
 
 
     public void addArithmetic(LLIRArithmetic arithmetic){
-
         if(peek() instanceof LLIRExpression){
             arithmetic.setLeftExpression((LLIRExpression) this.llirStack.pop());
         }
         this.llirStack.push(arithmetic);
     }
 
+    public void addConditional(LLIRConditional conditional){
+        if(peek() instanceof LLIRExpression){
+            conditional.setLeftExpression((LLIRExpression) this.llirStack.pop());
+        }
+
+        this.llirStack.push(conditional);
+    }
+
+    public void addVariable(LLIRVariable variable){
+        if(peek() instanceof LLIRArrayAccess ){
+            LLIRArrayAccess arrayAccess = (LLIRArrayAccess) peek();
+            arrayAccess.setArray(variable);
+        }
+
+    }
+
     public void addReturn(LLIRReturn returnLLIR){
         this.llirStack.push(returnLLIR);
     }
 
-    public void popArithmetics(){
+    public void popNegation(){
+
+        if(peek() instanceof LLIRExpression){
+            LLIRNode node = llirStack.pop();
+
+            if(peek() instanceof LLIRNegation){
+                ((LLIRNegation)peek()).setExpression((LLIRExpression) node);
+            }else{
+                llirStack.push(node);
+            }
+        }
+    }
+    public void popExpression(){
 
         //In case of a simple Assignment
         if(peek() instanceof LLIRExpression){
@@ -119,23 +154,42 @@ public class LLIRPopulator {
             if(peek() instanceof LLIRArithmetic){
                 ((LLIRArithmetic)peek()).setRightExpression((LLIRExpression) node);
             }
+            if(peek() instanceof LLIRConditional){
+                ((LLIRConditional)peek()).setRightExpression((LLIRExpression)node);
+            }
             if(peek() instanceof LLIRAssignment){
                 ((LLIRAssignment)peek()).setExpression((LLIRExpression) node);
+            }
+            if(peek() instanceof LLIRNegation){
+                ((LLIRNegation)peek()).setExpression((LLIRExpression) node);
+            }
+            if(peek() instanceof LLIRArrayInstantiation){
+                ((LLIRArrayInstantiation)peek()).setSize((LLIRExpression)node);
             }
         }
 
         //In case of a complex assignment
-        while (peek() instanceof LLIRArithmetic || peek() instanceof LLIRExpression ){
+        //Isto estava aqui um
+        while (peek() instanceof LLIRArithmetic || peek() instanceof LLIRConditional || peek() instanceof LLIRNegation){
             LLIRExpression actual = (LLIRExpression) this.llirStack.pop();
 
             if (peek() instanceof LLIRArithmetic){
                 LLIRArithmetic previous = (LLIRArithmetic) peek();
                 previous.setRightExpression(actual);
             }
-            else if (peek() instanceof LLIRAssignment){
-                LLIRAssignment previous = (LLIRAssignment) peek();
+            else if (peek() instanceof LLIRConditional){
+                LLIRConditional previous = (LLIRConditional) peek();
+                previous.setRightExpression(actual);
+            }
+
+            /*else if (peek() instanceof LLIRIfElseBlock){
+                LLIRIfElseBlock previous = (LLIRIfElseBlock) peek();
                 previous.setExpression(actual);
                 break;
+            }*/
+            else if (peek() instanceof LLIRNegation){
+                LLIRNegation previous = (LLIRNegation) peek();
+                previous.setExpression(actual);
             }
             else {
                 this.llirStack.push(actual);
@@ -162,6 +216,18 @@ public class LLIRPopulator {
             }
         }
     }
+    public void popArrayInstantiation(){
+        if(lastIsLLIRExpression()){
+            LLIRExpression expression = (LLIRExpression) this.llirStack.pop();
+            if(peek() instanceof  LLIRArrayInstantiation){
+                LLIRArrayInstantiation arrayInst = (LLIRArrayInstantiation) peek();
+                arrayInst.setSize(expression);
+            }else if(peek() instanceof LLIRAssignment){
+                LLIRAssignment assignment = (LLIRAssignment) peek();
+                assignment.setExpression(expression);
+            }
+        }
+    }
 
     public void popArguments(){
 
@@ -178,6 +244,30 @@ public class LLIRPopulator {
 
     }
 
+    public void addStatement(FunctionDescriptor currentFunctionDescriptor){
+        if(!llirStack.empty()) {
+            LLIRNode node = this.llirStack.pop();
+            if (peek() instanceof LLIRIfElseBlock) {
+                LLIRIfElseBlock ifElseBlock = (LLIRIfElseBlock) peek();
+                if (!ifElseBlock.isFinishedElse()) {
+                    ifElseBlock.addNode(node);
+                    return;
+                }
+            } else if (peek() instanceof LLIRWhileBlock) {
+                LLIRWhileBlock whileBlock = (LLIRWhileBlock) peek();
+                if (!whileBlock.isFinished()) {
+                    whileBlock.addNode(node);
+                    return;
+                }
+            }
+            currentFunctionDescriptor.addLLIRNode(node);
+        }
+
+
+
+
+    }
+
     //If the stack has an expression before assignment, set assignment expression
     public void popBeforeAssignment(){
         if(peek() instanceof LLIRExpression) {
@@ -189,8 +279,37 @@ public class LLIRPopulator {
         }
     }
 
+    public void popBlock(){
+        if(peek() instanceof LLIRIfElseBlock) {
+            LLIRIfElseBlock node = (LLIRIfElseBlock) this.llirStack.peek();
+            node.setFinishedElse(true);
+        } else if(peek() instanceof LLIRWhileBlock) {
+            LLIRWhileBlock node = (LLIRWhileBlock) this.llirStack.peek();
+            node.setFinished(true);
+        }
+    }
+
+    public void popBlockExpression(){
+        if(peek() instanceof LLIRExpression) {
+            LLIRExpression node = (LLIRExpression) this.llirStack.pop();
+            if (peek() instanceof LLIRIfElseBlock) {
+                LLIRIfElseBlock ifElseBlock = (LLIRIfElseBlock) peek();
+                ifElseBlock.setExpression(node);
+            }
+            if (peek() instanceof LLIRWhileBlock) {
+                LLIRWhileBlock whileBlock = (LLIRWhileBlock) peek();
+                whileBlock.setExpression(node);
+            }
+        }
+    }
+
     public boolean lastIsArithmetic(){
         if (this.peek() instanceof LLIRArithmetic) return true;
+        return false;
+    }
+
+    public boolean lastIsConditional(){
+        if(this.peek() instanceof LLIRConditional) return true;
         return false;
     }
 
@@ -206,6 +325,13 @@ public class LLIRPopulator {
         if (lastIsArithmetic()){
             LLIRArithmetic arithmetic = (LLIRArithmetic) peek();
             if (arithmetic.foundOperator()) return true;
+        }
+        return false;
+    }
+    public boolean shouldAddConditional(){
+        if (lastIsConditional()){
+            LLIRConditional conditional = (LLIRConditional) peek();
+            if (conditional.foundOperator()) return true;
         }
         return false;
     }
@@ -232,39 +358,97 @@ public class LLIRPopulator {
                     break;
                 }
             }
+        }else if(lastIsConditional()){
+            LLIRConditional conditional = (LLIRConditional) peek();
+            switch(nodeId){
+                case JavammTreeConstants.JJTAND:{
+                    conditional.setOperation(ConditionalOperation.AND);
+                    break;
+                }
+                case JavammTreeConstants.JJTLESS:{
+                    conditional.setOperation(ConditionalOperation.LESS_THAN);
+                    break;
+                }
+                case JavammTreeConstants.JJTNEGATION:{
+                    conditional.setOperation(ConditionalOperation.NEGATION);
+                    break;
+                }
+            }
         }
     }
 
-    public void addClassInstantiation(LLIRClassVariableInstantiation variable){
-        if (peek() instanceof LLIRAssignment){
-            LLIRAssignment assignment = (LLIRAssignment) peek();
-            assignment.setExpression(variable);
+
+
+
+    public String getBlockStatements(LLIRIfElseBlock ifElseBlock,String identation){
+        String stack = "";
+        stack = identation +  "IF:\n";
+        for (LLIRNode node : ifElseBlock.getIfNodes()){
+            stack += identation + getNodeString(node,identation + "  ");
         }
+        stack +=identation + identation + "ELSE:\n";
+        for (LLIRNode node : ifElseBlock.getElseNodes()){
+            stack += identation + getNodeString(node,identation + "  ");
+        }
+        return stack;
+    }
+
+    public String getBlockStatements(LLIRWhileBlock whileBlock,String identation){
+        String stack = "";
+        for (LLIRNode node : whileBlock.getNodes()){
+            stack += identation + getNodeString(node,identation + "  ");
+        }
+        return stack;
     }
 
     public void printStack(){
-        String stack = "";
 
+        String stack = "";
         Stack<LLIRNode> copy = (Stack<LLIRNode>) this.llirStack.clone();
         while (!copy.empty()){
             LLIRNode node  =copy.pop();
-            if (node instanceof LLIRAssignment){
-                stack += "Assignment\n";
-            }else if(node instanceof LLIRArithmetic){
-                stack += "Arithmetic\n";
-            }else if (node instanceof LLIRMethodCall) {
-                stack += "Method Call\n";
-            }else if(node instanceof LLIRImport){
-                stack += "Import\n";
-            }else if(node instanceof LLIRExpression){
-                stack += "Expression\n";
-            }else if(node instanceof LLIRReturn){
-                stack += "Return\n";
-            }
+            stack += getNodeString(node,"");
         }
-
         System.out.println("STACK\n\n" + stack);
 
+    }
+
+    private String getNodeString(LLIRNode node,String identation){
+
+        if (node instanceof LLIRAssignment){
+            return identation +"Assignment\n";
+        }else if(node instanceof LLIRArithmetic){
+            return identation +"Arithmetic\n";
+        }else if(node instanceof LLIRConditional) {
+            return identation +"Conditional\n";
+        }else if(node instanceof LLIRIfElseBlock) {
+            String s = identation + "IFElseBlock\n";
+            s += identation + getBlockStatements((LLIRIfElseBlock) node,identation);
+            return s;
+        }else if(node instanceof LLIRWhileBlock) {
+            String s = identation + "While\n";
+            s += identation + getBlockStatements((LLIRWhileBlock) node,identation);
+            return s;
+        }else if(node instanceof LLIRBoolean) {
+            return identation + "Boolean\n";
+        }else if(node instanceof LLIRInteger) {
+            return identation + "Integer\n";
+        }else if(node instanceof LLIRArrayInstantiation){
+            return identation +"Array Instantiation\n";
+        }else if(node instanceof LLIRArrayAccess){
+            return identation +"Array Access\n";
+        }else if (node instanceof LLIRMethodCall) {
+            return identation +"Method Call\n";
+        }else if(node instanceof LLIRImport){
+            return identation +"Import\n";
+        }else if(node instanceof LLIRNegation){
+            return identation +"Negation\n";
+        }else if(node instanceof LLIRExpression){
+            return identation +"Expression\n";
+        }else if(node instanceof LLIRReturn){
+            return identation +"Return\n";
+        }
+        return "NODE\n";
     }
 
 

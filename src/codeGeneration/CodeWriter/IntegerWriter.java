@@ -8,7 +8,7 @@ import symbols.Type;
 public class IntegerWriter {
     private String code;
 
-    public IntegerWriter(LLIRInteger integer,String name){
+    public IntegerWriter(LLIRInteger integer){
         String generatedCode = new String();
 
         int value = integer.getValue();
@@ -17,7 +17,7 @@ public class IntegerWriter {
         } else {
             generatedCode += "\tbipush\t" + value + "\n";
         }
-        FunctionBody.currentOperationIndex++;
+        FunctionBody.incStack();
 
         this.code = generatedCode;
     }

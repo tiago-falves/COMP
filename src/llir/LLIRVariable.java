@@ -3,26 +3,10 @@ package llir;
 import symbols.NamedTypeDescriptor;
 import symbols.VariableDescriptor;
 
-public class LLIRVariable extends LLIRExpression {
-    public NamedTypeDescriptor variable;
+public class LLIRVariable extends LLIRVariableAndArray {
 
     public LLIRVariable(NamedTypeDescriptor variable) {
-        this.variable = variable;
+        super(variable);
     }
-
-    /**
-     * @param variable the variable to set
-     */
-    public void setVariable(NamedTypeDescriptor variable) {
-        this.variable = variable;
-    }
-
-    /**
-     * @return the variable
-     */
-    public NamedTypeDescriptor getVariable() {
-        return variable;
-    }
-
 
 }

@@ -13,19 +13,11 @@ public class ClassVariableInstantiationWriter {
     public ClassVariableInstantiationWriter(LLIRClassVariableInstantiation variable){
         this.code = "";
 
-        FunctionBody.currentOperationIndex++;
+        //FunctionBody.incStack();
 
         this.code += NEW + variable.getClassDescriptor().getName() + "\n";
         this.code += DUP;
         this.code += INSTRUCTION + variable.getClassDescriptor().getName() + "/<init>()V\n";
-
-
-        //this.code += CGConst.load.get(Type.CLASS);
-
-        FunctionBody.currentOperationIndex = 0;
-
-       // int variableIndex = FunctionBody.getVariableIndex(variable.getVariable().getName());
-        //this.code = this.code + variableIndex + "\n";
     }
 
     public String getCode(){

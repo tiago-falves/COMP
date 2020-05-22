@@ -5,6 +5,7 @@ import codeGeneration.FunctionBody;
 import codeGeneration.FunctionParameters;
 import llir.LLIRExpression;
 import llir.LLIRMethodCall;
+import symbols.Type;
 
 import java.util.List;
 
@@ -20,8 +21,7 @@ public class MethodCallWriter {
             String variableIndex = FunctionBody.getVariableIndexString(methodCall.getClassName());
             this.code = LOAD + variableIndex + "\n";
         }
-
-
+        FunctionBody.incStack();
 
         this.code += getParameters(methodCall);
         this.code += INSTRUCTION;
@@ -30,7 +30,7 @@ public class MethodCallWriter {
         if (methodCall.getClassName()!="") this.code+= methodCall.getClassName().substring(0, 1).toUpperCase() + methodCall.getClassName().substring(1) + "/";
 
         this.code += methodCall.getMethodName() + "(" + arguments + ")"+ CGConst.types.get(methodCall.getReturnType()) + "\n";
-
+        FunctionBody.decStack(methodCall.getParametersTable().getSize()-(methodCall.getReturnType() == Type.VOID ? 0 : 1));
     }
 
     public String getCode(){
@@ -42,7 +42,7 @@ public class MethodCallWriter {
 
         List<LLIRExpression> parameters = methodCall.getParametersExpressions();
         for (LLIRExpression expression : parameters){
-            ExpressionWriter expressionWriter = new ExpressionWriter(expression,"NAME");
+            ExpressionWriter expressionWriter = new ExpressionWriter(expression);
             result += expressionWriter.getCode();
         }
 

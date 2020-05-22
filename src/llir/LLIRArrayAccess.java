@@ -1,12 +1,20 @@
 package llir;
 
-public class LLIRArrayAccess extends LLIRExpression {
+public class LLIRArrayAccess extends LLIRVariableAndArray {
     private LLIRExpression array;
     private LLIRExpression access;
 
     public LLIRArrayAccess(LLIRExpression array, LLIRExpression access) {
         this.array = array;
         this.access = access;
+    }
+
+    public LLIRArrayAccess(LLIRExpression array) {
+        this.array = array;
+    }
+
+    public LLIRArrayAccess() {
+
     }
 
     /**
@@ -23,6 +31,12 @@ public class LLIRArrayAccess extends LLIRExpression {
         return array;
     }
 
+    public void setArray(LLIRExpression array) {
+        this.array = array;
+    }
 
+    public void setAccess(LLIRExpression access) {
+        this.access = access;
+    }
 
 }

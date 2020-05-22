@@ -13,7 +13,7 @@ public class ReturnWriter {
     public ReturnWriter(LLIRReturn returnLLIR) {
         this.code  = "";
         LLIRExpression expression = returnLLIR.getExpression();
-        ExpressionWriter expressionWriter = new ExpressionWriter(expression,"NAME");
+        ExpressionWriter expressionWriter = new ExpressionWriter(expression);
         this.code+= expressionWriter.getCode();
         this.code+= CGConst.returnTypes.get(returnLLIR.getReturnType()) + "\n";
     }
