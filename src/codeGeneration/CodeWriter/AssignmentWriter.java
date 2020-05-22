@@ -21,14 +21,15 @@ public class AssignmentWriter {
 
         String name = assignment.getVariable().getVariable().getName();
 
-        getVariableCode();
+        type =getVariableCode();
 
-        type = getAssignmentExpression();
+        getAssignmentExpression();
 
         // get the instruction to store
         if(isArrayAccess){
             this.code += "\tiastore\n";
         }else{
+
 
             this.code += CGConst.store.get(type);
             // assign to the correct variable
@@ -89,27 +90,27 @@ public class AssignmentWriter {
             this.code += arrayInstantiationWriter.getCode();
             type = Type.INT_ARRAY;
         }
-
         else if (expression instanceof LLIRArrayAccess) {
-            ArrayAccessWriter arrayAccessWriter = new ArrayAccessWriter((LLIRArrayAccess) expression);
+            ArrayAccessWriter arrayAccessWriter = new ArrayAccessWriter((LLIRArrayAccess) expression,true);
             this.code += arrayAccessWriter.getCode();
             type = Type.INT_ARRAY;
-
         }
+
 
         return type;
     }
 
 
-    private void getVariableCode(){
+    private Type getVariableCode(){
 
         LLIRVariableAndArray variableAndArray = assignment.getVariable();
         if(variableAndArray instanceof LLIRArrayAccess){
-            ArrayAccessWriter arrayAccessWriter = new ArrayAccessWriter((LLIRArrayAccess) variableAndArray);
+            ArrayAccessWriter arrayAccessWriter = new ArrayAccessWriter((LLIRArrayAccess) variableAndArray,false);
             this.code += arrayAccessWriter.getCode();
             isArrayAccess = true;
-
         }
+
+        return assignment.getVariable().getVariable().getType();
 
     }
 

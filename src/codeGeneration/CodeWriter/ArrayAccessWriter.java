@@ -9,12 +9,12 @@ public class ArrayAccessWriter {
     private String code;
     private LLIRArrayAccess arrayAccess;
 
-    public ArrayAccessWriter(LLIRArrayAccess arrayAccess){
+    public ArrayAccessWriter(LLIRArrayAccess arrayAccess,boolean isLoad){
         this.code = "";
         this.arrayAccess = arrayAccess;
         this.code += generateArrayCode(arrayAccess.getArray());
         this.code += generateAccessCode(arrayAccess.getAccess());
-        //this.code += "\tiaload\n";
+        if(isLoad) this.code += "\tiaload\n";
     }
 
     public String generateArrayCode(LLIRExpression expression) {
