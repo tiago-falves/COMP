@@ -8,6 +8,8 @@ gradlew
 gradlew.bat
 comp2020-3e.jar
 
+.settings/
+
 # Ignore Gradle GUI config
 gradle-app.setting
 
