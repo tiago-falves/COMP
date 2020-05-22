@@ -629,6 +629,12 @@ public class TableGenerator {
             this.llirPopulator.addMethodCall(new LLIRMethodCall());
             inspectFunctionCall(statementNode, symbolTable);
 
+            if(statementNode.jjtGetNumChildren() > 4){
+                /**
+                 * TODO Create warnings: if the function returns anything (int[], for instance) and we call .length after this, it doesn't have any effect
+                 */
+                //this.semanticError.printError(statementNode, "Can't call anything after a simple function call");
+            }
 
             //If empty add tu function Descriptor
             if (llirPopulator.getLlirStack().size() == 1){
@@ -1326,12 +1332,29 @@ public class TableGenerator {
                             this.llirPopulator.addMethodCall(methodCall);
 
                             String functionType = inspectFunctionCall(argumentNode, symbolsTable, i);
+
+                            TypeString typeString = new TypeString(functionType);
+
+                            if(typeString.parseType() == Type.INT_ARRAY || typeString.parseType() == Type.STRING_ARRAY){
+                                functionType = inspectArrayNodeAfterFunctionCall(argumentNode, symbolsTable, functionType, i+4);
+                                if(functionType == null){
+                                    this.semanticError.printError(nextNextNode, "CAN'T EVALUATE NULL EXPRESSION");
+                                    return null;
+                                }
+                                if(!functionType.equals("int[]") && !functionType.equals("String[]")){
+                                    i++;
+                                    if(((SimpleNode)argumentNode.jjtGetChild(initialChild+4)).getId() == JavammTreeConstants.JJTDOT)
+                                        i++;
+                                }
+                            }
+                
                             if(type == null){
                                 type = functionType;
                             }else if(!type.equals(functionType)){
                                 this.semanticError.printError(nextNextNode, functionType + " IS INCOMPATIBLE WITH " + type);
                                 return null;
                             }
+
                             i += 3; // Jump function identifiers
                         
                             continue;
@@ -1636,17 +1659,88 @@ public class TableGenerator {
         return null;
     }
 
+    private String inspectArrayAccessAfterFunctionCall(SimpleNode node, TypeString arrayType, int initialChild, SymbolsTable symbolsTable)  throws SemanticErrorException {
+        /*
+            TODO ARRAY AFTER METHOD CALL IN CLASS INSTANTIATION
+            GENERATE CODE
+        */
+        SimpleNode arrayNode = (SimpleNode) node.jjtGetChild(initialChild);
+
+        String indexType = inspectExpression(arrayNode, symbolsTable);
+
+        if(indexType == null){
+            this.semanticError.printError(arrayNode, "Array index must be an int");
+            return null;
+        } else if(!indexType.equals("int")){
+            this.semanticError.printError(arrayNode, "Array index must be an int");
+            return null;
+        }
+
+        if(arrayType.parseType() == Type.INT_ARRAY)
+            return "int";
+        if(arrayType.parseType() == Type.STRING_ARRAY)
+            return "String";
+
+        return null;
+    }
+
+    private String inspectArrayNodeAfterFunctionCall(SimpleNode node, SymbolsTable symbolsTable, String type, int initialChild) throws SemanticErrorException{
+        TypeString typeString = new TypeString(type);
+
+        if(initialChild < node.jjtGetNumChildren()){
+            if(((SimpleNode)node.jjtGetChild(initialChild)).getId() == JavammTreeConstants.JJTARRAY){
+                return inspectArrayAccessAfterFunctionCall(node, typeString, initialChild, symbolsTable);
+            }else if(((SimpleNode)node.jjtGetChild(initialChild)).getId() == JavammTreeConstants.JJTDOT){
+                if(initialChild+1 < node.jjtGetNumChildren()){
+                    if(((SimpleNode)node.jjtGetChild(initialChild+1)).getId() == JavammTreeConstants.JJTLENGTH){
+                        /*
+                            TODO ARRAY LENGTH AFTER METHOD CALL IN CLASS INSTANTIATION
+                            GENERATE CODE
+                        */
+                        return "int"; // array.length always returns an int
+                    }else{
+                        this.semanticError.printError((SimpleNode)node.jjtGetChild(initialChild+1), "Operation not suported by arrays");
+                        return null;
+                    }
+                }else{
+                    this.semanticError.printError((SimpleNode)node.jjtGetChild(initialChild), "Parser error - dot must be followed by an identifier");
+                    return null;
+                }
+            }
+        }
+
+        return type;
+    }
+
     private String inspectFunctionOnClass(SimpleNode node, String classType, SymbolsTable symbolsTable, int initialChild) throws SemanticErrorException {
         List<Descriptor> descriptors = symbolsTable.getDescriptor(classType);
         Descriptor descriptor = descriptors.get(0);
         
         if (descriptor.getClass() == ClassDescriptor.class) {
-            if (isInClass(node, (ClassDescriptor)descriptor, symbolsTable, initialChild+4))
-                return inspectFunctionCall(node, symbolsTable, initialChild+4);
+            if (isInClass(node, (ClassDescriptor)descriptor, symbolsTable, initialChild+4)){
+                String type = inspectFunctionCall(node, symbolsTable, initialChild+4);
+
+                TypeString typeString = new TypeString(type);
+
+                if(typeString.parseType() == Type.INT_ARRAY || typeString.parseType() == Type.STRING_ARRAY){
+                    return inspectArrayNodeAfterFunctionCall(node, symbolsTable, type, initialChild+6);
+                }
+
+                return type;
+            }
         }
         if (descriptor.getClass() == ImportDescriptor.class) {
-            if (isInImport(node, classType, symbolsTable, initialChild))
-                return inspectFunctionCall(node, symbolsTable, initialChild+1, true);
+            if (isInImport(node, classType, symbolsTable, initialChild)){
+                String type = inspectFunctionCall(node, symbolsTable, initialChild+1, true);
+               
+                TypeString typeString = new TypeString(type);
+                
+                if(typeString.parseType() == Type.INT_ARRAY || typeString.parseType() == Type.STRING_ARRAY){
+                    return inspectArrayNodeAfterFunctionCall(node, symbolsTable, type, initialChild+3);
+                }
+               
+                return type;
+            }
         }
 
         SimpleNode errorNode = (SimpleNode)node.jjtGetChild(initialChild);          
@@ -1670,11 +1764,13 @@ public class TableGenerator {
                 break;
             }
         }
-        
         for (int i = 0; i < functionDescriptors.size(); i++) {
             FunctionDescriptor functionDescriptor = (FunctionDescriptor) functionDescriptors.get(i);
             HashMap<String, List<Descriptor>> parametersTable = functionDescriptor.getParametersTable().getTable();
             
+            if(parametersTable.size() == 0 && parametersTable.size() == parametersTypes.size()){
+                return true;
+            }
             int j = 0;
             for(HashMap.Entry<String, List<Descriptor>> parameters : parametersTable.entrySet()){
                 Descriptor desc = parameters.getValue().get(0);
@@ -1686,7 +1782,6 @@ public class TableGenerator {
                 }
             }
         }
-
         return false;
     }
 
