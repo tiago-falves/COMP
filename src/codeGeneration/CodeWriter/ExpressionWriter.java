@@ -11,7 +11,6 @@ public class ExpressionWriter {
     public ExpressionWriter(LLIRExpression expression){
         this.code  = "";
 
-
         if(expression instanceof LLIRInteger) {
             IntegerWriter integerWriter = new IntegerWriter((LLIRInteger) expression);
             this.code += integerWriter.getCode();
@@ -54,6 +53,7 @@ public class ExpressionWriter {
             ArrayAccessWriter arrayAcessWriter = new ArrayAccessWriter(((LLIRArrayAccess) expression),true);
             this.code += arrayAcessWriter.getCode();
         }
+
     }
 
     public String getCode(){

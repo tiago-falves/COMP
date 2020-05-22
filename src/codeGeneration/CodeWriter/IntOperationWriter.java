@@ -35,7 +35,7 @@ public class IntOperationWriter {
             result += expressionWriter.getCode();
         }else if(expression instanceof  LLIRArrayAccess){
             ArrayAccessWriter arrayAccessWriter = new ArrayAccessWriter((LLIRArrayAccess) expression,true);
-            result += arrayAccessWriter;
+            result += arrayAccessWriter.getCode();
         }
 
         return result;

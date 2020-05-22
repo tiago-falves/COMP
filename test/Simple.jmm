@@ -5,11 +5,18 @@ class Simple {
 	public static void main(String[] args) {
         int a;
         int[] newField;
-        //Simple simple;
-        //simple = new Simple();
+        Simple simple;
+        simple = new Simple();
         newField = new int[5];
         newField[1] = 5;
-        a = newField[1];
+        a = simple.add(1,1) * newField[1] + (2 * newField[1])  ;
+
+        if(true){
+            a = newField[1];
+        }
+        else{
+            a = 1;
+        }
 
         ioa.println(a);
 

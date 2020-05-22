@@ -823,14 +823,12 @@ public class TableGenerator {
             return null;
         }
 
-        //Assuming this function gives the correct parameters
-        //Set here function parameters
 
         List<String> parameters = inspectArguments(argumentsNode, symbolsTable);
 
 
-        llirPopulator.popArguments();
 
+        llirPopulator.popArguments();
 
 
 
@@ -1199,13 +1197,11 @@ public class TableGenerator {
                             continue;
                         } else if(nextNode.getId() == JavammTreeConstants.JJTARRAY){
 
-                            this.llirPopulator.printStack();
 
                             this.llirPopulator.addLLIR(new LLIRArrayAccess());
                             String arrayType = inspectArrayAccess(argumentNode, symbolsTable, i);
                             this.llirPopulator.popArrayAcessExpression();
 
-                            this.llirPopulator.printStack();
                             if(type == null){
                                 type = arrayType;
                             }else if(!type.equals(arrayType)){
