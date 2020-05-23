@@ -96,6 +96,11 @@ public class AssignmentWriter {
             this.code += arrayAccessWriter.getCode();
             type = Type.INT_ARRAY;
         }
+        else if(expression instanceof LLIRArrayLength){
+            ArrayLengthWriter arrayLengthWriter = new ArrayLengthWriter((LLIRArrayLength)expression);
+            this.code += arrayLengthWriter.getCode();
+            type = Type.INT;
+        }
 
 
         return type;

@@ -20,6 +20,7 @@ public class LLIRMethodCall extends LLIRExpression {
     private  Type returnType;
     private  boolean isStatic;
     private String className;
+    private LLIRClassVariableInstantiation classInstantiation;
 
     public LLIRMethodCall(List<LLIRExpression> parameters, String name, SymbolsTable parametersTable, Type returnType, boolean isStatic) {
         this.parametersExpressions = parameters;
@@ -115,5 +116,13 @@ public class LLIRMethodCall extends LLIRExpression {
 
     public void setClassName(String className) {
         this.className = className;
+    }
+
+    public LLIRClassVariableInstantiation getClassInstantiation(){
+        return this.classInstantiation;
+    }
+
+    public void setClassInstantiation(LLIRClassVariableInstantiation classInstantiation){
+        this.classInstantiation = classInstantiation;
     }
 }

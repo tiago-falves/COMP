@@ -63,10 +63,28 @@ public class LLIRPopulator {
         if(lastIsLLIRExpression()){
             LLIRExpression expression =(LLIRExpression) this.llirStack.pop();
             if(peek() instanceof  LLIRArrayAccess){
-                LLIRArrayAccess acess = (LLIRArrayAccess) this.llirStack.peek();
-                acess.setAccess(expression);
+                LLIRArrayAccess access = (LLIRArrayAccess) this.llirStack.peek();
+                access.setAccess(expression);
             }
 
+        }
+    }
+
+    //TODO Check if this function is needed
+    public void popArrayAfterFunction(){
+        if(!lastIsFunctionCall()){
+            LLIRExpression expression = (LLIRExpression) this.llirStack.pop();
+            if(expression instanceof LLIRArrayAccess){
+                LLIRArrayAccess access = (LLIRArrayAccess) expression;
+                LLIRExpression functionCall = (LLIRExpression) this.llirStack.pop();
+                access.setArray(functionCall);
+                this.llirStack.push(access);
+            }else if(expression instanceof LLIRArrayLength){
+                LLIRArrayLength arrayLength = (LLIRArrayLength) expression;
+                LLIRExpression functionCall = (LLIRExpression) this.llirStack.pop();
+                arrayLength.setArray(functionCall);
+                this.llirStack.push(arrayLength);
+            }   
         }
     }
 
@@ -78,6 +96,11 @@ public class LLIRPopulator {
 
     }
     public void addMethodCall(LLIRMethodCall methodCall){
+        //TODO Associate method call with the class instantiation ? 
+        /*if(peek() instanceof LLIRClassVariableInstantiation){
+            LLIRClassVariableInstantiation classVariableInstantiation = (LLIRClassVariableInstantiation)this.llirStack.pop();
+            methodCall.setClassInstantiation(classVariableInstantiation);
+        }*/
         //If empty then simpleFunctionCall
         addExpression(methodCall);
     }
@@ -437,12 +460,16 @@ public class LLIRPopulator {
             return identation +"Array Instantiation\n";
         }else if(node instanceof LLIRArrayAccess){
             return identation +"Array Access\n";
+        }else if(node instanceof LLIRArrayLength){
+            return identation + "Array Length\n";
         }else if (node instanceof LLIRMethodCall) {
             return identation +"Method Call\n";
         }else if(node instanceof LLIRImport){
             return identation +"Import\n";
         }else if(node instanceof LLIRNegation){
             return identation +"Negation\n";
+        }else if(node instanceof LLIRClassVariableInstantiation){
+            return identation + "Class Variable Instantiation\n";
         }else if(node instanceof LLIRExpression){
             return identation +"Expression\n";
         }else if(node instanceof LLIRReturn){

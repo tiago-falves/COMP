@@ -27,7 +27,12 @@ public class MethodCallWriter {
         this.code += INSTRUCTION;
 
         String arguments = FunctionParameters.getParametersTypes(methodCall.getParametersTable());
-        if (methodCall.getClassName()!="") this.code+= methodCall.getClassName().substring(0, 1).toUpperCase() + methodCall.getClassName().substring(1) + "/";
+        if (methodCall.getClassName()!="") {
+            this.code+= methodCall.getClassName().substring(0, 1).toUpperCase() + methodCall.getClassName().substring(1) + "/";
+        }/*else {
+            ClassVariableInstantiationWriter classVariableInstantiationWriter = new ClassVariableInstantiationWriter(methodCall.getClassInstantiation());
+            this.code += classVariableInstantiationWriter.getCode();
+        }*/ //TODO Check if we need this else
 
         this.code += methodCall.getMethodName() + "(" + arguments + ")"+ CGConst.types.get(methodCall.getReturnType()) + "\n";
         FunctionBody.decStack(methodCall.getParametersTable().getSize()-(methodCall.getReturnType() == Type.VOID ? 0 : 1));
