@@ -1310,6 +1310,8 @@ public class TableGenerator {
                                             }
                                         }
                                         
+                                        this.llirPopulator.addExpression(new LLIRArrayLength(new LLIRVariable((NamedTypeDescriptor) descriptor)));
+
                                         i += 2;
                                         foundDescriptor = true; // found the function we're looking for
                                         type = "int";
@@ -1326,8 +1328,9 @@ public class TableGenerator {
                             //Else function call
                             LLIRMethodCall methodCall = new LLIRMethodCall();
                             methodCall.setClassName(node.val);
+                            //this.llirPopulator.printStack();
                             this.llirPopulator.addMethodCall(methodCall);
-
+                            //this.llirPopulator.printStack();
                             String functionType = inspectFunctionCall(argumentNode, symbolsTable, i);
 
                             TypeString typeString = new TypeString(functionType);
@@ -1342,9 +1345,12 @@ public class TableGenerator {
                                     i++;
                                     if(((SimpleNode)argumentNode.jjtGetChild(initialChild+4)).getId() == JavammTreeConstants.JJTDOT)
                                         i++;
+                                    
+                                    // TODO Check if this call is needed
+                                    this.llirPopulator.popArrayAfterFunction();  
                                 }
                             }
-                
+
                             if(type == null){
                                 type = functionType;
                             }else if(!type.equals(functionType)){
@@ -1673,6 +1679,9 @@ public class TableGenerator {
             return null;
         }
 
+        // TODO Check if this call is needed
+        this.llirPopulator.popArrayAcessExpression();
+
         if(arrayType.parseType() == Type.INT_ARRAY)
             return "int";
         if(arrayType.parseType() == Type.STRING_ARRAY)
@@ -1686,9 +1695,7 @@ public class TableGenerator {
 
         if(initialChild < node.jjtGetNumChildren()){
             if(((SimpleNode)node.jjtGetChild(initialChild)).getId() == JavammTreeConstants.JJTARRAY){
-
-                String zas = inspectArrayAccessAfterFunctionCall(node, typeString, initialChild, symbolsTable);
-                return zas;
+                return inspectArrayAccessAfterFunctionCall(node, typeString, initialChild, symbolsTable);
             }else if(((SimpleNode)node.jjtGetChild(initialChild)).getId() == JavammTreeConstants.JJTDOT){
                 if(initialChild+1 < node.jjtGetNumChildren()){
                     if(((SimpleNode)node.jjtGetChild(initialChild+1)).getId() == JavammTreeConstants.JJTLENGTH){
@@ -1696,6 +1703,8 @@ public class TableGenerator {
                             TODO ARRAY LENGTH AFTER METHOD CALL IN CLASS INSTANTIATION
                             GENERATE CODE
                         */
+
+                        this.llirPopulator.addExpression(new LLIRArrayLength());
                         return "int"; // array.length always returns an int
                     }else{
                         this.semanticError.printError((SimpleNode)node.jjtGetChild(initialChild+1), "Operation not suported by arrays");
@@ -1718,14 +1727,13 @@ public class TableGenerator {
         if (descriptor.getClass() == ClassDescriptor.class) {
             if (isInClass(node, (ClassDescriptor)descriptor, symbolsTable, initialChild+4)){
                 this.llirPopulator.addMethodCall(new LLIRMethodCall());
+
                 String type = inspectFunctionCall(node, symbolsTable, initialChild+4);
                 this.llirPopulator.popArgumentsClassInstantiation();
                 TypeString typeString = new TypeString(type);
 
                 if(typeString.parseType() == Type.INT_ARRAY || typeString.parseType() == Type.STRING_ARRAY){
-                    String zas = inspectArrayNodeAfterFunctionCall(node, symbolsTable, type, initialChild+6);
-                    return zas;
-
+                    return  inspectArrayNodeAfterFunctionCall(node, symbolsTable, type, initialChild+6);
 
                 }
 
@@ -1739,7 +1747,9 @@ public class TableGenerator {
                 TypeString typeString = new TypeString(type);
                 
                 if(typeString.parseType() == Type.INT_ARRAY || typeString.parseType() == Type.STRING_ARRAY){
-                    return inspectArrayNodeAfterFunctionCall(node, symbolsTable, type, initialChild+3);
+                    type = inspectArrayNodeAfterFunctionCall(node, symbolsTable, type, initialChild+3);
+                    // TODO Check if this call is needed
+                    this.llirPopulator.popArrayAfterFunction(); //TODO Pop the class instantiation 
                 }
                
                 return type;

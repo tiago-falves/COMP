@@ -36,6 +36,7 @@ public class MethodCallWriter {
         if (methodCall.getClassName()!="") this.code+= methodCall.getClassName().substring(0, 1).toUpperCase() + methodCall.getClassName().substring(1) + "/";
         if (methodCall.getClassVariableInstantiation()!=null) this.code+= methodCall.getClassVariableInstantiation().getClassDescriptor().getName()+ "/";
 
+
         this.code += methodCall.getMethodName() + "(" + arguments + ")"+ CGConst.types.get(methodCall.getReturnType()) + "\n";
         FunctionBody.decStack(methodCall.getParametersTable().getSize()-(methodCall.getReturnType() == Type.VOID ? 0 : 1));
     }

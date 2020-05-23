@@ -129,5 +129,6 @@ public class LLIRMethodCall extends LLIRExpression {
 
     public int  getParentClass(){
          return this.parametersTable.getParent().getSize();
+
     }
 }
