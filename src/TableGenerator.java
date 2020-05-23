@@ -1328,9 +1328,7 @@ public class TableGenerator {
                             //Else function call
                             LLIRMethodCall methodCall = new LLIRMethodCall();
                             methodCall.setClassName(node.val);
-                            //this.llirPopulator.printStack();
                             this.llirPopulator.addMethodCall(methodCall);
-                            //this.llirPopulator.printStack();
                             String functionType = inspectFunctionCall(argumentNode, symbolsTable, i);
 
                             TypeString typeString = new TypeString(functionType);
@@ -1346,7 +1344,6 @@ public class TableGenerator {
                                     if(((SimpleNode)argumentNode.jjtGetChild(initialChild+4)).getId() == JavammTreeConstants.JJTDOT)
                                         i++;
                                     
-                                    // TODO Check if this call is needed
                                     this.llirPopulator.popArrayAfterFunction();  
                                 }
                             }
@@ -1669,6 +1666,8 @@ public class TableGenerator {
         */
         SimpleNode arrayNode = (SimpleNode) node.jjtGetChild(initialChild);
 
+        this.llirPopulator.addExpression(new LLIRArrayAccess());
+
         String indexType = inspectExpression(arrayNode, symbolsTable);
 
         if(indexType == null){
@@ -1679,7 +1678,6 @@ public class TableGenerator {
             return null;
         }
 
-        // TODO Check if this call is needed
         this.llirPopulator.popArrayAcessExpression();
 
         if(arrayType.parseType() == Type.INT_ARRAY)
@@ -1699,11 +1697,7 @@ public class TableGenerator {
             }else if(((SimpleNode)node.jjtGetChild(initialChild)).getId() == JavammTreeConstants.JJTDOT){
                 if(initialChild+1 < node.jjtGetNumChildren()){
                     if(((SimpleNode)node.jjtGetChild(initialChild+1)).getId() == JavammTreeConstants.JJTLENGTH){
-                        /*
-                            TODO ARRAY LENGTH AFTER METHOD CALL IN CLASS INSTANTIATION
-                            GENERATE CODE
-                        */
-
+        
                         this.llirPopulator.addExpression(new LLIRArrayLength());
                         return "int"; // array.length always returns an int
                     }else{
@@ -1733,8 +1727,9 @@ public class TableGenerator {
                 TypeString typeString = new TypeString(type);
 
                 if(typeString.parseType() == Type.INT_ARRAY || typeString.parseType() == Type.STRING_ARRAY){
-                    return  inspectArrayNodeAfterFunctionCall(node, symbolsTable, type, initialChild+6);
+                    type = inspectArrayNodeAfterFunctionCall(node, symbolsTable, type, initialChild+6);
 
+                    this.llirPopulator.popArrayAfterFunction(); 
                 }
 
                 return type;
@@ -1748,8 +1743,8 @@ public class TableGenerator {
                 
                 if(typeString.parseType() == Type.INT_ARRAY || typeString.parseType() == Type.STRING_ARRAY){
                     type = inspectArrayNodeAfterFunctionCall(node, symbolsTable, type, initialChild+3);
-                    // TODO Check if this call is needed
-                    this.llirPopulator.popArrayAfterFunction(); //TODO Pop the class instantiation 
+
+                    this.llirPopulator.popArrayAfterFunction();
                 }
                
                 return type;

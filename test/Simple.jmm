@@ -5,8 +5,8 @@ class Simple {
 	public static void main(String[] args) {
         int a;
         int[] newField;
-        //Simple simple;
-        //simple = new Simple();
+        Simple x;
+        x = new Simple();
 
         newField = new int[1];
         //newField[1] = 5;
@@ -15,8 +15,9 @@ class Simple {
 
         //a= new Simple().add(1,1);
         //a =simple.add(1,1);
-        a = newField[0];
+        //a = newField[0];
 
+        a = x.array().length;
         /*if(true){
             a = (new Simple().array()[0]) + simple.array().length;
         }
