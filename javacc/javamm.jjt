@@ -597,5 +597,4 @@ void NewExpr() #void : {Token i;}
     |
     i=<IDENTIFIER>{jjtThis.jjtSetVal(i.image); jjtThis.jjtSetLine(i.beginLine); jjtThis.jjtSetColumn(i.beginColumn);} #Identifier
     Arguments()
-    [ObjAcc()]
 }
