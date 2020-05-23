@@ -22,7 +22,7 @@ todas as verificações feitas na análise semantica devem reportar erro excepto
     * ✔ verificar se conditional expressions (if e while) resulta num booleano 
     * verificar se variáveis são inicializadas, dando um WARNING em vez de ERRO
         + ✔ parametros são assumidos como inicializados 
-        + devem fazer uma análise através do control flow, i.e., se há um if e a variável só é inicializada dentro de ou o then ou o else, deve-se dar um warning a indicar que poderá não estar inicializada 
+        + ✔ devem fazer uma análise através do control flow, i.e., se há um if e a variável só é inicializada dentro de ou o then ou o else, deve-se dar um warning a indicar que poderá não estar inicializada 
         + ✔ será considerado bónus a quem resolver esta verificação usando erros em vez de warning. 
             - ✔ cuidado que se a analise não estiver bem feita os erros vão fazer com que o vosso compilador não passe para a geração de código! 
             - ✔ caso pretendam fazer esta abordagem com erros adicionem uma forma de ativar/desativar o erro para facilitar no caso de haver problemas.

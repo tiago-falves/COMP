@@ -19,11 +19,9 @@ public class MethodCallWriter {
         if(methodCall.getClassVariableInstantiation() != null){
             ClassVariableInstantiationWriter classVariableInstantiationWriter = new ClassVariableInstantiationWriter(methodCall.getClassVariableInstantiation());
             this.code += classVariableInstantiationWriter.getCode();
-            System.out.println(methodCall.getClassVariableInstantiation().getClassDescriptor().getName());
         }
         else if (methodCall.getClassName() == "") this.code = LOAD + "_0\n";
         else{
-            System.err.println(methodCall.getClassName());
             String variableIndex = FunctionBody.getVariableIndexString(methodCall.getClassName());
             this.code = LOAD + variableIndex + "\n";
         }
@@ -34,8 +32,12 @@ public class MethodCallWriter {
 
         String arguments = FunctionParameters.getParametersTypes(methodCall.getParametersTable());
         //TODO Aceder ao nome da classe sem fazer isto do Upper Case
-        if (methodCall.getClassName()!="") this.code+= methodCall.getClassName().substring(0, 1).toUpperCase() + methodCall.getClassName().substring(1) + "/";
-        if (methodCall.getClassVariableInstantiation()!=null) this.code+= methodCall.getClassVariableInstantiation().getClassDescriptor().getName()+ "/";
+        if (methodCall.getClassType() != "")
+            this.code += methodCall.getClassType() + "/";
+        else if (methodCall.getClassName()!="") 
+            this.code+= methodCall.getClassName().substring(0, 1).toUpperCase() + methodCall.getClassName().substring(1) + "/";
+        if (methodCall.getClassVariableInstantiation()!=null) 
+            this.code+= methodCall.getClassVariableInstantiation().getClassDescriptor().getName()+ "/";
 
 
         this.code += methodCall.getMethodName() + "(" + arguments + ")"+ CGConst.types.get(methodCall.getReturnType()) + "\n";

@@ -8,29 +8,30 @@ class Simple {
         Simple x;
         x = new Simple();
 
-        newField = new int[1];
-        //newField[1] = 5;
+        newField = new int[5];
+        newField[1] = 5;
         //a = simple.add(1,1) * newField[1] + (2 * newField[1])  ;
-        newField = new Simple().array();
+        //newField = new Simple().array();
 
         //a= new Simple().add(1,1);
         //a =simple.add(1,1);
         //a = newField[0];
 
-        a = x.array().length;
+        a = new Simple().array().length;
+        //a = x.array().length;
         /*if(true){
             a = (new Simple().array()[0]) + simple.array().length;
         }
         else{
             a = 1;
         }*/
-
+        a = a + newField.length + x.array()[0];
         ioa.println(a);
 
 	}
-	public int add(int a, int b){
+	/*public int add(int a, int b){
 		return a+b;
-	}
+	}*/
 
     public int[] array(){
         int[] x;

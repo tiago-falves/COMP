@@ -910,7 +910,7 @@ public class TableGenerator {
                     }
                     if(this.llirPopulator.peek() instanceof LLIRMethodCall){
                         LLIRMethodCall methodCall = (LLIRMethodCall) this.llirPopulator.peek();
-                        methodCall.setClassName(typeDescriptor.getClassName());
+                        methodCall.setClassType(typeDescriptor.getClassName());
                     }
                     return typeDescriptor.getClassName();
                 }

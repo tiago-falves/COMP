@@ -37,6 +37,10 @@ public class IntOperationWriter {
             ArrayAccessWriter arrayAccessWriter = new ArrayAccessWriter((LLIRArrayAccess) expression,true);
             result += arrayAccessWriter.getCode();
         }
+        else if (expression instanceof LLIRArrayLength) {
+            ArrayLengthWriter arrayLengthWriter = new ArrayLengthWriter((LLIRArrayLength) expression);
+            result += arrayLengthWriter.getCode();
+        }
 
         return result;
     }
