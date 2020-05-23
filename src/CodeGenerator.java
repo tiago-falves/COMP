@@ -31,10 +31,12 @@ public class CodeGenerator {
     public void generate(){
         ClassHeader classHeader = new ClassHeader(this.classDescriptor.getName());
         SuperHeader superHeader = new SuperHeader(this.classDescriptor.getParentClass());
+        Fields classVars = new Fields(this.classDescriptor.getVariablesTable());
         Initializer initializer = new Initializer(this.classDescriptor.getParentClass());
 
         write(classHeader.generate() + "\n");
         write(superHeader.generate() + "\n");
+        write(classVars.generate() + "\n");
         write(initializer.generate() + "\n");
 
         generateFunctions();
