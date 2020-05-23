@@ -45,34 +45,6 @@ public class ConditionalWriter {
 
         ExpressionWriter expressionWriter = new ExpressionWriter(expression);
         result += expressionWriter.getCode();
-        /*if(expression instanceof LLIRInteger) {
-            IntegerWriter integerWriter = new IntegerWriter((LLIRInteger) expression);
-            result += integerWriter.getCode();
-        }
-        else if(expression instanceof LLIRVariable) {
-            VariableWriter variableWriter = new VariableWriter((LLIRVariable) expression);
-            result += variableWriter.getCode();
-        }
-        else if (expression instanceof LLIRArithmetic) {
-            ArithmeticWriter arithmeticWriter = new ArithmeticWriter((LLIRArithmetic) expression,name);
-            result += arithmeticWriter.getCode();
-        }
-        else if (expression instanceof LLIRMethodCall) {
-            MethodCallWriter methodCallWriter = new MethodCallWriter((LLIRMethodCall) expression);
-            result += methodCallWriter.getCode();
-        }
-        else if (expression instanceof LLIRParenthesis) {
-            ExpressionWriter expressionWriter = new ExpressionWriter(((LLIRParenthesis) expression).getExpression(),name);
-            result += expressionWriter.getCode();
-        }
-        else if (expression instanceof LLIRBoolean) {
-            BooleanWriter booleanWriter = new BooleanWriter((LLIRBoolean)expression);
-            result += booleanWriter.getCode();
-        }
-        else if(expression instanceof LLIRNegation){
-            NegationWriter negationWriter = new NegationWriter((LLIRNegation)expression, name);
-            result += negationWriter.getCode();
-        }*/
 
         return result;
     }

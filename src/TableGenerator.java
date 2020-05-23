@@ -961,9 +961,6 @@ public class TableGenerator {
 
 
         List<String> parameters = inspectArguments(argumentsNode, symbolsTable);
-
-
-
         llirPopulator.popArguments();
 
 
@@ -1478,7 +1475,7 @@ public class TableGenerator {
                                 this.semanticError.printError(nextNode,"Undefined class type");
                                 return null;
                             }
-
+                            //TODO
                             return inspectFunctionOnClass(argumentNode, classType, symbolsTable, initialChild);
                         }
                     }
@@ -1689,7 +1686,9 @@ public class TableGenerator {
 
         if(initialChild < node.jjtGetNumChildren()){
             if(((SimpleNode)node.jjtGetChild(initialChild)).getId() == JavammTreeConstants.JJTARRAY){
-                return inspectArrayAccessAfterFunctionCall(node, typeString, initialChild, symbolsTable);
+
+                String zas = inspectArrayAccessAfterFunctionCall(node, typeString, initialChild, symbolsTable);
+                return zas;
             }else if(((SimpleNode)node.jjtGetChild(initialChild)).getId() == JavammTreeConstants.JJTDOT){
                 if(initialChild+1 < node.jjtGetNumChildren()){
                     if(((SimpleNode)node.jjtGetChild(initialChild+1)).getId() == JavammTreeConstants.JJTLENGTH){
@@ -1711,19 +1710,23 @@ public class TableGenerator {
 
         return type;
     }
-
+    //So e chamada quando tem uma funçao a seguir a new Class().
     private String inspectFunctionOnClass(SimpleNode node, String classType, SymbolsTable symbolsTable, int initialChild) throws SemanticErrorException {
         List<Descriptor> descriptors = symbolsTable.getDescriptor(classType);
         Descriptor descriptor = descriptors.get(0);
         
         if (descriptor.getClass() == ClassDescriptor.class) {
             if (isInClass(node, (ClassDescriptor)descriptor, symbolsTable, initialChild+4)){
+                this.llirPopulator.addMethodCall(new LLIRMethodCall());
                 String type = inspectFunctionCall(node, symbolsTable, initialChild+4);
-
+                this.llirPopulator.popArgumentsClassInstantiation();
                 TypeString typeString = new TypeString(type);
 
                 if(typeString.parseType() == Type.INT_ARRAY || typeString.parseType() == Type.STRING_ARRAY){
-                    return inspectArrayNodeAfterFunctionCall(node, symbolsTable, type, initialChild+6);
+                    String zas = inspectArrayNodeAfterFunctionCall(node, symbolsTable, type, initialChild+6);
+                    return zas;
+
+
                 }
 
                 return type;

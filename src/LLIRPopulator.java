@@ -244,6 +244,26 @@ public class LLIRPopulator {
 
     }
 
+    public void popArgumentsClassInstantiation(){
+
+        List<LLIRExpression> arguments = new ArrayList<>();
+
+        if(peek() instanceof  LLIRMethodCall){
+            LLIRMethodCall methodCall = (LLIRMethodCall) this.llirStack.pop();
+            int numberArguments = methodCall.getParametersTable().getSize();
+            for (int i = 0; i < numberArguments; i++) {
+                this.llirStack.pop();
+            }
+
+            if(peek() instanceof  LLIRClassVariableInstantiation){
+                LLIRClassVariableInstantiation classVariableInstantiation = (LLIRClassVariableInstantiation) this.llirStack.pop();
+                methodCall.setClassVariableInstantiation(classVariableInstantiation);
+                addMethodCall(methodCall);
+            }
+        }
+    }
+
+
     public void addStatement(FunctionDescriptor currentFunctionDescriptor){
         if(!llirStack.empty()) {
             LLIRNode node = this.llirStack.pop();
@@ -432,7 +452,7 @@ public class LLIRPopulator {
         }else if(node instanceof LLIRBoolean) {
             return identation + "Boolean\n";
         }else if(node instanceof LLIRInteger) {
-            return identation + "Integer\n";
+            return identation + "Integer" +((LLIRInteger) node).getValue() + "\n";
         }else if(node instanceof LLIRArrayInstantiation){
             return identation +"Array Instantiation\n";
         }else if(node instanceof LLIRArrayAccess){
@@ -441,6 +461,10 @@ public class LLIRPopulator {
             return identation +"Method Call\n";
         }else if(node instanceof LLIRImport){
             return identation +"Import\n";
+        }else if(node instanceof LLIRClassVariable){
+            return identation +"Class Variable\n";
+        }else if(node instanceof LLIRClassVariableInstantiation){
+            return identation +"Class Variable Instantiation\n";
         }else if(node instanceof LLIRNegation){
             return identation +"Negation\n";
         }else if(node instanceof LLIRExpression){

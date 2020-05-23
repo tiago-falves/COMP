@@ -13,8 +13,8 @@ public class ClassVariableInstantiationWriter {
     public ClassVariableInstantiationWriter(LLIRClassVariableInstantiation variable){
         this.code = "";
 
-        //FunctionBody.incStack();
-
+        FunctionBody.incStack();
+        FunctionBody.incStack();
         this.code += NEW + variable.getClassDescriptor().getName() + "\n";
         this.code += DUP;
         this.code += INSTRUCTION + variable.getClassDescriptor().getName() + "/<init>()V\n";

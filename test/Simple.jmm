@@ -5,18 +5,24 @@ class Simple {
 	public static void main(String[] args) {
         int a;
         int[] newField;
-        Simple simple;
-        simple = new Simple();
-        newField = new int[5];
-        newField[1] = 5;
-        a = simple.add(1,1) * newField[1] + (2 * newField[1])  ;
+        //Simple simple;
+        //simple = new Simple();
 
-        if(true){
+        newField = new int[1];
+        //newField[1] = 5;
+        //a = simple.add(1,1) * newField[1] + (2 * newField[1])  ;
+        newField = new Simple().array();
+
+        //a= new Simple().add(1,1);
+        //a =simple.add(1,1);
+        a = newField[0];
+
+        /*if(true){
             a = (new Simple().array()[0]) + simple.array().length;
         }
         else{
             a = 1;
-        }
+        }*/
 
         ioa.println(a);
 
