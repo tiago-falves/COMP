@@ -23,6 +23,7 @@ public class MethodCallWriter {
         }
         else if (methodCall.getClassName() == "") this.code = LOAD + "_0\n";
         else{
+            System.err.println(methodCall.getClassName());
             String variableIndex = FunctionBody.getVariableIndexString(methodCall.getClassName());
             this.code = LOAD + variableIndex + "\n";
         }

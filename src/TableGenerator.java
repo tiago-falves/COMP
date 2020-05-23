@@ -895,19 +895,22 @@ public class TableGenerator {
     private String checkFunctionCallVariableType(String identifierName, SimpleNode statementNode, SymbolsTable symbolsTable, int initialChild)  throws SemanticErrorException {
         List<Descriptor> nodeDescriptors = symbolsTable.getDescriptor(identifierName);
         if(nodeDescriptors != null){
-            for(int i = initialChild; i < nodeDescriptors.size(); i++){
+            for(int i = 0; i < nodeDescriptors.size(); i++){
                 if(nodeDescriptors.get(i).getClass() == VariableDescriptor.class || nodeDescriptors.get(i).getClass() == FunctionParameterDescriptor.class){
                     TypeDescriptor typeDescriptor = (TypeDescriptor) nodeDescriptors.get(i);
                     if(typeDescriptor.getType() != Type.CLASS){
                         this.semanticError.printError(statementNode, "Can only call functions from classes");
                         return null;
                     }
-
                     if (typeDescriptor.getClass() == VariableDescriptor.class) {
                         VariableDescriptor variableDescriptor = (VariableDescriptor)typeDescriptor;
                         if (!variableDescriptor.isInitializedInFunction()) {
                             System.err.println("Warning: Variable " + identifierName + " might not have been initialized\n");
                         }
+                    }
+                    if(this.llirPopulator.peek() instanceof LLIRMethodCall){
+                        LLIRMethodCall methodCall = (LLIRMethodCall) this.llirPopulator.peek();
+                        methodCall.setClassName(typeDescriptor.getClassName());
                     }
                     return typeDescriptor.getClassName();
                 }
@@ -1327,8 +1330,8 @@ public class TableGenerator {
 
                             //Else function call
                             LLIRMethodCall methodCall = new LLIRMethodCall();
-                            methodCall.setClassName(node.val);
                             this.llirPopulator.addMethodCall(methodCall);
+                            methodCall.setClassName(node.val);
                             String functionType = inspectFunctionCall(argumentNode, symbolsTable, i);
 
                             TypeString typeString = new TypeString(functionType);
