@@ -177,20 +177,24 @@ public class LLIRPopulator {
             if(peek() instanceof LLIRArithmetic){
                 ((LLIRArithmetic)peek()).setRightExpression((LLIRExpression) node);
             }
-            if(peek() instanceof LLIRConditional){
+            else if(peek() instanceof LLIRConditional){
                 ((LLIRConditional)peek()).setRightExpression((LLIRExpression)node);
             }
-            if(peek() instanceof LLIRAssignment){
+            else if(peek() instanceof LLIRAssignment){
                 ((LLIRAssignment)peek()).setExpression((LLIRExpression) node);
             }
-            if(peek() instanceof LLIRNegation){
+            else if(peek() instanceof LLIRNegation){
                 ((LLIRNegation)peek()).setExpression((LLIRExpression) node);
             }
-            if(peek() instanceof LLIRArrayInstantiation){
+            else if(peek() instanceof LLIRArrayInstantiation){
                 ((LLIRArrayInstantiation)peek()).setSize((LLIRExpression)node);
             }
-            if(peek() instanceof LLIRReturn){
+            else if(peek() instanceof LLIRReturn){
                 ((LLIRReturn) peek()).setExpression((LLIRExpression) node);
+            }
+
+            else{
+                this.llirStack.push(node);
             }
         }
 
@@ -263,7 +267,15 @@ public class LLIRPopulator {
             arguments.add(0,actual);
         }
 
+
         if (peek() instanceof LLIRMethodCall){
+            LLIRMethodCall actual = (LLIRMethodCall) this.llirStack.pop();
+            if(peek() instanceof  LLIRMethodCall){
+                arguments.add(actual);
+            }else{
+                this.llirStack.push(actual);
+            }
+
             LLIRMethodCall function = (LLIRMethodCall) peek();
             function.setParametersExpressions(arguments);
         }
@@ -286,6 +298,24 @@ public class LLIRPopulator {
                 methodCall.setClassVariableInstantiation(classVariableInstantiation);
                 addMethodCall(methodCall);
             }
+        }
+    }
+
+    public void popFunctionCallFunction(){
+
+        List<LLIRExpression> arguments = new ArrayList<>();
+
+        if(this.llirStack.size()  > 1){
+            System.out.println("ZOS");
+            if(peek() instanceof LLIRMethodCall){
+                LLIRMethodCall mc = (LLIRMethodCall) this.llirStack.pop();
+                if(peek() instanceof LLIRMethodCall){
+                    LLIRMethodCall actual = (LLIRMethodCall) peek();
+                    arguments.add(mc);
+                    actual.setParametersExpressions(arguments);
+                }
+            }
+
         }
     }
 

@@ -630,6 +630,7 @@ public class TableGenerator {
             //Function call
             this.llirPopulator.addMethodCall(new LLIRMethodCall());
             inspectFunctionCall(statementNode, symbolTable);
+            llirPopulator.popFunctionCallFunction();
 
             if(statementNode.jjtGetNumChildren() > 4){
                 /**
@@ -968,8 +969,8 @@ public class TableGenerator {
             return null;
         }
 
-
         List<String> parameters = inspectArguments(argumentsNode, symbolsTable);
+
         llirPopulator.popArguments();
 
 
@@ -993,6 +994,8 @@ public class TableGenerator {
 
 
                 this.llirPopulator.addImport(new LLIRImport(importDescriptor));
+
+
 
                 if(empty){
                     //this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
@@ -1022,6 +1025,7 @@ public class TableGenerator {
                     }
                     continue;
                 }
+
                 
                 for(int j = 0; j < importParameters.size(); j++){
                     StringType stringType = new StringType(importParameters.get(j));
@@ -1132,7 +1136,11 @@ public class TableGenerator {
                 this.semanticError.printError(argumentNode, "Unexpected argument node with id=" + argumentNode.getId());
                 return null;
             }
+
             String parameterType = inspectArgument(argumentNode, symbolsTable);
+
+
+
             parameters.add(parameterType);
         }
 
@@ -1554,6 +1562,8 @@ public class TableGenerator {
             this.llirPopulator.popNegation();
         }
         this.llirPopulator.popExpression();
+
+
         return type;
     }
 
