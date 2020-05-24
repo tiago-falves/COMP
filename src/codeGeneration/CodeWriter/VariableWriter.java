@@ -14,10 +14,20 @@ public class VariableWriter {
 
         FunctionBody.incStack();
 
-        this.code += CGConst.load.get(variable.getVariable().getType());
+        String variableIndex = FunctionBody.getVariableIndexExists(variable.getVariable().getName());
+        if(variableIndex == "") {
+            this.code += "\taload_0\n";
+            this.code += CGConst.GET_FIELD + FunctionBody.getField(variable.getVariable().getName(),variable.getVariable().getType());
+        }
+        else{
+            this.code += CGConst.load.get(variable.getVariable().getType());
+            this.code +=variableIndex + "\n";
+        } 
 
-        String variableIndex = FunctionBody.getVariableIndexString(variable.getVariable().getName());
-        this.code = this.code + variableIndex + "\n";
+
+        
+
+        
     }
 
     public String getCode(){

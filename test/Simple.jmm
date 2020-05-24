@@ -2,41 +2,57 @@
 import ioa.println(int);
 //import ioa.println(boolean);
 class Simple {
+    int[] test_arr;
 	public static void main(String[] args) {
         int a;
-        int[] newField;
+        /*int[] newField;
         Simple x;
         x = new Simple();
 
-        newField = new int[5];
-        newField[1] = 5;
-        //a = simple.add(1,1) * newField[1] + (2 * newField[1])  ;
-        //newField = new Simple().array();
+        a = x.add(1,1);*/
 
-        //a= new Simple().add(1,1);
-        //a =simple.add(1,1);
-        //a = newField[0];
+        Simple x;
+        x = new Simple();
+
+        a = x.callAdd();
+
+        /*newField = new int[5];
+        newField[1] = 5;
+        a = x.add(1,1) * newField[1] + (2 * newField[1])  ;
+        newField = new Simple().array();
+
+        a= new Simple().add(1,1);
+        a =x.add(1,1);
+        a = newField[0];
 
         a = new Simple().array().length;
-        //a = x.array().length;
-        /*if(true){
-            a = (new Simple().array()[0]) + simple.array().length;
+        a = x.array().length;
+        if(true){
+            a = (new Simple().array()[0]) + x.array().length;
         }
         else{
             a = 1;
-        }*/
-        a = a + newField.length + x.array()[0];
-        ioa.println(a);
+        }
+        a = x.array()[0];
+        ioa.println(a);*/
 
 	}
-	/*public int add(int a, int b){
+
+	public int callAdd(){
+	    int b;
+	    b = this.add(1,1);
+	    return b;
+	}
+	public int add(int a, int b){
 		return a+b;
-	}*/
+	}
 
     public int[] array(){
         int[] x;
         x = new int[1];
-        x[0] = 10;
+        test_arr = new int[1];
+        test_arr[0] = 1;
+        x[0] = test_arr[0];
         return x;
     }
 }

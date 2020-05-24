@@ -13,9 +13,6 @@ public class ArrayWriter {
 
         this.code += "\tiaload\n";
         FunctionBody.incStack();
-
-        //String arrayIndex = FunctionBody.getVariableIndexString(array.getVariable().getName());
-        //this.code = this.code + arrayIndex + "\n";
     }
 
     public String getCode(){

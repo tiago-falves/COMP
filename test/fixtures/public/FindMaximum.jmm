@@ -2,7 +2,7 @@ import static ioPlus.printResult(int) void;
 class FindMaximum {
 	int[] test_arr;
 
-	public int find_maximum(int[] arr) {
+	/*public int find_maximum(int[] arr) {
 		int i;
 		int maximum;
 		int value;
@@ -20,7 +20,7 @@ class FindMaximum {
 		}
 
 		return maximum;
-	}
+	}*/
 
 	public int build_test_arr() {
 		test_arr = new int[5];
@@ -43,6 +43,6 @@ class FindMaximum {
 		fm = new FindMaximum();
 		fm.build_test_arr();
 
-		ioPlus.printResult(fm.find_maximum(fm.get_array()));
+		//ioPlus.printResult(fm.find_maximum(fm.get_array()));
 	}
 }
