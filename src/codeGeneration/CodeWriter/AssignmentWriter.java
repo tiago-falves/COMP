@@ -40,8 +40,8 @@ public class AssignmentWriter {
                 // assign to the correct variable
                 this.code = this.code + variableIndex + "\n";
             }else{
-                this.code += CGConst.PUT_FIELD + FunctionBody.getField(name, type);
-                FunctionBody.incStack();
+                this.code += CGConst.PUT_FIELD + FunctionBody.getField(name.equals("field") ? "_field" : name, type);
+                FunctionBody.incStack();FunctionBody.incStack();
             }
 
             

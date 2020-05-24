@@ -752,9 +752,7 @@ public class TableGenerator {
                 this.initializedElseVars.clear();
                 HashSet<VariableDescriptor> initializedIfVarsLocal = new HashSet<>(this.initializedIfVars);
                 this.initializedIfVars.clear();
-                
                 inspectIfStatement(statementNode, blockDescriptor.getLocalTable(), found_else);
-                
                 this.initializedElseVars.addAll(initializedElseVarsLocal);
                 Iterator<VariableDescriptor> it = this.initializedElseVars.iterator();
                 while (it.hasNext()) {

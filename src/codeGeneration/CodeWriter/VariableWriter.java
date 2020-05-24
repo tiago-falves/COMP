@@ -17,7 +17,7 @@ public class VariableWriter {
         String variableIndex = FunctionBody.getVariableIndexExists(variable.getVariable().getName());
         if(variableIndex == "") {
             this.code += "\taload_0\n";
-            this.code += CGConst.GET_FIELD + FunctionBody.getField(variable.getVariable().getName(),variable.getVariable().getType());
+            this.code += CGConst.GET_FIELD + FunctionBody.getField(variable.getVariable().getName().equals("field") ? "_field" : variable.getVariable().getName(),variable.getVariable().getType());
         }
         else{
             this.code += CGConst.load.get(variable.getVariable().getType());

@@ -25,8 +25,7 @@ class Quicksort {
         int i;
         i = 0;
         while (i < L.length) {
-//            ioa.println(L[i]);
-            ioa.println(1);
+            ioa.println(L[i]);
             i = i + 1;
         }
 
@@ -40,12 +39,14 @@ class Quicksort {
 
     public boolean quicksort(int[] L, int lo, int hi) {
         int p;
+        boolean b;
 
         if (lo < hi) {
             p = this.partition(L, lo, hi);
 
-            this.quicksort(L, lo, p - 1);
-            this.quicksort(L, p + 1, hi);
+            //TODO Delete b variable
+            b = this.quicksort(L, lo, p - 1);
+            b = this.quicksort(L, p + 1, hi);
         } else {}
 
         return true;

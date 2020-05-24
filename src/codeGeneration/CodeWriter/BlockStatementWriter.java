@@ -2,6 +2,7 @@ package codeGeneration.CodeWriter;
 
 import java.util.List;
 
+import codeGeneration.FunctionBody;
 import llir.*;
 
 public abstract class BlockStatementWriter {
@@ -18,22 +19,27 @@ public abstract class BlockStatementWriter {
 
         String result = new String();
         if(node instanceof LLIRAssignment) {
+            FunctionBody.resetStack();
             AssignmentWriter assignmentWriter = new AssignmentWriter((LLIRAssignment) node);
             result += assignmentWriter.getCode();
         }
         else if (node instanceof LLIRMethodCall) {
+            FunctionBody.resetStack();
             MethodCallWriter methodCallWriter = new MethodCallWriter((LLIRMethodCall) node);
             result += methodCallWriter.getCode();
         }
         else if (node instanceof LLIRImport){
+            FunctionBody.resetStack();
             ImportWriter importWriter = new ImportWriter((LLIRImport) node);
             result += importWriter.getCode();
         }
         else if (node instanceof LLIRIfElseBlock) {
+            FunctionBody.resetStack();
             IfElseWriter ifElseWriter = new IfElseWriter((LLIRIfElseBlock) node,name);
             result += ifElseWriter.getCode();
         }
         else if (node instanceof LLIRWhileBlock){
+            FunctionBody.resetStack();
             WhileWriter whileWriter = new WhileWriter((LLIRWhileBlock) node, name);
             result += whileWriter.getCode();
         }

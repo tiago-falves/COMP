@@ -46,6 +46,10 @@ public class FunctionBody {
         totalStack -= value;
     }
 
+    public static void resetStack(){
+        totalStack = 0;
+    }
+
     private void pushVariables(){
 
         //Push function parameters
@@ -75,6 +79,7 @@ public class FunctionBody {
         pushVariables();
 
         for(LLIRNode node : this.functionDescriptor.getFunctionBody()) {
+            FunctionBody.resetStack();
             if (node instanceof LLIRAssignment) {
                 AssignmentWriter assignmentWriter = new AssignmentWriter((LLIRAssignment) node);
                 generatedCode += assignmentWriter.getCode();
@@ -101,6 +106,9 @@ public class FunctionBody {
             }
         }
         if(!foundReturn) generatedCode += "\treturn\n";
+        
+        //TODO FIX THIS
+        maxStack = 99;
         
         return STACK_LIMIT + maxStack + "\n" + LOCALS_LIMIT + "\n" + generatedCode;
     }

@@ -319,6 +319,8 @@ public class LLIRPopulator {
                     LLIRMethodCall actual = (LLIRMethodCall) peek();
                     arguments.add(mc);
                     actual.setParametersExpressions(arguments);
+                }else{
+                    //TODO Fix method calls inside if and else
                 }
             }
 
