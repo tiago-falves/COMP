@@ -20,11 +20,11 @@ class Lazysort extends Quicksort {
 
         q = new Lazysort();
 
-        q.quicksort(L);
-        d = q.printL(L);
+        //q.quicksort(L);
+        //d = q.printL(L);
     }
 
-    public boolean quicksort(int[] L) {
+    /*public boolean quicksort(int[] L) {
         boolean lazy;
         if ( MathUtils.random(0, 5) < 4 ) {
             this.beLazy(L);
@@ -42,9 +42,9 @@ class Lazysort extends Quicksort {
         }
         
         return lazy;
-    }
+    }*/
     
-    public boolean beLazy(int[] L) {
+    /*public boolean beLazy(int[] L) {
         int _allowedNameL;
         int $allowedNameI;
 
@@ -65,5 +65,5 @@ class Lazysort extends Quicksort {
         
         
         return true;
-    }
+    }*/
 }

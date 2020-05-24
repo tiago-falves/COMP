@@ -5,6 +5,7 @@ import codeGeneration.FunctionBody;
 import codeGeneration.FunctionParameters;
 import llir.LLIRExpression;
 import llir.LLIRMethodCall;
+import symbols.SymbolsTable;
 import symbols.Type;
 
 import java.util.List;

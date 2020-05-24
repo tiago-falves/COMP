@@ -57,7 +57,6 @@ public class ExpressionWriter {
             ArrayLengthWriter arrayLengthWriter = new ArrayLengthWriter((LLIRArrayLength) expression);
             this.code += arrayLengthWriter.getCode();
         }
-
     }
 
     public String getCode(){

@@ -1,4 +1,4 @@
-import static io.println(int) void;
+import static ioa.println(int) void;
 
 class Quicksort {
     public static void main(String[] a) {
@@ -25,7 +25,8 @@ class Quicksort {
         int i;
         i = 0;
         while (i < L.length) {
-            io.println(L[i]);
+//            ioa.println(L[i]);
+            ioa.println(1);
             i = i + 1;
         }
 
