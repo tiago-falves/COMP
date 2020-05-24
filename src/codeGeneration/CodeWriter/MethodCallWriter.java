@@ -20,8 +20,9 @@ public class MethodCallWriter {
             ClassVariableInstantiationWriter classVariableInstantiationWriter = new ClassVariableInstantiationWriter(methodCall.getClassVariableInstantiation());
             this.code += classVariableInstantiationWriter.getCode();
         }
-        else if (methodCall.getClassName() == "") this.code = LOAD + "_0\n";
-        else{
+        else if (methodCall.getClassName() == "") {
+            this.code = LOAD + "_0\n";
+        }else{
             String variableIndex = FunctionBody.getVariableIndexString(methodCall.getClassName());
             this.code = LOAD + variableIndex + "\n";
         }

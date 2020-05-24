@@ -189,6 +189,9 @@ public class LLIRPopulator {
             if(peek() instanceof LLIRArrayInstantiation){
                 ((LLIRArrayInstantiation)peek()).setSize((LLIRExpression)node);
             }
+            if(peek() instanceof LLIRReturn){
+                ((LLIRReturn) peek()).setExpression((LLIRExpression) node);
+            }
         }
 
         //In case of a complex assignment
@@ -305,10 +308,6 @@ public class LLIRPopulator {
             }
             currentFunctionDescriptor.addLLIRNode(node);
         }
-
-
-
-
     }
 
     //If the stack has an expression before assignment, set assignment expression

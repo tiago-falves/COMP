@@ -190,6 +190,8 @@ public class TableGenerator {
                             functionDescriptor.addParameter(new FunctionParameterDescriptor(new String(new char[1]).replace('\0', (char)('a'+k)), parameters.get(k)));
                         }
 
+                        functionDescriptor.setExtended();
+
                         classDescriptor.addFunction(functionDescriptor.getName(), functionDescriptor);
                     }
                 }
@@ -637,11 +639,10 @@ public class TableGenerator {
             }
 
             //If empty add tu function Descriptor
-            if (llirPopulator.getLlirStack().size() == 1){
+            if (llirPopulator.getLlirStack().size() == 1 && !(llirPopulator.peek() instanceof LLIRIfElseBlock) && !(llirPopulator.peek() instanceof LLIRWhileBlock)){
                 //this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
                 this.llirPopulator.addStatement(currentFunctionDescriptor);
             }
-
 
         }
     }
@@ -700,9 +701,6 @@ public class TableGenerator {
         }
 
         this.llirPopulator.addStatement(currentFunctionDescriptor);
-
-
-
     }
 
     public void inspectIfStatement(SimpleNode ifNode, SymbolsTable statementParentTable) throws SemanticErrorException {
@@ -911,6 +909,10 @@ public class TableGenerator {
                     if(this.llirPopulator.peek() instanceof LLIRMethodCall){
                         LLIRMethodCall methodCall = (LLIRMethodCall) this.llirPopulator.peek();
                         methodCall.setClassType(typeDescriptor.getClassName());
+                        if(typeDescriptor instanceof VariableDescriptor)
+                            methodCall.setClassName(((VariableDescriptor)typeDescriptor).getName());
+                        else if(typeDescriptor instanceof FunctionParameterDescriptor)
+                            methodCall.setClassName(((FunctionParameterDescriptor)typeDescriptor).getName());
                     }
                     return typeDescriptor.getClassName();
                 }
@@ -931,6 +933,10 @@ public class TableGenerator {
         
         List<String> identifiers = new ArrayList<>(); 
         SimpleNode node = (SimpleNode) statementNode.jjtGetChild(initialChild);
+
+        if(node.getId() == JavammTreeConstants.JJTTHIS){
+            ((LLIRMethodCall) this.llirPopulator.peek()).setClassType(this.className);
+        }
 
         SimpleNode child = (SimpleNode) statementNode.jjtGetChild(initialChild+1);
         int nextChild = initialChild+1;
@@ -965,7 +971,6 @@ public class TableGenerator {
 
         List<String> parameters = inspectArguments(argumentsNode, symbolsTable);
         llirPopulator.popArguments();
-
 
 
         List<Descriptor> descriptorsList = symbolsTable.getDescriptor(((SimpleNode)statementNode.jjtGetChild(nextChild-1)).jjtGetVal());
@@ -1266,8 +1271,9 @@ public class TableGenerator {
                         return null;
                     }
                     
-                    this.llirPopulator.addMethodCall(new LLIRMethodCall());
-
+                    LLIRMethodCall methodCall = new LLIRMethodCall();
+                    methodCall.setClassType(this.className);
+                    this.llirPopulator.addMethodCall(methodCall);                    
                     String functionType = inspectFunctionCall(argumentNode, symbolsTable, i+2);
                     if(type == null){
                         type = functionType;
@@ -1312,9 +1318,7 @@ public class TableGenerator {
                                                 System.err.println("Warning: Variable " + node.jjtGetVal() + " might not have been initialized\n");
                                             }
                                         }
-                                        
                                         this.llirPopulator.addExpression(new LLIRArrayLength(new LLIRVariable((NamedTypeDescriptor) descriptor)));
-
                                         i += 2;
                                         foundDescriptor = true; // found the function we're looking for
                                         type = "int";
@@ -1367,7 +1371,6 @@ public class TableGenerator {
                             this.llirPopulator.addLLIR(new LLIRArrayAccess());
                             String arrayType = inspectArrayAccess(argumentNode, symbolsTable, i);
                             this.llirPopulator.popArrayAcessExpression();
-
                             if(type == null){
                                 type = arrayType;
                             }else if(!type.equals(arrayType)){
@@ -1514,8 +1517,8 @@ public class TableGenerator {
                         this.semanticError.printError(node, "CAN'T COMPARE " + otherType + " WITH OPERATOR <");
                         return null;
                     }
-
-                    this.llirPopulator.popExpression();
+                    if(!(llirPopulator.peek() instanceof LLIRConditional))
+                        this.llirPopulator.popExpression();
                     return "boolean";
                 }
                 case JavammTreeConstants.JJTDOT: {
@@ -1551,10 +1554,6 @@ public class TableGenerator {
             this.llirPopulator.popNegation();
         }
         this.llirPopulator.popExpression();
-
-
-
-
         return type;
     }
 

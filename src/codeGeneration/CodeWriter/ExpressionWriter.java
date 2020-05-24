@@ -53,6 +53,10 @@ public class ExpressionWriter {
             ArrayAccessWriter arrayAcessWriter = new ArrayAccessWriter(((LLIRArrayAccess) expression),true);
             this.code += arrayAcessWriter.getCode();
         }
+        else if(expression instanceof LLIRArrayLength){
+            ArrayLengthWriter arrayLengthWriter = new ArrayLengthWriter((LLIRArrayLength) expression);
+            this.code += arrayLengthWriter.getCode();
+        }
 
     }
 

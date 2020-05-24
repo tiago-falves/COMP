@@ -53,7 +53,8 @@ public class CodeGenerator {
             List<Descriptor> functionDescriptors = table.get(k);
             for (Descriptor descriptor : functionDescriptors){
                 FunctionDescriptor functionDescriptor= (FunctionDescriptor) descriptor;
-                generateFunction(functionDescriptor);
+                if(!functionDescriptor.isExtended())
+                    generateFunction(functionDescriptor);
                 nl();
             }
         }

@@ -13,6 +13,7 @@ public class FunctionDescriptor extends TypeDescriptor {
     protected SymbolsTable parametersTable;
 
     private boolean isStatic;
+    private boolean isExtended;
     private Access access;
     private String name;
     private List<LLIRNode> functionBody;
@@ -21,6 +22,7 @@ public class FunctionDescriptor extends TypeDescriptor {
     public FunctionDescriptor(){
         super(null);
         this.isStatic = false;
+        this.isExtended = false;
         this.access = Access.DEFAULT;
         this.bodyTable = new SymbolsTable();
         this.parametersTable = new SymbolsTable();
@@ -162,4 +164,11 @@ public class FunctionDescriptor extends TypeDescriptor {
         return functionBody;
     }
     
+    public void setExtended(){
+        this.isExtended = true;
+    }
+
+    public boolean isExtended(){
+        return this.isExtended;
+    }
 }
