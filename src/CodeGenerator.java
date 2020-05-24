@@ -61,7 +61,7 @@ public class CodeGenerator {
     }
 
     private void generateFunction(FunctionDescriptor functionDescriptor) {
-        FunctionGenerator functionGenerator = new FunctionGenerator(functionDescriptor);
+        FunctionGenerator functionGenerator = new FunctionGenerator(functionDescriptor,this.classDescriptor.getVariablesTable());
         write(functionGenerator.generate());
     }
 
