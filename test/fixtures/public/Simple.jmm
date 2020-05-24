@@ -1,5 +1,5 @@
 import static io.println(int) void;
-class SimpleTrue {
+class Simple {
 
     public int add(int a, int b){
         int c;
@@ -11,10 +11,10 @@ class SimpleTrue {
         int a;
         int b;
         int c;
-        SimpleTrue s;
+        Simple s;
         a = 20;
         b = 10;
-        s = new SimpleTrue();
+        s = new Simple();
         c = s.add(a,b);
         io.println(c);
     }
