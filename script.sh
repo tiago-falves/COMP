@@ -5,8 +5,10 @@ gradle build
 #javap -c ioa.class > src/example.txt
 
 
-java -jar comp2020-3e.jar test/fixtures/public/FindMaximum.jmm
+#java -jar comp2020-3e.jar test/fixtures/public/FindMaximum.jmm
+java -jar comp2020-3e.jar test/Simple.jmm
 java -jar jasmin-2.4/jasmin.jar test/Simple.j
-java FindMaximum
+java Simple
+#java FindMaximum
 
 

@@ -54,6 +54,8 @@ public class CGConst {
 
     public static String TRUE_VALUE = "\ticonst_1";
     public static String FALSE_VALUE = "\ticonst_0";
+    public static String GET_FIELD = "\tgetfield ";
+    public static String PUT_FIELD = "\tputfield ";
 
 
     public static String getJvmType(TypeDescriptor typeDescriptor){

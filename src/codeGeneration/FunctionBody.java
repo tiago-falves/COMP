@@ -1,9 +1,6 @@
 package codeGeneration;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import codeGeneration.CodeWriter.*;
 import llir.*;
@@ -19,16 +16,18 @@ public class FunctionBody {
     public static int totalStack = 0;
     private String STACK_LIMIT = "\t.limit stack ";
     private final String LOCALS_LIMIT;
-    private SymbolsTable fieldsTable;
-    
-    public FunctionBody(FunctionDescriptor functionDescriptor, LinkedHashMap<String, Integer> variableToIndex, SymbolsTable fieldsTable) {
+    private static SymbolsTable fieldsTable;
+    private static ClassDescriptor classDescriptor;
+
+    public FunctionBody(FunctionDescriptor functionDescriptor, LinkedHashMap<String, Integer> variableToIndex, ClassDescriptor classDescriptor) {
         this.functionDescriptor = functionDescriptor;
         this.variableToIndex = variableToIndex;
         this.currentVariableIndex = variableToIndex.size();
         this.LOCALS_LIMIT = "\t.limit locals " + (1 + functionDescriptor.getParametersTable().getSize() + functionDescriptor.getBodyTable().getSize());
         totalStack = 0;
         maxStack = 0;
-        this.fieldsTable = fieldsTable;
+        this.fieldsTable = classDescriptor.getVariablesTable();
+        this.classDescriptor = classDescriptor;
     }
 
     public static void incStack(){
@@ -116,12 +115,17 @@ public class FunctionBody {
 
 
     }
-    public static int getVariableIndexExists(String name){
-        Integer variableIndex = fieldsToIndex.get(name);
-        if(variableIndex == null) System.out.println("CLASS");
-        else return variableIndex;
+    public static String getVariableIndexExists(String name){
+        Integer variableIndex = variableToIndex.get(name);
+        if(variableIndex == null) {
+            return "";
+        }else if(variableIndex <= 3) return "_" + variableIndex;
+        else return "\t" + variableIndex;
 
-        return 0;
+    }
+
+    public static String getField(String name,Type type){
+        return FunctionBody.classDescriptor.getName() + "/" + name + " " + CGConst.types.get(type) + "\n";
     }
 
     public static String getVariableIndexString(String name){

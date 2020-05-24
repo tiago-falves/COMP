@@ -20,6 +20,10 @@ public class AssignmentWriter {
         this.assignment = assignment;
 
         String name = assignment.getVariable().getVariable().getName();
+        String variableIndex = FunctionBody.getVariableIndexExists(name);
+        if(variableIndex == ""){
+            this.code += "\taload_0\n";
+        }
 
         type =getVariableCode();
 
@@ -29,12 +33,17 @@ public class AssignmentWriter {
         if(isArrayAccess){
             this.code += "\tiastore\n";
         }else{
+            variableIndex = FunctionBody.getVariableIndexExists(name);
 
+            if(variableIndex != ""){
+                this.code += CGConst.store.get(type);
+                // assign to the correct variable
+                this.code = this.code + variableIndex + "\n";
+            }else{
+                this.code += CGConst.PUT_FIELD + FunctionBody.getField(name, type);
+            }
 
-            this.code += CGConst.store.get(type);
-            // assign to the correct variable
-            String variableIndex = FunctionBody.getVariableIndexString(name);
-            this.code = this.code + variableIndex + "\n";
+            
         }
         FunctionBody.decStack(1);
     }
