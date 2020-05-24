@@ -28,6 +28,8 @@ public class Fields {
                 VariableDescriptor field = (VariableDescriptor) tableEntry.getValue().get(0);
 
                 generatedCode.append(INSTRUCTION);
+                if(field.getName().equals("field"))
+                    generatedCode.append("_");
                 generatedCode.append(field.getName());
                 generatedCode.append(SPACE);
                 generatedCode.append(CGConst.types.get(field.getType())); // change to get code
