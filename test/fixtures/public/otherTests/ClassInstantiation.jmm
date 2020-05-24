@@ -1,0 +1,39 @@
+import ioa.println(int);
+class ClassInstantiation {
+    int x;
+
+	public static void main(String[] args) {
+        int a;
+        ClassInstantiation c1;
+        ClassInstantiation c2;
+        ClassInstantiation c3;
+
+        a = 1;
+        c1 = new ClassInstantiation();
+        c1.setX(a);
+
+        c2 = new ClassInstantiation();
+        c2.setX(2);
+
+        c3 = new ClassInstantiation();
+        c3.setX(c3.add(1, 2));
+
+        ioa.println(c1.getX());
+        ioa.println(c2.getX());
+        ioa.println(c3.getX());
+	}
+
+    public int setX(int newX){
+        x = newX;
+        return x;
+    }
+
+    public int getX(){
+        return x;
+    }
+
+	public int add(int a, int b){
+		return a+b;
+	}
+}
+

@@ -20,7 +20,6 @@ public class ImportWriter {
         this.code += INSTRUCTION;
 
         String arguments = FunctionParameters.getParametersTypes(importLLIR.getImportDescriptor().getParameters());
-
         this.code += getIdentifiers(importLLIR) + "(" + arguments + ")"+ CGConst.types.get(importLLIR.getImportDescriptor().getReturn()) + "\n";
         FunctionBody.decStack(1 + importLLIR.getImportDescriptor().getParameters().size() - (importLLIR.getImportDescriptor().getReturn() == Type.VOID?0:1));
     }
@@ -42,7 +41,6 @@ public class ImportWriter {
 
     private String getParameters(LLIRImport importLLIR){
         String result = "";
-
         List<LLIRExpression> parameters = importLLIR.getParametersExpressions();
         for (LLIRExpression expression : parameters){
             ExpressionWriter expressionWriter = new ExpressionWriter(expression);

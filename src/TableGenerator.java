@@ -10,7 +10,7 @@ public class TableGenerator {
     FunctionDescriptor currentFunctionDescriptor;
     LLIRPopulator llirPopulator;
     LLIRNode currentLLIRNode;
-    LLIRMethodCall currentMethodCall;
+    //LLIRMethodCall currentMethodCall;
     private String className;
     private boolean initializedWarning;
     private HashSet<VariableDescriptor> initializedIfVars = new HashSet<>();
@@ -26,7 +26,7 @@ public class TableGenerator {
         this.rootNode = rootNode;
         this.symbolsTable = new SymbolsTable();
         this.semanticError = new SemanticError();
-        this.currentMethodCall= new LLIRMethodCall();
+        //this.currentMethodCall= new LLIRMethodCall();
         this.llirPopulator = new LLIRPopulator();
         this.className = null;
         this.initializedWarning = initializedWarning;
@@ -968,10 +968,8 @@ public class TableGenerator {
             return null;
         }
 
-
         List<String> parameters = inspectArguments(argumentsNode, symbolsTable);
-        llirPopulator.popArguments();
-
+        llirPopulator.popArguments(parameters.size());
 
         List<Descriptor> descriptorsList = symbolsTable.getDescriptor(((SimpleNode)statementNode.jjtGetChild(nextChild-1)).jjtGetVal());
         if (descriptorsList == null) {
@@ -990,16 +988,6 @@ public class TableGenerator {
                 if(!llirPopulator.getLlirStack().empty()){
                     empty = true;
                 }
-
-
-                this.llirPopulator.addImport(new LLIRImport(importDescriptor));
-
-                if(empty){
-                    //this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
-                    this.llirPopulator.addStatement(currentFunctionDescriptor);
-                }
-
-
 
                 ArrayList<String> importIdentifiers = importDescriptor.getIdentifiers();
 
@@ -1039,8 +1027,15 @@ public class TableGenerator {
 
                 StringType stringType = new StringType(importType);
                 
-                return stringType.getString();
-                
+                this.llirPopulator.addImport(new LLIRImport(importDescriptor));
+
+                if(empty){
+                    //this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
+                    this.llirPopulator.addStatement(currentFunctionDescriptor);
+                }
+
+
+                return stringType.getString();                
             }
             //When we are sure it is a function
             else if(descriptorsList.get(i).getClass() == FunctionDescriptor.class){

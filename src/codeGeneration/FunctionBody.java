@@ -23,7 +23,12 @@ public class FunctionBody {
         this.functionDescriptor = functionDescriptor;
         this.variableToIndex = variableToIndex;
         this.currentVariableIndex = variableToIndex.size();
-        this.LOCALS_LIMIT = "\t.limit locals " + (1 + functionDescriptor.getParametersTable().getSize() + functionDescriptor.getBodyTable().getSize());
+
+        if(functionDescriptor.getName().equals("main")){
+            this.currentVariableIndex--;
+        }
+
+        this.LOCALS_LIMIT = "\t.limit locals " + ((functionDescriptor.isStatic()?0:1) + functionDescriptor.getParametersTable().getSize() + functionDescriptor.getBodyTable().getSize());
         totalStack = 0;
         maxStack = 0;
         this.fieldsTable = classDescriptor.getVariablesTable();

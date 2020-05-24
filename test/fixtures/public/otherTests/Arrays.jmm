@@ -1,0 +1,52 @@
+import ioa.println(int);
+class Arrays {
+	public static void main(String[] args) {
+        int a;
+        int b;
+        int c; 
+        int d;
+        int i;
+        int result;
+        int[] newField;
+        Arrays x;
+
+        x = new Arrays();
+
+        newField = new int[5];
+        i = 0;
+        
+        while(i < newField.length){
+            newField[i] = newField.length - i;
+            i = i + 1;
+        }
+
+        a = x.add(1,1) * newField[1] + (2 * newField[1]);
+        
+        b = new Arrays().add(1,1);
+        
+        c = x.add(1,1);
+
+        d = new Arrays().array().length;
+        
+        if((b+d) < (a-c)){
+            result = (new Arrays().array()[0]) + x.array().length;
+        }
+        else{
+            result = 0-1;
+        }
+
+        ioa.println(result);
+	}
+
+	public int add(int a, int b){
+		return a+b;
+	}
+
+    public int[] array(){
+        int[] x;
+        x = new int[1];
+        x[0] = 1;
+        return x;
+    }
+}
+

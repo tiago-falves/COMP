@@ -192,6 +192,9 @@ public class LLIRPopulator {
             if(peek() instanceof LLIRReturn){
                 ((LLIRReturn) peek()).setExpression((LLIRExpression) node);
             }
+            if(peek() instanceof LLIRMethodCall){
+                llirStack.push(node);
+            }
         }
 
         //In case of a complex assignment
@@ -255,19 +258,27 @@ public class LLIRPopulator {
         }
     }
 
-    public void popArguments(){
-
+    public void popArguments(int parametersNumber){
         List<LLIRExpression> arguments = new ArrayList<>();
-        while (peek() instanceof LLIRExpression && !lastIsFunctionCall()){
+        
+        if(parametersNumber == 0) {
+            if (peek() instanceof LLIRMethodCall){
+                LLIRMethodCall function = (LLIRMethodCall) peek();
+                function.setParametersExpressions(arguments);
+            }
+            return;
+        }
+
+        while (peek() instanceof LLIRExpression && parametersNumber > 0){
             LLIRExpression actual = (LLIRExpression) this.llirStack.pop();
             arguments.add(0,actual);
+            parametersNumber--;
         }
 
         if (peek() instanceof LLIRMethodCall){
             LLIRMethodCall function = (LLIRMethodCall) peek();
             function.setParametersExpressions(arguments);
         }
-
     }
 
     public void popArgumentsClassInstantiation(){
