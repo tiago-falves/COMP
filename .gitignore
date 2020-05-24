@@ -25,3 +25,6 @@ gradle-app.setting
 
 # Tests
 test/Simple.j
+
+
+*.class

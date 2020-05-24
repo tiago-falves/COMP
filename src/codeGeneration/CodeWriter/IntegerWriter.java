@@ -14,8 +14,12 @@ public class IntegerWriter {
         int value = integer.getValue();
         if(value <= 5) {
             generatedCode += "\ticonst_" + value + "\n";
-        } else {
+        } else if(value <= 127){
             generatedCode += "\tbipush\t" + value + "\n";
+        } else if(value <= 32767){
+            generatedCode += "\tsipush\t" + value + "\n";
+        } else{
+            generatedCode += "\tldc\t" + value + "\n";
         }
         FunctionBody.incStack();
 
