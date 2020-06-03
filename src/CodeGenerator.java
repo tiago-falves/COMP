@@ -19,8 +19,10 @@ public class CodeGenerator {
     public CodeGenerator(ClassDescriptor classDescriptor) {
         this.builder = new StringBuilder();
         this.classDescriptor = classDescriptor;
+
+        String className = classDescriptor.getName();
         try {
-            FileWriter file = new FileWriter("test/Simple.j", false);
+            FileWriter file = new FileWriter("compiled/jasmin/" + className + ".j", false);
             BufferedWriter bufferedWriter = new BufferedWriter(file);
             this.out = new PrintWriter(bufferedWriter);
         } catch (IOException e) {
