@@ -15,17 +15,17 @@
 	astore_1
 	iconst_0
 	istore_2
-while_13:
+while_0:
 	iload_2
 	aload_1
 	arraylength
-	if_icmpge notLess_36
+	if_icmpge notLess_0
 	iconst_1
-	goto endLess_36
-notLess_36:
+	goto endLess_0
+notLess_0:
 	iconst_0
-endLess_36:
-	ifeq endWhile_13
+endLess_0:
+	ifeq endWhile_0
 	aload_1
 	iload_2
 	aload_1
@@ -37,8 +37,8 @@ endLess_36:
 	iconst_1
 	iadd
 	istore_2
-	goto while_13
-endWhile_13:
+	goto while_0
+endWhile_0:
 	new QuickSort
 	dup
 	invokespecial QuickSort/<init>()V
@@ -57,17 +57,17 @@ endWhile_13:
 	.limit locals 4
 	iconst_0
 	istore_2
-while_14:
+while_1:
 	iload_2
 	aload_1
 	arraylength
-	if_icmpge notLess_37
+	if_icmpge notLess_1
 	iconst_1
-	goto endLess_37
-notLess_37:
+	goto endLess_1
+notLess_1:
 	iconst_0
-endLess_37:
-	ifeq endWhile_14
+endLess_1:
+	ifeq endWhile_1
 	aload_1
 	iload_2
 	iaload
@@ -76,8 +76,8 @@ endLess_37:
 	iconst_1
 	iadd
 	istore_2
-	goto while_14
-endWhile_14:
+	goto while_1
+endWhile_1:
 	iconst_1
 	ireturn
 .end method
@@ -101,22 +101,38 @@ endWhile_14:
 	.limit locals 6
 	iload_2
 	iload_3
-	if_icmpge notLess_38
+	if_icmpge notLess_2
 	iconst_1
-	goto endLess_38
-notLess_38:
+	goto endLess_2
+notLess_2:
 	iconst_0
-endLess_38:
-	ifeq else_33
+endLess_2:
+	ifeq else_0
 	aload_0
 	aload_1
 	iload_2
 	iload_3
 	invokevirtual QuickSort/partition([III)I
 	istore	4
-	goto endIf_33
-else_33:
-endIf_33:
+	aload_0
+	aload_1
+	iload_2
+	iload	4
+	iconst_1
+	isub
+	invokevirtual QuickSort/quicksort([III)Z
+	pop
+	aload_0
+	aload_1
+	iload	4
+	iconst_1
+	iadd
+	iload_3
+	invokevirtual QuickSort/quicksort([III)Z
+	pop
+	goto endIf_0
+else_0:
+endIf_0:
 	iconst_1
 	ireturn
 .end method
@@ -132,27 +148,27 @@ endIf_33:
 	istore	5
 	iload_2
 	istore	6
-while_15:
+while_2:
 	iload	6
 	iload_3
-	if_icmpge notLess_39
+	if_icmpge notLess_3
 	iconst_1
-	goto endLess_39
-notLess_39:
+	goto endLess_3
+notLess_3:
 	iconst_0
-endLess_39:
-	ifeq endWhile_15
+endLess_3:
+	ifeq endWhile_2
 	aload_1
 	iload	6
 	iaload
 	iload	4
-	if_icmpge notLess_40
+	if_icmpge notLess_4
 	iconst_1
-	goto endLess_40
-notLess_40:
+	goto endLess_4
+notLess_4:
 	iconst_0
-endLess_40:
-	ifeq else_34
+endLess_4:
+	ifeq else_1
 	aload_1
 	iload	5
 	iaload
@@ -171,15 +187,15 @@ endLess_40:
 	iconst_1
 	iadd
 	istore	5
-	goto endIf_34
-else_34:
-endIf_34:
+	goto endIf_1
+else_1:
+endIf_1:
 	iload	6
 	iconst_1
 	iadd
 	istore	6
-	goto while_15
-endWhile_15:
+	goto while_2
+endWhile_2:
 	aload_1
 	iload	5
 	iaload

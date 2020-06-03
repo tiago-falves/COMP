@@ -17,17 +17,17 @@
 	astore_1
 	iconst_0
 	istore_2
-while_6:
+while_0:
 	iload_2
 	aload_1
 	arraylength
-	if_icmpge notLess_10
+	if_icmpge notLess_0
 	iconst_1
-	goto endLess_10
-notLess_10:
+	goto endLess_0
+notLess_0:
 	iconst_0
-endLess_10:
-	ifeq endWhile_6
+endLess_0:
+	ifeq endWhile_0
 	aload_1
 	iload_2
 	aload_1
@@ -39,8 +39,8 @@ endLess_10:
 	iconst_1
 	iadd
 	istore_2
-	goto while_6
-endWhile_6:
+	goto while_0
+endWhile_0:
 	new Lazysort
 	dup
 	invokespecial Lazysort/<init>()V

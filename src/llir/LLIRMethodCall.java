@@ -5,20 +5,18 @@ import java.util.HashMap;
 import java.util.List;
 
 import symbols.Descriptor;
-import symbols.FunctionDescriptor;
 import symbols.SymbolsTable;
 import symbols.Type;
 import symbols.VariableDescriptor;
 
 public class LLIRMethodCall extends LLIRExpression {
 
-
-
-    private  List<LLIRExpression> parametersExpressions;
-    private  String methodName;
-    private  SymbolsTable parametersTable;
-    private  Type returnType;
-    private  boolean isStatic;
+    private List<LLIRExpression> parametersExpressions;
+    private String methodName;
+    private SymbolsTable parametersTable;
+    private Type returnType;
+    private boolean isStatic;
+    private boolean isIsolated;
     private String className;
     private String classType;
     private LLIRClassVariableInstantiation classVariableInstantiation;
@@ -29,17 +27,26 @@ public class LLIRMethodCall extends LLIRExpression {
         this.parametersTable = parametersTable;
         this.returnType = returnType;
         this.isStatic = isStatic;
+        this.isIsolated = false;
         classVariableInstantiation= null;
         this.classType = "";
     }
+
     public LLIRMethodCall(){
         parametersExpressions = new ArrayList<>();
         this.className ="";
         classVariableInstantiation = null;
         this.classType = "";
-
+        this.isIsolated = false;
     }
 
+    public LLIRMethodCall(boolean isolated){
+        parametersExpressions = new ArrayList<>();
+        this.className ="";
+        classVariableInstantiation = null;
+        this.classType = "";
+        this.isIsolated = true;
+    }
 
     /**
      * @return the method's name
@@ -97,6 +104,17 @@ public class LLIRMethodCall extends LLIRExpression {
 
     public boolean isStatic() {
         return this.isStatic;
+    }
+
+    /**
+     * @return if it's an isolated call
+     */
+    public boolean isIsolated() {
+        return isIsolated;
+    }
+
+    public void setIsolated(boolean isolated) {
+        this.isIsolated = isolated;
     }
 
     public void setParametersExpressions(List<LLIRExpression> parametersExpressions) {

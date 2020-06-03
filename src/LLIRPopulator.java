@@ -312,18 +312,21 @@ public class LLIRPopulator {
 
         List<LLIRExpression> arguments = new ArrayList<>();
 
-        if(this.llirStack.size()  > 1){
-            if(peek() instanceof LLIRMethodCall){
+        if(this.llirStack.size() > 1){
+            if(peek() instanceof LLIRMethodCall) {
+
                 LLIRMethodCall mc = (LLIRMethodCall) this.llirStack.pop();
                 if(peek() instanceof LLIRMethodCall){
                     LLIRMethodCall actual = (LLIRMethodCall) peek();
                     arguments.add(mc);
                     actual.setParametersExpressions(arguments);
-                }else{
-                    //TODO Fix method calls inside if and else
+                }
+                else if(peek() instanceof LLIRIfElseBlock) {
+                    LLIRIfElseBlock ifElseBlock = (LLIRIfElseBlock) peek();
+                    mc.setIsolated(true);
+                    ifElseBlock.addNode(mc);
                 }
             }
-
         }
     }
 

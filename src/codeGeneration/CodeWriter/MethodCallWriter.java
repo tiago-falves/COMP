@@ -13,6 +13,7 @@ import java.util.List;
 public class MethodCallWriter {
     private static String LOAD = "\taload";
     private static String INSTRUCTION = "\tinvokevirtual ";
+    private static String POP = "\tpop";
     private String code = "";
 
     public MethodCallWriter(LLIRMethodCall methodCall){
@@ -44,6 +45,9 @@ public class MethodCallWriter {
 
         this.code += methodCall.getMethodName() + "(" + arguments + ")"+ CGConst.types.get(methodCall.getReturnType()) + "\n";
         FunctionBody.decStack(methodCall.getParametersTable().getSize()-(methodCall.getReturnType() == Type.VOID ? 0 : 1));
+
+        if(methodCall.isIsolated())
+            this.code += POP + "\n";
     }
 
     public String getCode(){

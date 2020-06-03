@@ -65,7 +65,7 @@ public class ParserTest {
 
     @Test
     public void testLazysort() {
-        test("fixtures/public/Lazysort.jmm", false);
+        test("fixtures/public/LazySort.jmm", false);
     }
 
     @Test

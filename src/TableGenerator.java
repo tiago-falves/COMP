@@ -628,7 +628,12 @@ public class TableGenerator {
         }
         else{
             //Function call
-            this.llirPopulator.addMethodCall(new LLIRMethodCall());
+            if(firstChild.getId() == JavammTreeConstants.JJTTHIS) {
+                this.llirPopulator.addMethodCall(new LLIRMethodCall(true));
+            }
+            else {
+                this.llirPopulator.addMethodCall(new LLIRMethodCall());
+            }
             inspectFunctionCall(statementNode, symbolTable);
             llirPopulator.popFunctionCallFunction();
 
@@ -639,7 +644,7 @@ public class TableGenerator {
                 //this.semanticError.printError(statementNode, "Can't call anything after a simple function call");
             }
 
-            //If empty add tu function Descriptor
+            //If empty add to function Descriptor
             if (llirPopulator.getLlirStack().size() == 1 && !(llirPopulator.peek() instanceof LLIRIfElseBlock) && !(llirPopulator.peek() instanceof LLIRWhileBlock)){
                 //this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
                 this.llirPopulator.addStatement(currentFunctionDescriptor);
