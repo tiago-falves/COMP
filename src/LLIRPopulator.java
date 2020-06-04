@@ -99,7 +99,7 @@ public class LLIRPopulator {
         //TODO Associate method call with the class instantiation ? 
         /*if(peek() instanceof LLIRClassVariableInstantiation){
             LLIRClassVariableInstantiation classVariableInstantiation = (LLIRClassVariableInstantiation)this.llirStack.pop();
-            methodCall.setClassInstantiation(classVariableInstantiation);
+            methodCall.setClassVariableInstantiation(classVariableInstantiation);
         }*/
         //If empty then simpleFunctionCall
         addExpression(methodCall);
@@ -336,7 +336,7 @@ public class LLIRPopulator {
             LLIRNode node = this.llirStack.pop();
             if (peek() instanceof LLIRIfElseBlock) {
                 LLIRIfElseBlock ifElseBlock = (LLIRIfElseBlock) peek();
-                if (!ifElseBlock.isFinishedElse()) {
+                if (!ifElseBlock.isFinishedElse() && ifElseBlock.getExpression() != null) {
                     ifElseBlock.addNode(node);
                     return;
                 }

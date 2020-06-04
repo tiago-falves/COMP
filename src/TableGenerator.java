@@ -1031,7 +1031,6 @@ public class TableGenerator {
                     return importDescriptor.getClassName();
 
                 StringType stringType = new StringType(importType);
-                
                 this.llirPopulator.addImport(new LLIRImport(importDescriptor));
 
                 if(empty){
@@ -1341,7 +1340,7 @@ public class TableGenerator {
                             this.llirPopulator.addMethodCall(methodCall);
                             methodCall.setClassName(node.val);
                             String functionType = inspectFunctionCall(argumentNode, symbolsTable, i);
-
+                    
                             TypeString typeString = new TypeString(functionType);
 
                             if(typeString.parseType() == Type.INT_ARRAY || typeString.parseType() == Type.STRING_ARRAY){
@@ -1365,7 +1364,7 @@ public class TableGenerator {
                                 this.semanticError.printError(nextNextNode, functionType + " IS INCOMPATIBLE WITH " + type);
                                 return null;
                             }
-
+                            
                             i += 3; // Jump function identifiers
                         
                             continue;
