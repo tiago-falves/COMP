@@ -349,7 +349,7 @@ public class LLIRPopulator {
                 }
             } else if (peek() instanceof LLIRWhileBlock) {
                 LLIRWhileBlock whileBlock = (LLIRWhileBlock) peek();
-                if (!whileBlock.isFinished()) {
+                if (!whileBlock.isFinished() && whileBlock.getExpression() != null) {
                     whileBlock.addNode(node);
                     return;
                 }
