@@ -116,6 +116,7 @@ endWhile_0:
 	astore_1
 	aload_1
 	invokevirtual FindMaximum/build_test_arr()I
+	pop
 	aload_1
 	aload_1
 	invokevirtual FindMaximum/get_array()[I

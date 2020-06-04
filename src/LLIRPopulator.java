@@ -326,6 +326,13 @@ public class LLIRPopulator {
                     mc.setIsolated(true);
                     ifElseBlock.addNode(mc);
                 }
+                /*
+                else if(peek() instanceof LLIRWhileBlock) {
+                    LLIRWhileBlock whileBlock = (LLIRWhileBlock) peek();
+                    mc.setIsolated(true);
+                    whileBlock.addNode(mc);
+                }
+                */
             }
         }
     }

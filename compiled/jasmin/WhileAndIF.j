@@ -19,36 +19,36 @@
 	astore	4
 	iload_1
 	iload_2
-	if_icmpge notLess_33
+	if_icmpge notLess_0
 	iconst_1
-	goto endLess_33
-notLess_33:
+	goto endLess_0
+notLess_0:
 	iconst_0
-endLess_33:
-	ifeq else_33
+endLess_0:
+	ifeq else_0
 	iload_1
 	iconst_1
 	isub
 	istore_3
-	goto endIf_33
-else_33:
+	goto endIf_0
+else_0:
 	iload_2
 	iconst_1
 	isub
 	istore_3
-endIf_33:
-while_12:
+endIf_0:
+while_0:
 	iconst_0
 	iconst_1
 	isub
 	iload_3
-	if_icmpge notLess_34
+	if_icmpge notLess_1
 	iconst_1
-	goto endLess_34
-notLess_34:
+	goto endLess_1
+notLess_1:
 	iconst_0
-endLess_34:
-	ifeq endWhile_12
+endLess_1:
+	ifeq endWhile_0
 	aload	4
 	iload_3
 	iload_1
@@ -67,21 +67,21 @@ endLess_34:
 	iconst_1
 	isub
 	istore_2
-	goto while_12
-endWhile_12:
+	goto while_0
+endWhile_0:
 	iconst_0
 	istore_3
-while_13:
+while_1:
 	iload_3
 	aload	4
 	arraylength
-	if_icmpge notLess_35
+	if_icmpge notLess_2
 	iconst_1
-	goto endLess_35
-notLess_35:
+	goto endLess_2
+notLess_2:
 	iconst_0
-endLess_35:
-	ifeq endWhile_13
+endLess_2:
+	ifeq endWhile_1
 	aload	4
 	iload_3
 	iaload
@@ -90,8 +90,8 @@ endLess_35:
 	iconst_1
 	iadd
 	istore_3
-	goto while_13
-endWhile_13:
+	goto while_1
+endWhile_1:
 	return
 .end method
 

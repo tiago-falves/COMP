@@ -83,45 +83,45 @@
 	.limit locals 5
 	iload_2
 	iconst_0
-	if_icmpge notLess_13
+	if_icmpge notLess_0
 	iconst_1
-	goto endLess_13
-notLess_13:
+	goto endLess_0
+notLess_0:
 	iconst_0
-endLess_13:
-	ifeq else_13
+endLess_0:
+	ifeq else_0
 	iconst_0
 	istore_3
-	goto endIf_13
-else_13:
+	goto endIf_0
+else_0:
 	iconst_2
 	iload_2
-	if_icmpge notLess_14
+	if_icmpge notLess_1
 	iconst_1
-	goto endLess_14
-notLess_14:
+	goto endLess_1
+notLess_1:
 	iconst_0
-endLess_14:
-	ifeq else_14
+endLess_1:
+	ifeq else_1
 	iconst_0
 	istore_3
-	goto endIf_14
-else_14:
+	goto endIf_1
+else_1:
 	iconst_0
 	aload_1
 	iload_2
 	iaload
-	if_icmpge notLess_15
+	if_icmpge notLess_2
 	iconst_1
-	goto endLess_15
-notLess_15:
+	goto endLess_2
+notLess_2:
 	iconst_0
-endLess_15:
-	ifeq else_15
+endLess_2:
+	ifeq else_2
 	iconst_0
 	istore_3
-	goto endIf_15
-else_15:
+	goto endIf_2
+else_2:
 	aload_1
 	iload_2
 	aload_0
@@ -138,9 +138,9 @@ else_15:
 	putfield TicTacToe/movesmade I
 	iconst_1
 	istore_3
-endIf_15:
-endIf_14:
-endIf_13:
+endIf_2:
+endIf_1:
+endIf_0:
 	iload_3
 	ireturn
 .end method
@@ -150,99 +150,99 @@ endIf_13:
 	.limit locals 5
 	iload_1
 	iconst_0
-	if_icmpge notLess_16
+	if_icmpge notLess_3
 	iconst_1
-	goto endLess_16
-notLess_16:
+	goto endLess_3
+notLess_3:
 	iconst_0
-endLess_16:
+endLess_3:
 	iconst_1
 	ixor
 	iconst_0
 	iload_1
-	if_icmpge notLess_17
+	if_icmpge notLess_4
 	iconst_1
-	goto endLess_17
-notLess_17:
+	goto endLess_4
+notLess_4:
 	iconst_0
-endLess_17:
+endLess_4:
 	iconst_1
 	ixor
 	iand
-	ifeq else_16
+	ifeq else_3
 	aload_0
 	aload_0
 	getfield TicTacToe/row0 [I
 	iload_2
 	invokevirtual TicTacToe/MoveRow([II)Z
 	istore_3
-	goto endIf_16
-else_16:
+	goto endIf_3
+else_3:
 	iload_1
 	iconst_1
-	if_icmpge notLess_18
+	if_icmpge notLess_5
 	iconst_1
-	goto endLess_18
-notLess_18:
+	goto endLess_5
+notLess_5:
 	iconst_0
-endLess_18:
+endLess_5:
 	iconst_1
 	ixor
 	iconst_1
 	iload_1
-	if_icmpge notLess_19
+	if_icmpge notLess_6
 	iconst_1
-	goto endLess_19
-notLess_19:
+	goto endLess_6
+notLess_6:
 	iconst_0
-endLess_19:
+endLess_6:
 	iconst_1
 	ixor
 	iand
-	ifeq else_17
+	ifeq else_4
 	aload_0
 	aload_0
 	getfield TicTacToe/row1 [I
 	iload_2
 	invokevirtual TicTacToe/MoveRow([II)Z
 	istore_3
-	goto endIf_17
-else_17:
+	goto endIf_4
+else_4:
 	iload_1
 	iconst_2
-	if_icmpge notLess_20
+	if_icmpge notLess_7
 	iconst_1
-	goto endLess_20
-notLess_20:
+	goto endLess_7
+notLess_7:
 	iconst_0
-endLess_20:
+endLess_7:
 	iconst_1
 	ixor
 	iconst_2
 	iload_1
-	if_icmpge notLess_21
+	if_icmpge notLess_8
 	iconst_1
-	goto endLess_21
-notLess_21:
+	goto endLess_8
+notLess_8:
 	iconst_0
-endLess_21:
+endLess_8:
 	iconst_1
 	ixor
 	iand
-	ifeq else_18
+	ifeq else_5
 	aload_0
 	aload_0
 	getfield TicTacToe/row2 [I
 	iload_2
 	invokevirtual TicTacToe/MoveRow([II)Z
 	istore_3
-	goto endIf_18
-else_18:
+	goto endIf_5
+else_5:
 	iconst_0
 	istore_3
-endIf_18:
-endIf_17:
-endIf_16:
+endIf_5:
+endIf_4:
+endIf_3:
 	iload_3
 	ireturn
 .end method
@@ -252,62 +252,62 @@ endIf_16:
 	.limit locals 5
 	iload_1
 	iconst_0
-	if_icmpge notLess_22
+	if_icmpge notLess_9
 	iconst_1
-	goto endLess_22
-notLess_22:
+	goto endLess_9
+notLess_9:
 	iconst_0
-endLess_22:
-	ifeq else_19
+endLess_9:
+	ifeq else_6
 	iconst_0
 	istore_3
-	goto endIf_19
-else_19:
+	goto endIf_6
+else_6:
 	iload_2
 	iconst_0
-	if_icmpge notLess_23
+	if_icmpge notLess_10
 	iconst_1
-	goto endLess_23
-notLess_23:
+	goto endLess_10
+notLess_10:
 	iconst_0
-endLess_23:
-	ifeq else_20
+endLess_10:
+	ifeq else_7
 	iconst_0
 	istore_3
-	goto endIf_20
-else_20:
+	goto endIf_7
+else_7:
 	iconst_2
 	iload_1
-	if_icmpge notLess_24
+	if_icmpge notLess_11
 	iconst_1
-	goto endLess_24
-notLess_24:
+	goto endLess_11
+notLess_11:
 	iconst_0
-endLess_24:
-	ifeq else_21
+endLess_11:
+	ifeq else_8
 	iconst_0
 	istore_3
-	goto endIf_21
-else_21:
+	goto endIf_8
+else_8:
 	iconst_2
 	iload_2
-	if_icmpge notLess_25
+	if_icmpge notLess_12
 	iconst_1
-	goto endLess_25
-notLess_25:
+	goto endLess_12
+notLess_12:
 	iconst_0
-endLess_25:
-	ifeq else_22
+endLess_12:
+	ifeq else_9
 	iconst_0
 	istore_3
-	goto endIf_22
-else_22:
+	goto endIf_9
+else_9:
 	iconst_1
 	istore_3
-endIf_22:
-endIf_21:
-endIf_20:
-endIf_19:
+endIf_9:
+endIf_8:
+endIf_7:
+endIf_6:
 	iload_3
 	ireturn
 .end method
@@ -337,221 +337,8 @@ endIf_19:
 
 .method public winner()I
 	.limit stack 99
-	.limit locals 5
-	iconst_0
+	.limit locals 1
 	iconst_1
-	isub
-	istore_2
-	iconst_3
-	newarray int
-	astore_1
-	ifeq else_23
-	aload_0
-	getfield TicTacToe/row0 [I
-	invokestatic BoardBase/sameArray([I)Z
-	aload_0
-	getfield TicTacToe/row0 [I
-	iconst_0
-	iaload
-	istore_2
-	goto endIf_23
-else_23:
-	ifeq else_24
-	aload_0
-	getfield TicTacToe/row1 [I
-	invokestatic BoardBase/sameArray([I)Z
-	aload_0
-	getfield TicTacToe/row1 [I
-	iconst_0
-	iaload
-	istore_2
-	goto endIf_24
-else_24:
-	ifeq else_25
-	aload_0
-	getfield TicTacToe/row2 [I
-	invokestatic BoardBase/sameArray([I)Z
-	aload_0
-	getfield TicTacToe/row2 [I
-	iconst_0
-	iaload
-	istore_2
-	goto endIf_25
-else_25:
-	iconst_0
-	istore_3
-while_9:
-	iload_2
-	iconst_1
-	if_icmpge notLess_26
-	iconst_1
-	goto endLess_26
-notLess_26:
-	iconst_0
-endLess_26:
-	iload_3
-	iconst_3
-	if_icmpge notLess_27
-	iconst_1
-	goto endLess_27
-notLess_27:
-	iconst_0
-endLess_27:
-	iand
-	ifeq endWhile_9
-	aload_1
-	iconst_0
-	aload_0
-	getfield TicTacToe/row0 [I
-	iload_3
-	iaload
-	iastore
-	aload_1
-	iconst_1
-	aload_0
-	getfield TicTacToe/row1 [I
-	iload_3
-	iaload
-	iastore
-	aload_1
-	iconst_2
-	aload_0
-	getfield TicTacToe/row2 [I
-	iload_3
-	iaload
-	iastore
-	ifeq else_26
-	aload_1
-	invokestatic BoardBase/sameArray([I)Z
-	aload_1
-	iconst_0
-	iaload
-	istore_2
-	goto endIf_26
-else_26:
-endIf_26:
-	iload_3
-	iconst_1
-	iadd
-	istore_3
-	goto while_9
-endWhile_9:
-	iload_2
-	iconst_1
-	if_icmpge notLess_28
-	iconst_1
-	goto endLess_28
-notLess_28:
-	iconst_0
-endLess_28:
-	ifeq else_27
-	aload_1
-	iconst_0
-	aload_0
-	getfield TicTacToe/row0 [I
-	iconst_0
-	iaload
-	iastore
-	aload_1
-	iconst_1
-	aload_0
-	getfield TicTacToe/row1 [I
-	iconst_1
-	iaload
-	iastore
-	aload_1
-	iconst_2
-	aload_0
-	getfield TicTacToe/row2 [I
-	iconst_2
-	iaload
-	iastore
-	ifeq else_28
-	aload_1
-	invokestatic BoardBase/sameArray([I)Z
-	aload_1
-	iconst_0
-	iaload
-	istore_2
-	goto endIf_28
-else_28:
-	aload_1
-	iconst_0
-	aload_0
-	getfield TicTacToe/row0 [I
-	iconst_2
-	iaload
-	iastore
-	aload_1
-	iconst_1
-	aload_0
-	getfield TicTacToe/row1 [I
-	iconst_1
-	iaload
-	iastore
-	aload_1
-	iconst_2
-	aload_0
-	getfield TicTacToe/row2 [I
-	iconst_0
-	iaload
-	iastore
-	ifeq else_29
-	aload_1
-	invokestatic BoardBase/sameArray([I)Z
-	aload_1
-	iconst_0
-	iaload
-	istore_2
-	goto endIf_29
-else_29:
-endIf_29:
-endIf_28:
-	goto endIf_27
-else_27:
-endIf_27:
-endIf_25:
-endIf_24:
-endIf_23:
-	iload_2
-	iconst_1
-	if_icmpge notLess_29
-	iconst_1
-	goto endLess_29
-notLess_29:
-	iconst_0
-endLess_29:
-	aload_0
-	getfield TicTacToe/movesmade I
-	bipush	9
-	if_icmpge notLess_30
-	iconst_1
-	goto endLess_30
-notLess_30:
-	iconst_0
-endLess_30:
-	iconst_1
-	ixor
-	bipush	9
-	aload_0
-	getfield TicTacToe/movesmade I
-	if_icmpge notLess_31
-	iconst_1
-	goto endLess_31
-notLess_31:
-	iconst_0
-endLess_31:
-	iconst_1
-	ixor
-	iand
-	iand
-	ifeq else_30
-	iconst_0
-	istore_2
-	goto endIf_30
-else_30:
-endIf_30:
-	iload_2
 	ireturn
 .end method
 
@@ -564,20 +351,19 @@ endIf_30:
 	astore_1
 	aload_1
 	invokevirtual TicTacToe/init()Z
-	iload	5
-	invokestatic BoardBase/playerTurn(I)[I
-while_10:
+	pop
+while_0:
 	aload_1
 	invokevirtual TicTacToe/winner()I
 	iconst_0
 	iconst_1
 	isub
-	if_icmpge notLess_32
+	if_icmpge notLess_13
 	iconst_1
-	goto endLess_32
-notLess_32:
+	goto endLess_13
+notLess_13:
 	iconst_0
-endLess_32:
+endLess_13:
 	iconst_1
 	ixor
 	iconst_0
@@ -585,14 +371,14 @@ endLess_32:
 	iconst_1
 	ixor
 	iand
-	ifeq endWhile_10
+	ifeq endWhile_0
 	iconst_0
 	istore_3
-while_11:
+while_1:
 	iload_3
 	iconst_1
 	ixor
-	ifeq endWhile_11
+	ifeq endWhile_1
 	aload_1
 	invokevirtual TicTacToe/getRow0()[I
 	aload_1
@@ -603,7 +389,17 @@ while_11:
 	aload_1
 	invokevirtual TicTacToe/getCurrentPlayer()I
 	istore	5
+	iconst_2
+	newarray int
 	astore	4
+	aload	4
+	iconst_0
+	iconst_0
+	iastore
+	aload	4
+	iconst_1
+	iconst_1
+	iastore
 	aload_1
 	aload	4
 	iconst_0
@@ -614,10 +410,10 @@ while_11:
 	invokevirtual TicTacToe/inbounds(II)Z
 	iconst_1
 	ixor
-	ifeq else_31
+	ifeq else_10
 	invokestatic BoardBase/wrongMove()V
-	goto endIf_31
-else_31:
+	goto endIf_10
+else_10:
 	aload_1
 	aload	4
 	iconst_0
@@ -628,18 +424,18 @@ else_31:
 	invokevirtual TicTacToe/Move(II)Z
 	iconst_1
 	ixor
-	ifeq else_32
+	ifeq else_11
 	invokestatic BoardBase/placeTaken()V
-	goto endIf_32
-else_32:
+	goto endIf_11
+else_11:
 	iconst_1
 	istore_3
-endIf_32:
-endIf_31:
-	goto while_11
-endWhile_11:
-	goto while_10
-endWhile_10:
+endIf_11:
+endIf_10:
+	goto while_1
+endWhile_1:
+	goto while_0
+endWhile_0:
 	aload_1
 	invokevirtual TicTacToe/getRow0()[I
 	aload_1

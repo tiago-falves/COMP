@@ -23,6 +23,7 @@
 	astore_1
 	aload_1
 	invokevirtual Life/init()Z
+	pop
 while_1:
 	iconst_1
 	ifeq endWhile_1

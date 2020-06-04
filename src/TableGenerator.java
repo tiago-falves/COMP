@@ -628,12 +628,7 @@ public class TableGenerator {
         }
         else{
             //Function call
-            if(firstChild.getId() == JavammTreeConstants.JJTTHIS) {
-                this.llirPopulator.addMethodCall(new LLIRMethodCall(true));
-            }
-            else {
-                this.llirPopulator.addMethodCall(new LLIRMethodCall());
-            }
+            this.llirPopulator.addMethodCall(new LLIRMethodCall(true));
             inspectFunctionCall(statementNode, symbolTable);
             llirPopulator.popFunctionCallFunction();
 

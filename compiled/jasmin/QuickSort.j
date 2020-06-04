@@ -46,9 +46,11 @@ endWhile_0:
 	aload_3
 	aload_1
 	invokevirtual QuickSort/quicksort([I)Z
+	pop
 	aload_3
 	aload_1
 	invokevirtual QuickSort/printL([I)Z
+	pop
 	return
 .end method
 

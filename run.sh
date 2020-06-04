@@ -34,7 +34,7 @@ java -jar "$executable".jar "$file_path"
 java -jar jasmin-2.4/jasmin.jar -d ./compiled/bytecode ./compiled/jasmin/"$class_name".j
 
 # compile the files to be included
-javac $(find ./compiled/include | grep .java) -d compiled/bytecode 2> /dev/null
+#javac $(find ./compiled/include | grep .java) -d compiled/bytecode 2> /dev/null
 
 # execute
 java -cp "compiled/bytecode" $class_name
