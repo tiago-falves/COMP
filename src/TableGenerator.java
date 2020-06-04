@@ -601,7 +601,6 @@ public class TableGenerator {
             }
 
             inspectAssignment(statementNode, symbolTable, typeString, 3);
-
             this.llirPopulator.popBeforeAssignment();
 
 
@@ -1030,9 +1029,8 @@ public class TableGenerator {
 
                 if(empty){
                     //this.currentFunctionDescriptor.addLLIRNode(this.llirPopulator.popLLIR());
-                    this.llirPopulator.addStatement(currentFunctionDescriptor);
+                    //this.llirPopulator.addStatement(currentFunctionDescriptor);
                 }
-
 
                 return stringType.getString();                
             }
@@ -1359,7 +1357,6 @@ public class TableGenerator {
                                 this.semanticError.printError(nextNextNode, functionType + " IS INCOMPATIBLE WITH " + type);
                                 return null;
                             }
-                            
                             i += 3; // Jump function identifiers
                         
                             continue;

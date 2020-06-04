@@ -26,6 +26,10 @@ public class IntOperationWriter {
             ArithmeticWriter arithmeticWriter = new ArithmeticWriter((LLIRArithmetic) expression);
             result += arithmeticWriter.getCode();
         }
+        else if (expression instanceof LLIRImport){
+            ImportWriter importWriter = new ImportWriter((LLIRImport)expression);
+            result += importWriter.getCode();
+        }
         else if (expression instanceof LLIRMethodCall) {
             MethodCallWriter methodCallWriter = new MethodCallWriter((LLIRMethodCall) expression);
             result += methodCallWriter.getCode();

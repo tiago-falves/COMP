@@ -32,7 +32,10 @@ public class ExpressionWriter {
             ArithmeticWriter arithmeticWriter = new ArithmeticWriter(transformed);
             this.code += arithmeticWriter.getCode();
         }
-
+        else if(expression instanceof LLIRImport){
+            ImportWriter importWriter = new ImportWriter((LLIRImport)expression);
+            this.code += importWriter.getCode();
+        }
         else if (expression instanceof LLIRMethodCall) {
             MethodCallWriter methodCallWriter = new MethodCallWriter((LLIRMethodCall) expression);
             this.code += methodCallWriter.getCode();

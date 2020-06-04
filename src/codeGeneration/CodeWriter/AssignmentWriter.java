@@ -87,7 +87,10 @@ public class AssignmentWriter {
             NegationWriter negationWriter = new NegationWriter((LLIRNegation)expression);
             this.code += negationWriter.getCode();
         }
-
+        else if(expression instanceof LLIRImport){
+            ImportWriter importWriter = new ImportWriter((LLIRImport)expression);
+            this.code += importWriter.getCode();
+        }
         else if (expression instanceof LLIRMethodCall) {
             MethodCallWriter methodCallWriter = new MethodCallWriter((LLIRMethodCall) expression);
             this.code += methodCallWriter.getCode();
