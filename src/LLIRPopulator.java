@@ -227,6 +227,23 @@ public class LLIRPopulator {
         }
     }
 
+    public void fixConditional(){
+        if(peek() instanceof LLIRInteger){
+            LLIRInteger iLlirInteger = (LLIRInteger) this.llirStack.pop();
+            if(peek() instanceof LLIRArithmetic){
+                LLIRArithmetic actual = (LLIRArithmetic) this.llirStack.pop();
+                actual.setRightExpression(iLlirInteger);
+                while (peek() instanceof LLIRArithmetic){
+                    ((LLIRArithmetic) peek()).setRightExpression(actual);
+                    actual = (LLIRArithmetic)this.llirStack.pop();
+                }
+                this.llirStack.push(actual);
+            }else{
+                this.llirStack.push(iLlirInteger);
+            }
+        }
+    }
+
     public LLIRNode peek(){
         if(!this.llirStack.empty()){
             return this.llirStack.peek();
@@ -341,10 +358,12 @@ public class LLIRPopulator {
                 }
                 else if(peek() instanceof LLIRIfElseBlock) {
                     LLIRIfElseBlock ifElseBlock = (LLIRIfElseBlock) peek();
+                    mc.setIsolated(true);
                     ifElseBlock.addNode(mc);
                 }
                 else if(peek() instanceof LLIRWhileBlock) {
                     LLIRWhileBlock whileBlock = (LLIRWhileBlock) peek();
+                    mc.setIsolated(true);
                     whileBlock.addNode(mc);
                 }
             }

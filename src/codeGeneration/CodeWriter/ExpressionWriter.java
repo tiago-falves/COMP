@@ -28,7 +28,6 @@ public class ExpressionWriter {
         else if (expression instanceof LLIRArithmetic) {
             ArithmeticTransformer transformer = new ArithmeticTransformer((LLIRArithmetic) expression);
             LLIRArithmetic transformed = transformer.transform();
-
             ArithmeticWriter arithmeticWriter = new ArithmeticWriter(transformed);
             this.code += arithmeticWriter.getCode();
         }

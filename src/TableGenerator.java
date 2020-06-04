@@ -1503,6 +1503,9 @@ public class TableGenerator {
                         this.semanticError.printError(node, "CAN'T COMPARE " + type + " WITH OPERATOR <");
                         return null;
                     }
+                    
+                    this.llirPopulator.fixConditional();
+
                     //CONDITIONAL <
                     if(llirPopulator.lastIsLLIRExpression()) this.llirPopulator.addConditional(new LLIRConditional());
                     this.llirPopulator.addOperator(node.getId());

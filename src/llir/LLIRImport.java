@@ -9,6 +9,7 @@ import java.util.List;
 public class LLIRImport extends LLIRExpression {
     public ImportDescriptor importDescriptor;
 
+    private boolean isIsolated;
 
     private List<LLIRExpression> parametersExpressions;
 
@@ -16,9 +17,11 @@ public class LLIRImport extends LLIRExpression {
     public LLIRImport(ImportDescriptor importDescriptor) {
         this.importDescriptor = importDescriptor;
         this.parametersExpressions = new ArrayList<>();
+        this.isIsolated = false;
     }
     public LLIRImport() {
         this.parametersExpressions = new ArrayList<>();
+        this.isIsolated = false;
     }
 
     /**
@@ -44,5 +47,15 @@ public class LLIRImport extends LLIRExpression {
     }
 
 
+    /**
+     * @return if it's an isolated call
+     */
+    public boolean isIsolated() {
+        return isIsolated;
+    }
+
+    public void setIsolated(boolean isolated) {
+        this.isIsolated = isolated;
+    }
 
 }

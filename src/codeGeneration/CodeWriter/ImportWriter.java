@@ -13,6 +13,7 @@ import java.util.List;
 public class ImportWriter {
     private static String INSTRUCTION = "\tinvokestatic ";
     private String code;
+    private static String POP = "\tpop";
 
     public ImportWriter(LLIRImport importLLIR){
         this.code ="";
@@ -22,6 +23,9 @@ public class ImportWriter {
         String arguments = FunctionParameters.getParametersTypes(importLLIR.getImportDescriptor().getParameters());
         this.code += getIdentifiers(importLLIR) + "(" + arguments + ")"+ CGConst.types.get(importLLIR.getImportDescriptor().getReturn()) + "\n";
         FunctionBody.decStack(1 + importLLIR.getImportDescriptor().getParameters().size() - (importLLIR.getImportDescriptor().getReturn() == Type.VOID?0:1));
+        
+        if(importLLIR.isIsolated() && importLLIR.getImportDescriptor().getType() != Type.VOID)
+            this.code += POP + "\n";
     }
 
     private String getIdentifiers(LLIRImport importLLIR){
