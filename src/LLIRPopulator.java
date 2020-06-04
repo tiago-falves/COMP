@@ -326,13 +326,27 @@ public class LLIRPopulator {
                     mc.setIsolated(true);
                     ifElseBlock.addNode(mc);
                 }
-                /*
                 else if(peek() instanceof LLIRWhileBlock) {
                     LLIRWhileBlock whileBlock = (LLIRWhileBlock) peek();
                     mc.setIsolated(true);
                     whileBlock.addNode(mc);
                 }
-                */
+                
+            }else if(peek() instanceof LLIRImport){
+                LLIRImport mc = (LLIRImport) this.llirStack.pop();
+                if(peek() instanceof LLIRMethodCall){
+                    LLIRMethodCall actual = (LLIRMethodCall) peek();
+                    arguments.add(mc);
+                    actual.setParametersExpressions(arguments);
+                }
+                else if(peek() instanceof LLIRIfElseBlock) {
+                    LLIRIfElseBlock ifElseBlock = (LLIRIfElseBlock) peek();
+                    ifElseBlock.addNode(mc);
+                }
+                else if(peek() instanceof LLIRWhileBlock) {
+                    LLIRWhileBlock whileBlock = (LLIRWhileBlock) peek();
+                    whileBlock.addNode(mc);
+                }
             }
         }
     }
