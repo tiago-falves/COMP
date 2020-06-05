@@ -294,12 +294,12 @@ public class LLIRPopulator {
 
 
         if (peek() instanceof LLIRMethodCall){
-            LLIRMethodCall actual = (LLIRMethodCall) this.llirStack.pop();
+            /*LLIRMethodCall actual = (LLIRMethodCall) this.llirStack.pop();
             if(peek() instanceof  LLIRMethodCall){
                 arguments.add(actual);
             }else{
                 this.llirStack.push(actual);
-            }
+            }*/
 
             LLIRMethodCall function = (LLIRMethodCall) peek();
             function.setParametersExpressions(arguments);
