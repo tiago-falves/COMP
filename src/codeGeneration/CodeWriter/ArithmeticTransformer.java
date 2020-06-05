@@ -6,8 +6,9 @@ import java.util.ArrayList;
 import llir.LLIRArithmetic;
 import llir.LLIRExpression;
 import llir.LLIRInteger;
-import llir.LLIRParenthesis;
 import llir.ArithmeticOperation;
+
+import optimizations.*;
 
 public class ArithmeticTransformer {
     LLIRArithmetic originalArithmetic;
@@ -36,9 +37,27 @@ public class ArithmeticTransformer {
         }
 
         expressions.add(originalArithmetic.getRightExpression());
-
+       
         LLIRArithmetic result = (LLIRArithmetic) recursiveTransform(expressions, operators, 1);
 
+        if(OptimizationManager.constantFolding){
+            LLIRArithmetic tmp_result = result;
+            //try{
+                LLIRArithmetic actual = result;
+                ConstantFolding constantFolding = new ConstantFolding(actual);
+                LLIRExpression expr = constantFolding.getArithmetic();
+
+                if(expr instanceof LLIRArithmetic){
+                    result = (LLIRArithmetic)expr;
+                }else{
+                    result = new LLIRArithmetic(ArithmeticOperation.SUM, expr, new LLIRInteger(0));
+                }
+            /* }catch(Exception e){
+                System.out.println(e.getMessage());
+                result = tmp_result;
+            }*/
+        }
+        
         return result;
     }
 
