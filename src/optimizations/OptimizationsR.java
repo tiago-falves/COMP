@@ -81,7 +81,7 @@ public class OptimizationsR {
         String s = "";
         System.out.println(currentLine);
         for (int i = 1; i <= currentLine; i++) {
-            System.out.println("Statement");
+            System.out.println("Statement " + i);
             List<String> defs = def.get(i);
             List<String> uses = use.get(i);
             for(String defName : defs) System.out.println("\tDef: " + defName);
