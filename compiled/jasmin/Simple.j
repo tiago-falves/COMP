@@ -21,17 +21,13 @@
 .method public static main([Ljava/lang/String;)V
 	.limit stack 3
 	.limit locals 5
-	bipush	20
-	istore_1
-	bipush	10
-	istore_2
 	new Simple
 	dup
 	invokespecial Simple/<init>()V
 	astore	4
 	aload	4
-	iload_1
-	iload_2
+	bipush	20
+	bipush	10
 	invokevirtual Simple/add(II)I
 	istore_3
 	iload_3
