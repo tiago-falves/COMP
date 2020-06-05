@@ -1,5 +1,6 @@
 import symbols.ClassDescriptor;
 import symbols.SymbolsTable;
+import optimizations.OptimizationManager;
 
 
 public class Main {
@@ -15,6 +16,8 @@ public class Main {
                 debugMode = true;
             }else if(args[i].equals("-Winit") || args[i].equals("--InitializedWarning")){
                 initializedWarning = true;
+            }else if(args[i].equals("-o")){
+                OptimizationManager.constantPropagation = true;
             }
         }
 

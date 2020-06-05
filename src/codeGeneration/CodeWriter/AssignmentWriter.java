@@ -3,6 +3,8 @@ package codeGeneration.CodeWriter;
 import codeGeneration.CGConst;
 import codeGeneration.FunctionBody;
 import llir.*;
+import optimizations.OptimizationManager;
+import symbols.ConstantDescriptor;
 import symbols.NamedTypeDescriptor;
 import symbols.Type;
 
@@ -19,36 +21,40 @@ public class AssignmentWriter {
         this.code  = "";
         this.assignment = assignment;
 
-        String name = assignment.getVariable().getVariable().getName();
-        String variableIndex = FunctionBody.getVariableIndexExists(name);
-        boolean variableIndexNotFound = false;
-        if(variableIndex == ""){
-            variableIndexNotFound = true;
-            this.code += "\taload_0\n";
-        }
+        ConstantDescriptor constantDescriptor = assignment.getVariable().getVariable().getConstantDescriptor();
+        if(!(OptimizationManager.constantPropagation && constantDescriptor.isConstant())) {
 
-        type =getVariableCode(variableIndexNotFound);
-
-        getAssignmentExpression();
-
-        // get the instruction to store
-        if(isArrayAccess){
-            this.code += "\tiastore\n";
-        }else{
-            variableIndex = FunctionBody.getVariableIndexExists(name);
-
-            if(variableIndex != ""){
-                this.code += CGConst.store.get(type);
-                // assign to the correct variable
-                this.code = this.code + variableIndex + "\n";
-            }else{
-                this.code += CGConst.PUT_FIELD + FunctionBody.getField(name.equals("field") ? "_field" : name, type);
-                FunctionBody.incStack();FunctionBody.incStack();
+            String name = assignment.getVariable().getVariable().getName();
+            String variableIndex = FunctionBody.getVariableIndexExists(name);
+            boolean variableIndexNotFound = false;
+            if(variableIndex == ""){
+                variableIndexNotFound = true;
+                this.code += "\taload_0\n";
             }
 
-            
+            type =getVariableCode(variableIndexNotFound);
+
+            getAssignmentExpression();
+
+            // get the instruction to store
+            if(isArrayAccess){
+                this.code += "\tiastore\n";
+            }else{
+                variableIndex = FunctionBody.getVariableIndexExists(name);
+
+                if(variableIndex != ""){
+                    this.code += CGConst.store.get(type);
+                    // assign to the correct variable
+                    this.code = this.code + variableIndex + "\n";
+                }else{
+                    this.code += CGConst.PUT_FIELD + FunctionBody.getField(name.equals("field") ? "_field" : name, type);
+                    FunctionBody.incStack();FunctionBody.incStack();
+                }
+
+                
+            }
+            FunctionBody.decStack(1);
         }
-        FunctionBody.decStack(1);
     }
 
     public Type getAssignmentExpression(){
