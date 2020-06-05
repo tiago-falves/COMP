@@ -8,7 +8,7 @@
 .end method
 
 .method public static main([Ljava/lang/String;)V
-	.limit stack 99
+	.limit stack 0
 	.limit locals 1
 	invokestatic ioPlus/printHelloWorld()V
 	return

@@ -8,7 +8,7 @@
 .end method
 
 .method public static main([Ljava/lang/String;)V
-	.limit stack 99
+	.limit stack 4
 	.limit locals 5
 	bipush	10
 	newarray int
@@ -55,7 +55,7 @@ endWhile_0:
 .end method
 
 .method public printL([I)Z
-	.limit stack 99
+	.limit stack 4
 	.limit locals 4
 	iconst_0
 	istore_2
@@ -85,7 +85,7 @@ endWhile_1:
 .end method
 
 .method public quicksort([I)Z
-	.limit stack 99
+	.limit stack 5
 	.limit locals 2
 	aload_0
 	aload_1
@@ -99,7 +99,7 @@ endWhile_1:
 .end method
 
 .method public quicksort([III)Z
-	.limit stack 99
+	.limit stack 5
 	.limit locals 6
 	iload_2
 	iload_3
@@ -140,7 +140,7 @@ endIf_0:
 .end method
 
 .method public partition([III)I
-	.limit stack 99
+	.limit stack 6
 	.limit locals 9
 	aload_1
 	iload_3

@@ -8,7 +8,7 @@
 .end method
 
 .method public performSingleEstimate()Z
-	.limit stack 99
+	.limit stack 4
 	.limit locals 6
 	iconst_0
 	bipush	100
@@ -53,7 +53,7 @@ endIf_0:
 .end method
 
 .method public estimatePi100(I)I
-	.limit stack 99
+	.limit stack 4
 	.limit locals 6
 	iconst_0
 	istore_3
@@ -85,18 +85,18 @@ endIf_1:
 	istore_3
 	goto while_0
 endWhile_0:
+	sipush	400
 	iload_2
+	imul
 	iload_1
 	idiv
-	sipush	400
-	imul
 	istore	4
 	iload	4
 	ireturn
 .end method
 
 .method public static main([Ljava/lang/String;)V
-	.limit stack 99
+	.limit stack 4
 	.limit locals 3
 	invokestatic ioPlus/requestNumber()I
 	istore_2

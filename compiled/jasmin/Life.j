@@ -15,7 +15,7 @@
 .end method
 
 .method public static main([Ljava/lang/String;)V
-	.limit stack 99
+	.limit stack 2
 	.limit locals 4
 	new Life
 	dup
@@ -27,13 +27,21 @@
 while_1:
 	iconst_1
 	ifeq endWhile_1
+	aload_1
+	invokevirtual Life/printField()Z
+	pop
+	aload_1
+	invokevirtual Life/update()Z
+	pop
+	invokestatic io/read()I
+	istore_2
 	goto while_1
 endWhile_1:
 	return
 .end method
 
 .method public init()Z
-	.limit stack 99
+	.limit stack 4
 	.limit locals 3
 	iconst_1
 	newarray int
@@ -78,7 +86,7 @@ endWhile_1:
 .end method
 
 .method public field([I)[I
-	.limit stack 99
+	.limit stack 3
 	.limit locals 3
 	bipush	100
 	newarray int
@@ -492,7 +500,7 @@ endWhile_1:
 .end method
 
 .method public update()Z
-	.limit stack 99
+	.limit stack 5
 	.limit locals 7
 	aload_0
 	getfield Life/_field [I
@@ -600,7 +608,7 @@ endWhile_2:
 .end method
 
 .method public printField()Z
-	.limit stack 99
+	.limit stack 4
 	.limit locals 4
 	iconst_0
 	istore_1
@@ -652,7 +660,7 @@ endWhile_3:
 .end method
 
 .method public trIdx(II)I
-	.limit stack 99
+	.limit stack 2
 	.limit locals 3
 	aload_0
 	getfield Life/xMax I
@@ -666,7 +674,7 @@ endWhile_3:
 .end method
 
 .method public cartIdx(I)[I
-	.limit stack 99
+	.limit stack 3
 	.limit locals 6
 	aload_0
 	getfield Life/xMax I
@@ -677,11 +685,13 @@ endWhile_3:
 	iload	4
 	idiv
 	istore_3
+	iconst_0
 	iload_3
 	iload	4
 	imul
-	iload_1
 	isub
+	iload_1
+	iadd
 	istore_2
 	iconst_2
 	newarray int
@@ -699,7 +709,7 @@ endWhile_3:
 .end method
 
 .method public getNeighborCoords(I)[I
-	.limit stack 99
+	.limit stack 5
 	.limit locals 11
 	aload_0
 	iload_1
@@ -853,7 +863,7 @@ endIf_8:
 .end method
 
 .method public getLiveNeighborN(I)I
-	.limit stack 99
+	.limit stack 7
 	.limit locals 6
 	iconst_0
 	istore	4
@@ -902,7 +912,7 @@ endWhile_4:
 .end method
 
 .method public busyWait(I)Z
-	.limit stack 99
+	.limit stack 4
 	.limit locals 5
 	iload_1
 	aload_0
@@ -932,7 +942,7 @@ endWhile_5:
 .end method
 
 .method public eq(II)Z
-	.limit stack 99
+	.limit stack 6
 	.limit locals 3
 	aload_0
 	iload_1
@@ -951,7 +961,7 @@ endWhile_5:
 .end method
 
 .method public ne(II)Z
-	.limit stack 99
+	.limit stack 3
 	.limit locals 3
 	aload_0
 	iload_1
@@ -963,7 +973,7 @@ endWhile_5:
 .end method
 
 .method public lt(II)Z
-	.limit stack 99
+	.limit stack 4
 	.limit locals 3
 	iload_1
 	iload_2
@@ -977,7 +987,7 @@ endLess_9:
 .end method
 
 .method public le(II)Z
-	.limit stack 99
+	.limit stack 7
 	.limit locals 3
 	aload_0
 	iload_1
@@ -998,7 +1008,7 @@ endLess_9:
 .end method
 
 .method public gt(II)Z
-	.limit stack 99
+	.limit stack 3
 	.limit locals 3
 	aload_0
 	iload_1
@@ -1010,7 +1020,7 @@ endLess_9:
 .end method
 
 .method public ge(II)Z
-	.limit stack 99
+	.limit stack 7
 	.limit locals 3
 	aload_0
 	iload_1

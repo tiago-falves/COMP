@@ -8,7 +8,7 @@
 .end method
 
 .method public static main([Ljava/lang/String;)V
-	.limit stack 99
+	.limit stack 4
 	.limit locals 7
 	bipush	20
 	istore_1
@@ -19,36 +19,36 @@
 	astore	4
 	iload_1
 	iload_2
-	if_icmpge notLess_0
+	if_icmpge notLess_41
 	iconst_1
-	goto endLess_0
-notLess_0:
+	goto endLess_41
+notLess_41:
 	iconst_0
-endLess_0:
-	ifeq else_0
+endLess_41:
+	ifeq else_33
 	iload_1
 	iconst_1
 	isub
 	istore_3
-	goto endIf_0
-else_0:
+	goto endIf_33
+else_33:
 	iload_2
 	iconst_1
 	isub
 	istore_3
-endIf_0:
-while_0:
+endIf_33:
+while_12:
 	iconst_0
 	iconst_1
 	isub
 	iload_3
-	if_icmpge notLess_1
+	if_icmpge notLess_42
 	iconst_1
-	goto endLess_1
-notLess_1:
+	goto endLess_42
+notLess_42:
 	iconst_0
-endLess_1:
-	ifeq endWhile_0
+endLess_42:
+	ifeq endWhile_12
 	aload	4
 	iload_3
 	iload_1
@@ -67,21 +67,21 @@ endLess_1:
 	iconst_1
 	isub
 	istore_2
-	goto while_0
-endWhile_0:
+	goto while_12
+endWhile_12:
 	iconst_0
 	istore_3
-while_1:
+while_13:
 	iload_3
 	aload	4
 	arraylength
-	if_icmpge notLess_2
+	if_icmpge notLess_43
 	iconst_1
-	goto endLess_2
-notLess_2:
+	goto endLess_43
+notLess_43:
 	iconst_0
-endLess_2:
-	ifeq endWhile_1
+endLess_43:
+	ifeq endWhile_13
 	aload	4
 	iload_3
 	iaload
@@ -90,8 +90,8 @@ endLess_2:
 	iconst_1
 	iadd
 	istore_3
-	goto while_1
-endWhile_1:
+	goto while_13
+endWhile_13:
 	return
 .end method
 

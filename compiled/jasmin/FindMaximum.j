@@ -9,7 +9,7 @@
 .end method
 
 .method public find_maximum([I)I
-	.limit stack 99
+	.limit stack 4
 	.limit locals 6
 	iconst_1
 	istore_2
@@ -57,31 +57,27 @@ endWhile_0:
 .end method
 
 .method public build_test_arr()I
-	.limit stack 99
+	.limit stack 4
 	.limit locals 1
 	aload_0
 	iconst_5
 	newarray int
 	putfield FindMaximum/test_arr [I
 	aload_0
-	aload_0
 	getfield FindMaximum/test_arr [I
 	iconst_0
 	bipush	14
 	iastore
-	aload_0
 	aload_0
 	getfield FindMaximum/test_arr [I
 	iconst_1
 	bipush	28
 	iastore
 	aload_0
-	aload_0
 	getfield FindMaximum/test_arr [I
 	iconst_2
 	iconst_0
 	iastore
-	aload_0
 	aload_0
 	getfield FindMaximum/test_arr [I
 	iconst_3
@@ -89,7 +85,6 @@ endWhile_0:
 	iconst_5
 	isub
 	iastore
-	aload_0
 	aload_0
 	getfield FindMaximum/test_arr [I
 	iconst_4
@@ -100,7 +95,7 @@ endWhile_0:
 .end method
 
 .method public get_array()[I
-	.limit stack 99
+	.limit stack 1
 	.limit locals 1
 	aload_0
 	getfield FindMaximum/test_arr [I
@@ -108,7 +103,7 @@ endWhile_0:
 .end method
 
 .method public static main([Ljava/lang/String;)V
-	.limit stack 99
+	.limit stack 2
 	.limit locals 3
 	new FindMaximum
 	dup

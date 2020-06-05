@@ -8,7 +8,7 @@
 .end method
 
 .method public add(II)I
-	.limit stack 99
+	.limit stack 2
 	.limit locals 4
 	iload_1
 	iload_2
@@ -19,7 +19,7 @@
 .end method
 
 .method public static main([Ljava/lang/String;)V
-	.limit stack 99
+	.limit stack 3
 	.limit locals 5
 	bipush	20
 	istore_1
@@ -40,7 +40,7 @@
 .end method
 
 .method public constInstr()I
-	.limit stack 99
+	.limit stack 1
 	.limit locals 2
 	iconst_0
 	istore_1
