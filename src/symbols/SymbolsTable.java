@@ -101,7 +101,7 @@ public class SymbolsTable {
                 else {
                     System.out.println(prefix + name + " ---> " + descriptor.getClass().getName());
                 }
-         }
+            }
 
         }
     }

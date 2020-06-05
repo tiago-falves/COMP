@@ -4,6 +4,7 @@ import java.util.*;
 
 import codeGeneration.CodeWriter.*;
 import llir.*;
+import optimizations.OptimizationsR;
 import symbols.*;
 
 
@@ -79,6 +80,7 @@ public class FunctionBody {
         pushVariables();
 
         for(LLIRNode node : this.functionDescriptor.getFunctionBody()) {
+            OptimizationsR.incrementLine();
             FunctionBody.resetStack();
             if (node instanceof LLIRAssignment) {
                 AssignmentWriter assignmentWriter = new AssignmentWriter((LLIRAssignment) node);

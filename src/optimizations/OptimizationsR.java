@@ -3,56 +3,52 @@ package optimizations;
 import llir.LLIRNode;
 import symbols.Descriptor;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class OptimizationsR {
 
-    public static LinkedHashMap<Integer, List<Integer>> def; //Statement Number Variable Indexes
-    public static LinkedHashMap<Integer, List<Integer>> use; //Statement Number Variable Indexes
-    public static LinkedHashMap<Integer, List<Integer>> succ; //Statement Number Successors
-    public static LinkedHashMap<Integer, List<Integer>> pred; //Statement Number Predecessors
+    //O variable Index remoceça em cada função? aqui ja nao e suposto right?
+    //Mais vale usar Strings?
+    public static LinkedHashMap<Integer, List<String>> def = new LinkedHashMap<>(); //Statement Number Variable Indexes
+    public static LinkedHashMap<Integer, List<String>> use = new LinkedHashMap<>(); //Statement Number Variable Indexes
+    public static LinkedHashMap<Integer, List<Integer>> succ = new LinkedHashMap<>(); //Statement Number Successors
+    public static LinkedHashMap<Integer, List<Integer>> pred = new LinkedHashMap<>(); //Statement Number Predecessors
     public static int currentLine = 0;
-
-    public OptimizationsR() {
-        def = new LinkedHashMap<>();
-        use = new LinkedHashMap<>();
-        succ = new LinkedHashMap<>();
-        pred = new LinkedHashMap<>();
-    }
 
     public static void incrementLine(){
         currentLine++;
-        def.put(currentLine,new ArrayList<>());
-        use.put(currentLine,new ArrayList<>());
-        succ.put(currentLine,new ArrayList<>());
-        pred.put(currentLine,new ArrayList<>());
+        List<String> defs = new ArrayList<>();
+        List<String> uses = new ArrayList<>();
+        List<Integer> succs = new ArrayList<>();
+        List<Integer> preds = new ArrayList<>();
+        def.put(currentLine,defs);
+        use.put(currentLine,uses);
+        succ.put(currentLine,succs);
+        pred.put(currentLine,preds);
 
     }
 
-    public static void addDef(int variableIndex){
-        List<Integer> defsList;
+    public static void addDef(String variableName){
+        List<String> defsList;
         if (def.containsKey(currentLine)){ //Nao e muito necessario
             defsList = def.get(currentLine);
-            defsList.add(variableIndex);
+            defsList.add(variableName);
         }else{
             defsList = new ArrayList<>();
-            defsList.add(variableIndex);
+            defsList.add(variableName);
             def.put(currentLine,defsList);
         }
 
     }
 
-    public static void addUse(int variableIndex){
-        List<Integer> usesList;
+    public static void addUse(String variableName){
+        List<String> usesList;
         if (use.containsKey(currentLine)){ //Nao e muito necessario
             usesList = use.get(currentLine);
-            usesList.add(variableIndex);
+            usesList.add(variableName);
         }else{
             usesList = new ArrayList<>();
-            usesList.add(variableIndex);
+            usesList.add(variableName);
             use.put(currentLine,usesList);
         }
     }
@@ -79,6 +75,21 @@ public class OptimizationsR {
             predsList.add(predessor);
             pred.put(currentLine,predsList);
         }
+    }
+
+    public static void print() {
+        String s = "";
+        System.out.println(currentLine);
+        for (int i = 1; i <= currentLine; i++) {
+            System.out.println("Statement");
+            List<String> defs = def.get(i);
+            List<String> uses = use.get(i);
+            for(String defName : defs) System.out.println("\tDef: " + defName);
+            for(String useName : uses) System.out.println("\tUse: " + useName);
+
+        }
+
+        System.out.println(s);
     }
 
 

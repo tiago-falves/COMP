@@ -1,3 +1,4 @@
+import optimizations.OptimizationsR;
 import symbols.ClassDescriptor;
 import symbols.SymbolsTable;
 
@@ -50,9 +51,12 @@ public class Main {
         }
 
         symbolsTable = tb.getTable();
+        OptimizationsR optimizationsR = new OptimizationsR();
         ClassDescriptor classDescriptor = CodeGenerator.getClass(root, symbolsTable);
         CodeGenerator codeGenerator = new CodeGenerator(classDescriptor);
         codeGenerator.generate();
+
+        OptimizationsR.print();
 	}
 
 }
