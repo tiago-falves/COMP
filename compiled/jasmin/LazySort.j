@@ -15,32 +15,32 @@
 	iconst_5
 	invokestatic MathUtils/random(II)I
 	iconst_4
-	if_icmpge notLess_10
+	if_icmpge notLess_49
 	iconst_1
-	goto endLess_10
-notLess_10:
+	goto endLess_49
+notLess_49:
 	iconst_0
-endLess_10:
-	ifeq else_11
+endLess_49:
+	ifeq else_37
 	aload_0
 	aload_1
 	invokevirtual LazySort/beLazy([I)Z
 	pop
 	iconst_1
 	istore_2
-	goto endIf_11
-else_11:
+	goto endIf_37
+else_37:
 	iconst_0
 	istore_2
-endIf_11:
+endIf_37:
 	iload_2
-	ifeq else_12
+	ifeq else_38
 	iload_2
 	iconst_1
 	ixor
 	istore_2
-	goto endIf_12
-else_12:
+	goto endIf_38
+else_38:
 	aload_0
 	aload_1
 	iconst_0
@@ -50,7 +50,7 @@ else_12:
 	isub
 	invokevirtual LazySort/quicksort([III)Z
 	istore_2
-endIf_12:
+endIf_38:
 	iload_2
 	ireturn
 .end method
@@ -64,17 +64,17 @@ endIf_12:
 	astore_1
 	iconst_0
 	istore_2
-while_6:
+while_16:
 	iload_2
 	aload_1
 	arraylength
-	if_icmpge notLess_11
+	if_icmpge notLess_50
 	iconst_1
-	goto endLess_11
-notLess_11:
+	goto endLess_50
+notLess_50:
 	iconst_0
-endLess_11:
-	ifeq endWhile_6
+endLess_50:
+	ifeq endWhile_16
 	aload_1
 	iload_2
 	aload_1
@@ -86,8 +86,8 @@ endLess_11:
 	iconst_1
 	iadd
 	istore_2
-	goto while_6
-endWhile_6:
+	goto while_16
+endWhile_16:
 	new LazySort
 	dup
 	invokespecial LazySort/<init>()V
@@ -111,18 +111,18 @@ endWhile_6:
 	istore_2
 	iconst_0
 	istore_3
-while_7:
+while_17:
 	iload_3
 	iload_2
 	iconst_2
 	idiv
-	if_icmpge notLess_12
+	if_icmpge notLess_51
 	iconst_1
-	goto endLess_12
-notLess_12:
+	goto endLess_51
+notLess_51:
 	iconst_0
-endLess_12:
-	ifeq endWhile_7
+endLess_51:
+	ifeq endWhile_17
 	aload_1
 	iload_3
 	iconst_0
@@ -133,18 +133,18 @@ endLess_12:
 	iconst_1
 	iadd
 	istore_3
-	goto while_7
-endWhile_7:
-while_8:
+	goto while_17
+endWhile_17:
+while_18:
 	iload_3
 	iload_2
-	if_icmpge notLess_13
+	if_icmpge notLess_52
 	iconst_1
-	goto endLess_13
-notLess_13:
+	goto endLess_52
+notLess_52:
 	iconst_0
-endLess_13:
-	ifeq endWhile_8
+endLess_52:
+	ifeq endWhile_18
 	aload_1
 	iload_3
 	iconst_0
@@ -157,8 +157,8 @@ endLess_13:
 	iconst_1
 	iadd
 	istore_3
-	goto while_8
-endWhile_8:
+	goto while_18
+endWhile_18:
 	iconst_1
 	ireturn
 .end method

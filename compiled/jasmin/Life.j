@@ -24,9 +24,9 @@
 	aload_1
 	invokevirtual Life/init()Z
 	pop
-while_1:
+while_11:
 	iconst_1
-	ifeq endWhile_1
+	ifeq endWhile_11
 	aload_1
 	invokevirtual Life/printField()Z
 	pop
@@ -35,8 +35,8 @@ while_1:
 	pop
 	invokestatic io/read()I
 	istore_2
-	goto while_1
-endWhile_1:
+	goto while_11
+endWhile_11:
 	return
 .end method
 
@@ -509,18 +509,18 @@ endWhile_1:
 	astore	5
 	iconst_0
 	istore_1
-while_2:
+while_12:
 	iload_1
 	aload_0
 	getfield Life/_field [I
 	arraylength
-	if_icmpge notLess_2
+	if_icmpge notLess_41
 	iconst_1
-	goto endLess_2
-notLess_2:
+	goto endLess_41
+notLess_41:
 	iconst_0
-endLess_2:
-	ifeq endWhile_2
+endLess_41:
+	ifeq endWhile_12
 	aload_0
 	getfield Life/_field [I
 	iload_1
@@ -532,15 +532,15 @@ endLess_2:
 	istore_3
 	iload_2
 	iconst_1
-	if_icmpge notLess_3
+	if_icmpge notLess_42
 	iconst_1
-	goto endLess_3
-notLess_3:
+	goto endLess_42
+notLess_42:
 	iconst_0
-endLess_3:
+endLess_42:
 	iconst_1
 	ixor
-	ifeq else_2
+	ifeq else_28
 	aload_0
 	iload_3
 	aload_0
@@ -556,13 +556,13 @@ endLess_3:
 	iload	4
 	iconst_1
 	ixor
-	ifeq else_3
+	ifeq else_29
 	aload	5
 	iload_1
 	iconst_0
 	iastore
-	goto endIf_3
-else_3:
+	goto endIf_29
+else_29:
 	aload	5
 	iload_1
 	aload_0
@@ -570,21 +570,21 @@ else_3:
 	iload_1
 	iaload
 	iastore
-endIf_3:
-	goto endIf_2
-else_2:
+endIf_29:
+	goto endIf_28
+else_28:
 	aload_0
 	iload_3
 	aload_0
 	getfield Life/REPRODUCE_NUM I
 	invokevirtual Life/eq(II)Z
-	ifeq else_4
+	ifeq else_30
 	aload	5
 	iload_1
 	iconst_1
 	iastore
-	goto endIf_4
-else_4:
+	goto endIf_30
+else_30:
 	aload	5
 	iload_1
 	aload_0
@@ -592,14 +592,14 @@ else_4:
 	iload_1
 	iaload
 	iastore
-endIf_4:
-endIf_2:
+endIf_30:
+endIf_28:
 	iload_1
 	iconst_1
 	iadd
 	istore_1
-	goto while_2
-endWhile_2:
+	goto while_12
+endWhile_12:
 	aload_0
 	aload	5
 	putfield Life/_field [I
@@ -614,30 +614,30 @@ endWhile_2:
 	istore_1
 	iconst_0
 	istore_2
-while_3:
+while_13:
 	iload_1
 	aload_0
 	getfield Life/_field [I
 	arraylength
-	if_icmpge notLess_4
+	if_icmpge notLess_43
 	iconst_1
-	goto endLess_4
-notLess_4:
+	goto endLess_43
+notLess_43:
 	iconst_0
-endLess_4:
-	ifeq endWhile_3
+endLess_43:
+	ifeq endWhile_13
 	aload_0
 	iload_2
 	aload_0
 	getfield Life/xMax I
 	invokevirtual Life/gt(II)Z
-	ifeq else_5
+	ifeq else_31
 	invokestatic io/println()V
 	iconst_0
 	istore_2
-	goto endIf_5
-else_5:
-endIf_5:
+	goto endIf_31
+else_31:
+endIf_31:
 	aload_0
 	getfield Life/_field [I
 	iload_1
@@ -651,8 +651,8 @@ endIf_5:
 	iconst_1
 	iadd
 	istore_2
-	goto while_3
-endWhile_3:
+	goto while_13
+endWhile_13:
 	invokestatic io/println()V
 	invokestatic io/println()V
 	iconst_1
@@ -726,13 +726,13 @@ endWhile_3:
 	iload_2
 	aload_0
 	getfield Life/xMax I
-	if_icmpge notLess_5
+	if_icmpge notLess_44
 	iconst_1
-	goto endLess_5
-notLess_5:
+	goto endLess_44
+notLess_44:
 	iconst_0
-endLess_5:
-	ifeq else_6
+endLess_44:
+	ifeq else_32
 	iload_2
 	iconst_1
 	iadd
@@ -741,36 +741,36 @@ endLess_5:
 	iload_2
 	iconst_0
 	invokevirtual Life/gt(II)Z
-	ifeq else_7
+	ifeq else_33
 	iload_2
 	iconst_1
 	isub
 	istore	4
-	goto endIf_7
-else_7:
+	goto endIf_33
+else_33:
 	aload_0
 	getfield Life/xMax I
 	istore	4
-endIf_7:
-	goto endIf_6
-else_6:
+endIf_33:
+	goto endIf_32
+else_32:
 	iconst_0
 	istore	6
 	iload_2
 	iconst_1
 	isub
 	istore	4
-endIf_6:
+endIf_32:
 	iload_3
 	aload_0
 	getfield Life/yMax I
-	if_icmpge notLess_6
+	if_icmpge notLess_45
 	iconst_1
-	goto endLess_6
-notLess_6:
+	goto endLess_45
+notLess_45:
 	iconst_0
-endLess_6:
-	ifeq else_8
+endLess_45:
+	ifeq else_34
 	iload_3
 	iconst_1
 	iadd
@@ -779,26 +779,26 @@ endLess_6:
 	iload_3
 	iconst_0
 	invokevirtual Life/gt(II)Z
-	ifeq else_9
+	ifeq else_35
 	iload_3
 	iconst_1
 	isub
 	istore	5
-	goto endIf_9
-else_9:
+	goto endIf_35
+else_35:
 	aload_0
 	getfield Life/yMax I
 	istore	5
-endIf_9:
-	goto endIf_8
-else_8:
+endIf_35:
+	goto endIf_34
+else_34:
 	iconst_0
 	istore	7
 	iload_3
 	iconst_1
 	isub
 	istore	5
-endIf_8:
+endIf_34:
 	bipush	8
 	newarray int
 	astore	9
@@ -873,17 +873,17 @@ endIf_8:
 	astore_2
 	iconst_0
 	istore_3
-while_4:
+while_14:
 	iload_3
 	aload_2
 	arraylength
-	if_icmpge notLess_7
+	if_icmpge notLess_46
 	iconst_1
-	goto endLess_7
-notLess_7:
+	goto endLess_46
+notLess_46:
 	iconst_0
-endLess_7:
-	ifeq endWhile_4
+endLess_46:
+	ifeq endWhile_14
 	aload_0
 	aload_0
 	getfield Life/_field [I
@@ -893,20 +893,20 @@ endLess_7:
 	iaload
 	iconst_0
 	invokevirtual Life/ne(II)Z
-	ifeq else_10
+	ifeq else_36
 	iload	4
 	iconst_1
 	iadd
 	istore	4
-	goto endIf_10
-else_10:
-endIf_10:
+	goto endIf_36
+else_36:
+endIf_36:
 	iload_3
 	iconst_1
 	iadd
 	istore_3
-	goto while_4
-endWhile_4:
+	goto while_14
+endWhile_14:
 	iload	4
 	ireturn
 .end method
@@ -921,22 +921,22 @@ endWhile_4:
 	istore_3
 	iconst_0
 	istore_2
-while_5:
+while_15:
 	iload_2
 	iload_3
-	if_icmpge notLess_8
+	if_icmpge notLess_47
 	iconst_1
-	goto endLess_8
-notLess_8:
+	goto endLess_47
+notLess_47:
 	iconst_0
-endLess_8:
-	ifeq endWhile_5
+endLess_47:
+	ifeq endWhile_15
 	iload_2
 	iconst_1
 	iadd
 	istore_2
-	goto while_5
-endWhile_5:
+	goto while_15
+endWhile_15:
 	iconst_1
 	ireturn
 .end method
@@ -977,12 +977,12 @@ endWhile_5:
 	.limit locals 3
 	iload_1
 	iload_2
-	if_icmpge notLess_9
+	if_icmpge notLess_48
 	iconst_1
-	goto endLess_9
-notLess_9:
+	goto endLess_48
+notLess_48:
 	iconst_0
-endLess_9:
+endLess_48:
 	ireturn
 .end method
 
