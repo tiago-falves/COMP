@@ -11,32 +11,23 @@ public class ConstantFolding {
 
     public ConstantFolding(LLIRArithmetic arithmeticExpression){
         this.arithmeticExpression = this.transformArithmetic(arithmeticExpression);
-        System.out.println();
     }
 
     public LLIRExpression transformArithmetic(LLIRArithmetic arithmetic){
-        System.out.println(arithmetic.getOperation());
         if(arithmetic.getLeftExpression() instanceof LLIRArithmetic){
-            System.out.println("asdgfasdf");
             LLIRArithmetic leftExpression = (LLIRArithmetic)arithmetic.getLeftExpression();
             arithmetic.setLeftExpression(transformArithmetic(leftExpression));
-            System.out.println("asssa");
         }
         if(arithmetic.getRightExpression() instanceof LLIRArithmetic){
-            System.out.println("dsgjhvcbdzkjqgfdklrjlkd");
             LLIRArithmetic rightExpression = (LLIRArithmetic)arithmetic.getRightExpression();
             arithmetic.setRightExpression(transformArithmetic(rightExpression));
-            System.out.println("hgfds");
         }
         
         if(arithmetic.getLeftExpression() instanceof LLIRInteger){
-            System.out.print(((LLIRInteger)arithmetic.getLeftExpression()).getValue() +" :");
             if(arithmetic.getRightExpression() instanceof LLIRInteger){
-                System.out.println(((LLIRInteger)arithmetic.getRightExpression()).getValue());
                 LLIRExpression expression = calculateArithmetic(arithmetic);
                 return expression;
             }
-            System.out.println();
         }
 
         return arithmetic;
