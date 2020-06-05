@@ -17,41 +17,41 @@
 	iconst_0
 	iaload
 	istore_3
-while_24:
+while_0:
 	iload_2
 	aload_1
 	arraylength
-	if_icmpge notLess_83
+	if_icmpge notLess_0
 	iconst_1
-	goto endLess_83
-notLess_83:
+	goto endLess_0
+notLess_0:
 	iconst_0
-endLess_83:
-	ifeq endWhile_24
+endLess_0:
+	ifeq endWhile_0
 	aload_1
 	iload_2
 	iaload
 	istore	4
 	iload_3
 	iload	4
-	if_icmpge notLess_84
+	if_icmpge notLess_1
 	iconst_1
-	goto endLess_84
-notLess_84:
+	goto endLess_1
+notLess_1:
 	iconst_0
-endLess_84:
-	ifeq else_60
+endLess_1:
+	ifeq else_0
 	iload	4
 	istore_3
-	goto endIf_60
-else_60:
-endIf_60:
+	goto endIf_0
+else_0:
+endIf_0:
 	iload_2
 	iconst_1
 	iadd
 	istore_2
-	goto while_24
-endWhile_24:
+	goto while_0
+endWhile_0:
 	iload_3
 	ireturn
 .end method
