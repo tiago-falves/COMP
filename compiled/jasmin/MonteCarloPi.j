@@ -34,20 +34,20 @@
 	istore	4
 	iload	4
 	bipush	100
-	if_icmpge notLess_0
+	if_icmpge notLess_51
 	iconst_1
-	goto endLess_0
-notLess_0:
+	goto endLess_51
+notLess_51:
 	iconst_0
-endLess_0:
-	ifeq else_0
+endLess_51:
+	ifeq else_37
 	iconst_1
 	istore_3
-	goto endIf_0
-else_0:
+	goto endIf_37
+else_37:
 	iconst_0
 	istore_3
-endIf_0:
+endIf_37:
 	iload_3
 	ireturn
 .end method
@@ -59,32 +59,32 @@ endIf_0:
 	istore_3
 	iconst_0
 	istore_2
-while_0:
+while_18:
 	iload_3
 	iload_1
-	if_icmpge notLess_1
+	if_icmpge notLess_52
 	iconst_1
-	goto endLess_1
-notLess_1:
+	goto endLess_52
+notLess_52:
 	iconst_0
-endLess_1:
-	ifeq endWhile_0
+endLess_52:
+	ifeq endWhile_18
 	aload_0
 	invokevirtual MonteCarloPi/performSingleEstimate()Z
-	ifeq else_1
+	ifeq else_38
 	iload_2
 	iconst_1
 	iadd
 	istore_2
-	goto endIf_1
-else_1:
-endIf_1:
+	goto endIf_38
+else_38:
+endIf_38:
 	iload_3
 	iconst_1
 	iadd
 	istore_3
-	goto while_0
-endWhile_0:
+	goto while_18
+endWhile_18:
 	sipush	400
 	iload_2
 	imul
