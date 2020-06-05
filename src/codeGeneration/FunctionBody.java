@@ -107,9 +107,6 @@ public class FunctionBody {
         }
         if(!foundReturn) generatedCode += "\treturn\n";
         
-        //TODO FIX THIS
-        maxStack = 99;
-        
         return STACK_LIMIT + maxStack + "\n" + LOCALS_LIMIT + "\n" + generatedCode;
     }
 

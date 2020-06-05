@@ -7,8 +7,11 @@ import symbols.Type;
 public class ArrayAccessWriter {
     private String code;
     private LLIRArrayAccess arrayAccess;
+    private boolean variableIndexNotFound;
 
-    public ArrayAccessWriter(LLIRArrayAccess arrayAccess,boolean isLoad){
+
+    public ArrayAccessWriter(LLIRArrayAccess arrayAccess,boolean isLoad, boolean variableIndexNotFound){
+        this.variableIndexNotFound = variableIndexNotFound;
         this.code = "";
         this.arrayAccess = arrayAccess;
         this.code += generateArrayCode(arrayAccess.getArray());
@@ -19,6 +22,10 @@ public class ArrayAccessWriter {
         }
     }
 
+    public ArrayAccessWriter(LLIRArrayAccess arrayAccess,boolean isLoad){
+        this(arrayAccess, isLoad, false);
+    }        
+
     public String generateArrayCode(LLIRExpression expression) {
         String result = new String();
         if (expression instanceof LLIRMethodCall) {
@@ -26,7 +33,7 @@ public class ArrayAccessWriter {
             result += methodCallWriter.getCode();
         }
         else if (expression instanceof LLIRVariable) {
-            VariableWriter arrayWriter = new VariableWriter((LLIRVariable) expression);
+            VariableWriter arrayWriter = new VariableWriter((LLIRVariable) expression, this.variableIndexNotFound);
             result += arrayWriter.getCode();
         }else{
             System.out.println(expression);

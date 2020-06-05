@@ -21,11 +21,13 @@ public class AssignmentWriter {
 
         String name = assignment.getVariable().getVariable().getName();
         String variableIndex = FunctionBody.getVariableIndexExists(name);
+        boolean variableIndexNotFound = false;
         if(variableIndex == ""){
+            variableIndexNotFound = true;
             this.code += "\taload_0\n";
         }
 
-        type =getVariableCode();
+        type =getVariableCode(variableIndexNotFound);
 
         getAssignmentExpression();
 
@@ -120,11 +122,11 @@ public class AssignmentWriter {
     }
 
 
-    private Type getVariableCode(){
+    private Type getVariableCode(boolean variableIndexNotFound){
 
         LLIRVariableAndArray variableAndArray = assignment.getVariable();
         if(variableAndArray instanceof LLIRArrayAccess){
-            ArrayAccessWriter arrayAccessWriter = new ArrayAccessWriter((LLIRArrayAccess) variableAndArray,false);
+            ArrayAccessWriter arrayAccessWriter = new ArrayAccessWriter((LLIRArrayAccess) variableAndArray,false, variableIndexNotFound);
             this.code += arrayAccessWriter.getCode();
             isArrayAccess = true;
         }

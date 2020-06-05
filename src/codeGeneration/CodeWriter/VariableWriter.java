@@ -8,26 +8,29 @@ import symbols.Type;
 
 public class VariableWriter {
     private String code;
+    private boolean variableIndexNotFound;
 
-    public VariableWriter(LLIRVariable variable){
+    public VariableWriter(LLIRVariable variable, boolean variableIndexNotFound){
+        this.variableIndexNotFound = variableIndexNotFound;
         this.code = "";
 
         FunctionBody.incStack();
 
         String variableIndex = FunctionBody.getVariableIndexExists(variable.getVariable().getName());
         if(variableIndex == "") {
-            this.code += "\taload_0\n";
+            if(!this.variableIndexNotFound){
+                this.code += "\taload_0\n";
+            }
             this.code += CGConst.GET_FIELD + FunctionBody.getField(variable.getVariable().getName().equals("field") ? "_field" : variable.getVariable().getName(),variable.getVariable().getType());
         }
         else{
             this.code += CGConst.load.get(variable.getVariable().getType());
             this.code +=variableIndex + "\n";
         } 
+    }
 
-
-        
-
-        
+    public VariableWriter(LLIRVariable variable){
+        this(variable, false);
     }
 
     public String getCode(){
