@@ -41,21 +41,15 @@ public class ArithmeticTransformer {
         LLIRArithmetic result = (LLIRArithmetic) recursiveTransform(expressions, operators, 1);
 
         if(OptimizationManager.constantFolding){
-            LLIRArithmetic tmp_result = result;
-            //try{
-                LLIRArithmetic actual = result;
-                ConstantFolding constantFolding = new ConstantFolding(actual);
-                LLIRExpression expr = constantFolding.getArithmetic();
+            LLIRArithmetic actual = result;
+            ConstantFoldingArithmetic constantFolding = new ConstantFoldingArithmetic(actual);
+            LLIRExpression expr = constantFolding.getArithmetic();
 
-                if(expr instanceof LLIRArithmetic){
-                    result = (LLIRArithmetic)expr;
-                }else{
-                    result = new LLIRArithmetic(ArithmeticOperation.SUM, expr, new LLIRInteger(0));
-                }
-            /* }catch(Exception e){
-                System.out.println(e.getMessage());
-                result = tmp_result;
-            }*/
+            if(expr instanceof LLIRArithmetic){
+                result = (LLIRArithmetic)expr;
+            }else{
+                result = new LLIRArithmetic(ArithmeticOperation.SUM, expr, new LLIRInteger(0));
+            }
         }
         
         return result;

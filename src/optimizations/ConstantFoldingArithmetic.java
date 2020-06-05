@@ -6,10 +6,10 @@ import llir.LLIRExpression;
 import llir.LLIRInteger;
 
 
-public class ConstantFolding {
+public class ConstantFoldingArithmetic {
     private LLIRExpression arithmeticExpression;
 
-    public ConstantFolding(LLIRArithmetic arithmeticExpression){
+    public ConstantFoldingArithmetic(LLIRArithmetic arithmeticExpression){
         this.arithmeticExpression = this.transformArithmetic(arithmeticExpression);
     }
 
