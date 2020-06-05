@@ -38,13 +38,10 @@ class FindMaximum {
 
 	public static void main(String[] args) {
 		FindMaximum fm;
-		int x;
 
 		fm = new FindMaximum();
 		fm.build_test_arr();
 
-		// TODO delete variable x
-		x = fm.find_maximum(fm.get_array());
-		ioPlus.printResult(x);
+		ioPlus.printResult(fm.find_maximum(fm.get_array()));
 	}
 }
