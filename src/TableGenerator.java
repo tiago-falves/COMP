@@ -678,7 +678,8 @@ public class TableGenerator {
 
         BlockDescriptor blockDescriptor = new BlockDescriptor(statementParentTable);
         
-        statementParentTable.addSymbol("while", blockDescriptor);
+        //TODO check if necessary
+        //statementParentTable.addSymbol("while", blockDescriptor);
         
         for(int i = 1; i < whileNode.jjtGetNumChildren(); i++){
             SimpleNode statementNode = (SimpleNode) whileNode.jjtGetChild(i);
@@ -736,7 +737,8 @@ public class TableGenerator {
 
         BlockDescriptor blockDescriptor = new BlockDescriptor(statementParentTable);
         
-        statementParentTable.addSymbol("if", blockDescriptor);
+        //TODO check if necessary
+        //statementParentTable.addSymbol("if", blockDescriptor);
         boolean found_else = false;
         for(int i = 1; i < ifNode.jjtGetNumChildren(); i++){
             SimpleNode statementNode = (SimpleNode) ifNode.jjtGetChild(i);
