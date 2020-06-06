@@ -2,6 +2,7 @@ package codeGeneration;
 
 import java.util.*;
 
+import optimizations.*;
 import codeGeneration.CodeWriter.*;
 import llir.*;
 import optimizations.OptimizationManager;
@@ -69,15 +70,74 @@ public class FunctionBody {
             String variableName = entry.getKey();
             int variableIndex = getVariableIndex(variableName);
             variableToIndex.put(variableName,variableIndex);
+
+            //Determine variables that are only assigned once (constant propagation)
+            if(OptimizationManager.constantPropagation && (entry.getValue().get(0) instanceof VariableDescriptor)) {
+
+                VariableDescriptor varDes = (VariableDescriptor) entry.getValue().get(0);
+                if(varDes.getType() != Type.INT && varDes.getType() != Type.BOOLEAN) continue;
+
+                if(searchForAssignments(varDes, functionDescriptor.getFunctionBody()) == 1) {
+                    if(varDes.getConstantDescriptor().isSimple()) {
+                        varDes.getConstantDescriptor().setConstant(true);
+                        System.out.println("\nConstant variable: " + varDes.getName());
+                    }
+                }
+            }
+
         }
 
+    }
+
+    public int searchForAssignments(VariableDescriptor varDes, List<LLIRNode> body) {
+        int assignments = 0;
+
+        for(LLIRNode node : body) {
+            if(assignments > 1) break;
+
+            if (node instanceof LLIRAssignment) {
+                LLIRAssignment assignmentNode = (LLIRAssignment) node;
+                LLIRVariableAndArray variableAndArray = (LLIRVariableAndArray) assignmentNode.getVariable();
+                NamedTypeDescriptor namedTypeDescriptor = (NamedTypeDescriptor) variableAndArray.getVariable();
+            
+                if(namedTypeDescriptor.getName() == varDes.getName()) {
+                    assignments++;
+
+                    if((assignmentNode.getExpression() instanceof LLIRInteger) && !varDes.getConstantDescriptor().isSimple()) {
+                        LLIRInteger assignementInteger = (LLIRInteger) assignmentNode.getExpression();
+                        varDes.setConstantDescriptor(new ConstantInt(assignementInteger.getValue()));
+                    }
+                    else if((assignmentNode.getExpression() instanceof LLIRBoolean) && !varDes.getConstantDescriptor().isSimple()) {
+                        LLIRBoolean assignementBoolean = (LLIRBoolean) assignmentNode.getExpression();
+                        varDes.setConstantDescriptor(new ConstantBoolean(assignementBoolean.getValue()));
+                    }
+
+                    // TODO: add more cases, for ex, a constant variable
+                }
+            }
+            else if (node instanceof LLIRIfElseBlock) {
+                LLIRIfElseBlock block = (LLIRIfElseBlock) node;
+
+                assignments += searchForAssignments(varDes, block.getIfNodes());
+                assignments += searchForAssignments(varDes, block.getElseNodes());
+            }
+            else if(node instanceof LLIRWhileBlock) {
+                LLIRWhileBlock block = (LLIRWhileBlock) node;
+
+                int found = searchForAssignments(varDes, block.getNodes());
+                if(found > 0) assignments += 2;
+            }
+        }
+
+        return assignments;
     }
 
     public String generate(){
 
         boolean foundReturn = false;
-
         String generatedCode = new String();
+
+        // Add variables to hash map
         pushVariables();
 
         for(LLIRNode node : this.functionDescriptor.getFunctionBody()) {
@@ -118,9 +178,6 @@ public class FunctionBody {
         return STACK_LIMIT + maxStack + "\n" + LOCALS_LIMIT + "\n" + generatedCode;
     }
 
-
-
-
     public static int getVariableIndex(String name){
         int variableIndex = variableToIndex.computeIfAbsent(
                 name,
@@ -133,6 +190,7 @@ public class FunctionBody {
 
 
     }
+
     public static String getVariableIndexExists(String name){
         Integer variableIndex = variableToIndex.get(name);
         if(variableIndex == null) {
@@ -163,12 +221,7 @@ public class FunctionBody {
             }
         }
 
-
         return fieldsToIndex;
     }
-
-    
-
-
 
 }
