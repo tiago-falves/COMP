@@ -19,6 +19,7 @@ public class ArrayAccessWriter {
         if(isLoad){
             this.code += "\tiaload\n";
             //FunctionBody.incStack();
+            FunctionBody.decStack(1);
         }
     }
 

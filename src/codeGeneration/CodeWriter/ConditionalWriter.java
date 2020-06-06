@@ -18,6 +18,7 @@ public class ConditionalWriter {
         this.conditional = conditional;
         this.code += generateCode(conditional.getLeftExpression());     // left
         this.code += generateCode(conditional.getRightExpression());    // right
+        FunctionBody.decStack(1);
 
         switch(conditional.getOperation()){
             case AND:
