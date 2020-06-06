@@ -10,37 +10,37 @@
 
 .method public quicksort([I)Z
 	.limit stack 5
-	.limit locals 4
+	.limit locals 3
 	iconst_0
 	iconst_5
 	invokestatic MathUtils/random(II)I
 	iconst_4
-	if_icmpge notLess_49
+	if_icmpge notLess_10
 	iconst_1
-	goto endLess_49
-notLess_49:
+	goto endLess_10
+notLess_10:
 	iconst_0
-endLess_49:
-	ifeq else_37
+endLess_10:
+	ifeq else_11
 	aload_0
 	aload_1
 	invokevirtual LazySort/beLazy([I)Z
 	pop
 	iconst_1
 	istore_2
-	goto endIf_37
-else_37:
+	goto endIf_11
+else_11:
 	iconst_0
 	istore_2
-endIf_37:
+endIf_11:
 	iload_2
-	ifeq else_38
+	ifeq else_12
 	iload_2
 	iconst_1
 	ixor
 	istore_2
-	goto endIf_38
-else_38:
+	goto endIf_12
+else_12:
 	aload_0
 	aload_1
 	iconst_0
@@ -50,7 +50,7 @@ else_38:
 	isub
 	invokevirtual LazySort/quicksort([III)Z
 	istore_2
-endIf_38:
+endIf_12:
 	iload_2
 	ireturn
 .end method
@@ -58,23 +58,23 @@ endIf_38:
 
 .method public static main([Ljava/lang/String;)V
 	.limit stack 4
-	.limit locals 6
+	.limit locals 5
 	bipush	10
 	newarray int
 	astore_1
 	iconst_0
 	istore_2
-while_16:
+while_6:
 	iload_2
 	aload_1
 	arraylength
-	if_icmpge notLess_50
+	if_icmpge notLess_11
 	iconst_1
-	goto endLess_50
-notLess_50:
+	goto endLess_11
+notLess_11:
 	iconst_0
-endLess_50:
-	ifeq endWhile_16
+endLess_11:
+	ifeq endWhile_6
 	aload_1
 	iload_2
 	aload_1
@@ -86,8 +86,8 @@ endLess_50:
 	iconst_1
 	iadd
 	istore_2
-	goto while_16
-endWhile_16:
+	goto while_6
+endWhile_6:
 	new LazySort
 	dup
 	invokespecial LazySort/<init>()V
@@ -105,24 +105,24 @@ endWhile_16:
 
 .method public beLazy([I)Z
 	.limit stack 4
-	.limit locals 5
+	.limit locals 4
 	aload_1
 	arraylength
 	istore_2
 	iconst_0
 	istore_3
-while_17:
+while_7:
 	iload_3
 	iload_2
 	iconst_2
 	idiv
-	if_icmpge notLess_51
+	if_icmpge notLess_12
 	iconst_1
-	goto endLess_51
-notLess_51:
+	goto endLess_12
+notLess_12:
 	iconst_0
-endLess_51:
-	ifeq endWhile_17
+endLess_12:
+	ifeq endWhile_7
 	aload_1
 	iload_3
 	iconst_0
@@ -133,18 +133,18 @@ endLess_51:
 	iconst_1
 	iadd
 	istore_3
-	goto while_17
-endWhile_17:
-while_18:
+	goto while_7
+endWhile_7:
+while_8:
 	iload_3
 	iload_2
-	if_icmpge notLess_52
+	if_icmpge notLess_13
 	iconst_1
-	goto endLess_52
-notLess_52:
+	goto endLess_13
+notLess_13:
 	iconst_0
-endLess_52:
-	ifeq endWhile_18
+endLess_13:
+	ifeq endWhile_8
 	aload_1
 	iload_3
 	iconst_0
@@ -157,8 +157,8 @@ endLess_52:
 	iconst_1
 	iadd
 	istore_3
-	goto while_18
-endWhile_18:
+	goto while_8
+endWhile_8:
 	iconst_1
 	ireturn
 .end method

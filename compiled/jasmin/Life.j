@@ -16,7 +16,7 @@
 
 .method public static main([Ljava/lang/String;)V
 	.limit stack 2
-	.limit locals 4
+	.limit locals 3
 	new Life
 	dup
 	invokespecial Life/<init>()V
@@ -24,9 +24,9 @@
 	aload_1
 	invokevirtual Life/init()Z
 	pop
-while_11:
+while_1:
 	iconst_1
-	ifeq endWhile_11
+	ifeq endWhile_1
 	aload_1
 	invokevirtual Life/printField()Z
 	pop
@@ -35,8 +35,8 @@ while_11:
 	pop
 	invokestatic io/read()I
 	istore_2
-	goto while_11
-endWhile_11:
+	goto while_1
+endWhile_1:
 	return
 .end method
 
@@ -501,7 +501,7 @@ endWhile_11:
 
 .method public update()Z
 	.limit stack 5
-	.limit locals 7
+	.limit locals 6
 	aload_0
 	getfield Life/_field [I
 	arraylength
@@ -509,18 +509,18 @@ endWhile_11:
 	astore	5
 	iconst_0
 	istore_1
-while_12:
+while_2:
 	iload_1
 	aload_0
 	getfield Life/_field [I
 	arraylength
-	if_icmpge notLess_41
+	if_icmpge notLess_2
 	iconst_1
-	goto endLess_41
-notLess_41:
+	goto endLess_2
+notLess_2:
 	iconst_0
-endLess_41:
-	ifeq endWhile_12
+endLess_2:
+	ifeq endWhile_2
 	aload_0
 	getfield Life/_field [I
 	iload_1
@@ -532,15 +532,15 @@ endLess_41:
 	istore_3
 	iload_2
 	iconst_1
-	if_icmpge notLess_42
+	if_icmpge notLess_3
 	iconst_1
-	goto endLess_42
-notLess_42:
+	goto endLess_3
+notLess_3:
 	iconst_0
-endLess_42:
+endLess_3:
 	iconst_1
 	ixor
-	ifeq else_28
+	ifeq else_2
 	aload_0
 	iload_3
 	aload_0
@@ -556,13 +556,13 @@ endLess_42:
 	iload	4
 	iconst_1
 	ixor
-	ifeq else_29
+	ifeq else_3
 	aload	5
 	iload_1
 	iconst_0
 	iastore
-	goto endIf_29
-else_29:
+	goto endIf_3
+else_3:
 	aload	5
 	iload_1
 	aload_0
@@ -570,21 +570,21 @@ else_29:
 	iload_1
 	iaload
 	iastore
-endIf_29:
-	goto endIf_28
-else_28:
+endIf_3:
+	goto endIf_2
+else_2:
 	aload_0
 	iload_3
 	aload_0
 	getfield Life/REPRODUCE_NUM I
 	invokevirtual Life/eq(II)Z
-	ifeq else_30
+	ifeq else_4
 	aload	5
 	iload_1
 	iconst_1
 	iastore
-	goto endIf_30
-else_30:
+	goto endIf_4
+else_4:
 	aload	5
 	iload_1
 	aload_0
@@ -592,14 +592,14 @@ else_30:
 	iload_1
 	iaload
 	iastore
-endIf_30:
-endIf_28:
+endIf_4:
+endIf_2:
 	iload_1
 	iconst_1
 	iadd
 	istore_1
-	goto while_12
-endWhile_12:
+	goto while_2
+endWhile_2:
 	aload_0
 	aload	5
 	putfield Life/_field [I
@@ -609,35 +609,35 @@ endWhile_12:
 
 .method public printField()Z
 	.limit stack 4
-	.limit locals 4
+	.limit locals 3
 	iconst_0
 	istore_1
 	iconst_0
 	istore_2
-while_13:
+while_3:
 	iload_1
 	aload_0
 	getfield Life/_field [I
 	arraylength
-	if_icmpge notLess_43
+	if_icmpge notLess_4
 	iconst_1
-	goto endLess_43
-notLess_43:
+	goto endLess_4
+notLess_4:
 	iconst_0
-endLess_43:
-	ifeq endWhile_13
+endLess_4:
+	ifeq endWhile_3
 	aload_0
 	iload_2
 	aload_0
 	getfield Life/xMax I
 	invokevirtual Life/gt(II)Z
-	ifeq else_31
+	ifeq else_5
 	invokestatic io/println()V
 	iconst_0
 	istore_2
-	goto endIf_31
-else_31:
-endIf_31:
+	goto endIf_5
+else_5:
+endIf_5:
 	aload_0
 	getfield Life/_field [I
 	iload_1
@@ -651,8 +651,8 @@ endIf_31:
 	iconst_1
 	iadd
 	istore_2
-	goto while_13
-endWhile_13:
+	goto while_3
+endWhile_3:
 	invokestatic io/println()V
 	invokestatic io/println()V
 	iconst_1
@@ -710,7 +710,7 @@ endWhile_13:
 
 .method public getNeighborCoords(I)[I
 	.limit stack 5
-	.limit locals 11
+	.limit locals 10
 	aload_0
 	iload_1
 	invokevirtual Life/cartIdx(I)[I
@@ -726,13 +726,13 @@ endWhile_13:
 	iload_2
 	aload_0
 	getfield Life/xMax I
-	if_icmpge notLess_44
+	if_icmpge notLess_5
 	iconst_1
-	goto endLess_44
-notLess_44:
+	goto endLess_5
+notLess_5:
 	iconst_0
-endLess_44:
-	ifeq else_32
+endLess_5:
+	ifeq else_6
 	iload_2
 	iconst_1
 	iadd
@@ -741,36 +741,36 @@ endLess_44:
 	iload_2
 	iconst_0
 	invokevirtual Life/gt(II)Z
-	ifeq else_33
+	ifeq else_7
 	iload_2
 	iconst_1
 	isub
 	istore	4
-	goto endIf_33
-else_33:
+	goto endIf_7
+else_7:
 	aload_0
 	getfield Life/xMax I
 	istore	4
-endIf_33:
-	goto endIf_32
-else_32:
+endIf_7:
+	goto endIf_6
+else_6:
 	iconst_0
 	istore	6
 	iload_2
 	iconst_1
 	isub
 	istore	4
-endIf_32:
+endIf_6:
 	iload_3
 	aload_0
 	getfield Life/yMax I
-	if_icmpge notLess_45
+	if_icmpge notLess_6
 	iconst_1
-	goto endLess_45
-notLess_45:
+	goto endLess_6
+notLess_6:
 	iconst_0
-endLess_45:
-	ifeq else_34
+endLess_6:
+	ifeq else_8
 	iload_3
 	iconst_1
 	iadd
@@ -779,26 +779,26 @@ endLess_45:
 	iload_3
 	iconst_0
 	invokevirtual Life/gt(II)Z
-	ifeq else_35
+	ifeq else_9
 	iload_3
 	iconst_1
 	isub
 	istore	5
-	goto endIf_35
-else_35:
+	goto endIf_9
+else_9:
 	aload_0
 	getfield Life/yMax I
 	istore	5
-endIf_35:
-	goto endIf_34
-else_34:
+endIf_9:
+	goto endIf_8
+else_8:
 	iconst_0
 	istore	7
 	iload_3
 	iconst_1
 	isub
 	istore	5
-endIf_34:
+endIf_8:
 	bipush	8
 	newarray int
 	astore	9
@@ -864,7 +864,7 @@ endIf_34:
 
 .method public getLiveNeighborN(I)I
 	.limit stack 7
-	.limit locals 6
+	.limit locals 5
 	iconst_0
 	istore	4
 	aload_0
@@ -873,17 +873,17 @@ endIf_34:
 	astore_2
 	iconst_0
 	istore_3
-while_14:
+while_4:
 	iload_3
 	aload_2
 	arraylength
-	if_icmpge notLess_46
+	if_icmpge notLess_7
 	iconst_1
-	goto endLess_46
-notLess_46:
+	goto endLess_7
+notLess_7:
 	iconst_0
-endLess_46:
-	ifeq endWhile_14
+endLess_7:
+	ifeq endWhile_4
 	aload_0
 	aload_0
 	getfield Life/_field [I
@@ -893,27 +893,27 @@ endLess_46:
 	iaload
 	iconst_0
 	invokevirtual Life/ne(II)Z
-	ifeq else_36
+	ifeq else_10
 	iload	4
 	iconst_1
 	iadd
 	istore	4
-	goto endIf_36
-else_36:
-endIf_36:
+	goto endIf_10
+else_10:
+endIf_10:
 	iload_3
 	iconst_1
 	iadd
 	istore_3
-	goto while_14
-endWhile_14:
+	goto while_4
+endWhile_4:
 	iload	4
 	ireturn
 .end method
 
 .method public busyWait(I)Z
 	.limit stack 4
-	.limit locals 5
+	.limit locals 4
 	iload_1
 	aload_0
 	getfield Life/LOOPS_PER_MS I
@@ -921,22 +921,22 @@ endWhile_14:
 	istore_3
 	iconst_0
 	istore_2
-while_15:
+while_5:
 	iload_2
 	iload_3
-	if_icmpge notLess_47
+	if_icmpge notLess_8
 	iconst_1
-	goto endLess_47
-notLess_47:
+	goto endLess_8
+notLess_8:
 	iconst_0
-endLess_47:
-	ifeq endWhile_15
+endLess_8:
+	ifeq endWhile_5
 	iload_2
 	iconst_1
 	iadd
 	istore_2
-	goto while_15
-endWhile_15:
+	goto while_5
+endWhile_5:
 	iconst_1
 	ireturn
 .end method
@@ -977,12 +977,12 @@ endWhile_15:
 	.limit locals 3
 	iload_1
 	iload_2
-	if_icmpge notLess_48
+	if_icmpge notLess_9
 	iconst_1
-	goto endLess_48
-notLess_48:
+	goto endLess_9
+notLess_9:
 	iconst_0
-endLess_48:
+endLess_9:
 	ireturn
 .end method
 

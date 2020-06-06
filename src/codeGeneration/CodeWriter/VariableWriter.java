@@ -5,16 +5,11 @@ import codeGeneration.FunctionBody;
 import llir.LLIRInteger;
 import llir.LLIRBoolean;
 import llir.LLIRVariable;
-<<<<<<< HEAD
 import optimizations.OptimizationManager;
 import optimizations.OptimizationsR;
-=======
 import symbols.ConstantDescriptor;
 import symbols.ConstantInt;
 import symbols.ConstantBoolean;
->>>>>>> master
-import symbols.Type;
-import optimizations.OptimizationManager;
 
 public class VariableWriter {
     private String code;

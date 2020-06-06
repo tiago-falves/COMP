@@ -10,7 +10,7 @@
 
 .method public find_maximum([I)I
 	.limit stack 4
-	.limit locals 6
+	.limit locals 5
 	iconst_1
 	istore_2
 	aload_1
@@ -104,7 +104,7 @@ endWhile_0:
 
 .method public static main([Ljava/lang/String;)V
 	.limit stack 2
-	.limit locals 3
+	.limit locals 2
 	new FindMaximum
 	dup
 	invokespecial FindMaximum/<init>()V
@@ -116,8 +116,6 @@ endWhile_0:
 	aload_1
 	invokevirtual FindMaximum/get_array()[I
 	invokevirtual FindMaximum/find_maximum([I)I
-	istore_2
-	iload_2
 	invokestatic ioPlus/printResult(I)V
 	return
 .end method

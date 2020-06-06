@@ -9,7 +9,7 @@
 
 .method public performSingleEstimate()Z
 	.limit stack 4
-	.limit locals 6
+	.limit locals 5
 	iconst_0
 	bipush	100
 	isub
@@ -34,57 +34,57 @@
 	istore	4
 	iload	4
 	bipush	100
-	if_icmpge notLess_39
+	if_icmpge notLess_51
 	iconst_1
-	goto endLess_39
-notLess_39:
+	goto endLess_51
+notLess_51:
 	iconst_0
-endLess_39:
-	ifeq else_26
+endLess_51:
+	ifeq else_37
 	iconst_1
 	istore_3
-	goto endIf_26
-else_26:
+	goto endIf_37
+else_37:
 	iconst_0
 	istore_3
-endIf_26:
+endIf_37:
 	iload_3
 	ireturn
 .end method
 
 .method public estimatePi100(I)I
 	.limit stack 4
-	.limit locals 6
+	.limit locals 5
 	iconst_0
 	istore_3
 	iconst_0
 	istore_2
-while_10:
+while_18:
 	iload_3
 	iload_1
-	if_icmpge notLess_40
+	if_icmpge notLess_52
 	iconst_1
-	goto endLess_40
-notLess_40:
+	goto endLess_52
+notLess_52:
 	iconst_0
-endLess_40:
-	ifeq endWhile_10
+endLess_52:
+	ifeq endWhile_18
 	aload_0
 	invokevirtual MonteCarloPi/performSingleEstimate()Z
-	ifeq else_27
+	ifeq else_38
 	iload_2
 	iconst_1
 	iadd
 	istore_2
-	goto endIf_27
-else_27:
-endIf_27:
+	goto endIf_38
+else_38:
+endIf_38:
 	iload_3
 	iconst_1
 	iadd
 	istore_3
-	goto while_10
-endWhile_10:
+	goto while_18
+endWhile_18:
 	sipush	400
 	iload_2
 	imul

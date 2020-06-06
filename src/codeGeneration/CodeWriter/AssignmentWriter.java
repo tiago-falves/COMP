@@ -3,16 +3,11 @@ package codeGeneration.CodeWriter;
 import codeGeneration.CGConst;
 import codeGeneration.FunctionBody;
 import llir.*;
-<<<<<<< HEAD
 import optimizations.OptimizationManager;
 import optimizations.OptimizationsR;
-=======
 import optimizations.ConstantFoldingConditional;
 import optimizations.ConstantFoldingNegation;
-import optimizations.OptimizationManager;
 import symbols.ConstantDescriptor;
->>>>>>> master
-import symbols.NamedTypeDescriptor;
 import symbols.Type;
 
 public class AssignmentWriter {

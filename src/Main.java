@@ -21,6 +21,13 @@ public class Main {
                 OptimizationManager.constantPropagation = true;
             }else if(args[i].equals("-f")){
                 OptimizationManager.constantFolding = true;
+            }else if(args[i].matches("-r=\\d+")){
+                try {
+                    OptimizationManager.reducedLocals = true;
+                    OptimizationManager.maximumLocalVariables = Integer.parseInt(args[i].substring(3));
+                } catch (final NumberFormatException e) {
+                    System.err.println("Invalid -r option");
+                }
             }
         }
 
