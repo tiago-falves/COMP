@@ -1,5 +1,6 @@
 package optimizations;
 
+import llir.ArithmeticOperation;
 import llir.LLIRArithmetic;
 import llir.LLIRBoolean;
 import llir.LLIRConditional;
@@ -121,7 +122,55 @@ public class ConstantFoldingConditional {
         if(conditional.getLeftExpression() instanceof LLIRInteger){
             if(conditional.getRightExpression() instanceof LLIRInteger){
                 return calculateLessThan(conditional);
+            }else if(conditional.getRightExpression() instanceof LLIRArithmetic){
+                LLIRArithmetic rightArithmetic = (LLIRArithmetic)conditional.getRightExpression();
+                
+                // A negative number is always an arithmetic expression with 0 - abs(number)
+                if(rightArithmetic.getOperation() == ArithmeticOperation.SUBTRACTION 
+                   && rightArithmetic.getLeftExpression() instanceof LLIRInteger
+                   && rightArithmetic.getRightExpression() instanceof LLIRInteger){
+                    
+                    // If the number on the left side isn't 0 this can't be a negative number 
+                    if(((LLIRInteger)rightArithmetic.getLeftExpression()).getValue() == 0){
+                        // A positive number is always greater than a negative number
+                        return new LLIRBoolean(false);                                
+                    }
+                }
             }
+        }else if(conditional.getLeftExpression() instanceof LLIRArithmetic){
+            LLIRArithmetic arithmetic = (LLIRArithmetic)conditional.getLeftExpression();
+            
+            // A negative number is always an arithmetic expression with 0 - abs(number)
+            if(arithmetic.getOperation() == ArithmeticOperation.SUBTRACTION 
+               && arithmetic.getLeftExpression() instanceof LLIRInteger
+               && arithmetic.getRightExpression() instanceof LLIRInteger){
+                
+                LLIRInteger rightInteger = (LLIRInteger)arithmetic.getRightExpression();
+
+                // If the number on the left side isn't 0 this can't be a negative number 
+                if(((LLIRInteger)arithmetic.getLeftExpression()).getValue() == 0){
+                    if(conditional.getRightExpression() instanceof LLIRInteger){
+                        // A negative number is always lower than a positive number
+                        return new LLIRBoolean(true);
+                    }else if(conditional.getRightExpression() instanceof LLIRArithmetic){
+                        LLIRArithmetic rightArithmetic = (LLIRArithmetic)conditional.getRightExpression();
+                        
+                        // A negative number is always an arithmetic expression with 0 - abs(number)
+                        if(rightArithmetic.getOperation() == ArithmeticOperation.SUBTRACTION 
+                           && rightArithmetic.getLeftExpression() instanceof LLIRInteger
+                           && rightArithmetic.getRightExpression() instanceof LLIRInteger){
+                            
+                            // If the number on the left side isn't 0 this can't be a negative number 
+                            if(((LLIRInteger)rightArithmetic.getLeftExpression()).getValue() == 0){
+                                LLIRInteger rightInteger2 = (LLIRInteger)rightArithmetic.getRightExpression();
+                                return new LLIRBoolean(-1*rightInteger.getValue() < -1*rightInteger2.getValue());                                
+                            }
+                        }
+            
+                    }
+                }
+            }
+
         }
 
         return conditional;
