@@ -33,19 +33,6 @@ public class ConstantFoldingConditional {
     }
 
     private LLIRExpression transformConditionalAnd(LLIRConditional conditional){
-        if(conditional.getLeftExpression() instanceof LLIRBoolean){
-            LLIRBoolean booleanExpr = (LLIRBoolean)conditional.getLeftExpression();
-            // Operator && with false always returns false
-            if(!booleanExpr.getValue())
-                return new LLIRBoolean(false);
-        }
-        if(conditional.getRightExpression() instanceof LLIRBoolean){
-            LLIRBoolean booleanExpr = (LLIRBoolean)conditional.getRightExpression();
-            // Operator && with false always returns false
-            if(!booleanExpr.getValue())
-                return new LLIRBoolean(false);
-        }
-
         if(conditional.getLeftExpression() instanceof LLIRConditional){
             LLIRConditional leftExpression = (LLIRConditional)conditional.getLeftExpression();
             conditional.setLeftExpression(transformConditional(leftExpression));
@@ -91,9 +78,21 @@ public class ConstantFoldingConditional {
         }
 
         if(conditional.getLeftExpression() instanceof LLIRBoolean){
+            LLIRBoolean booleanExpr = (LLIRBoolean)conditional.getLeftExpression();
+            // Operator && with false always returns false
+            if(!booleanExpr.getValue())
+                return new LLIRBoolean(false);
+
             if(conditional.getRightExpression() instanceof LLIRBoolean){
                 return calculateAnd(conditional);
             }
+        }
+        if(conditional.getRightExpression() instanceof LLIRBoolean){
+            LLIRBoolean booleanExpr = (LLIRBoolean)conditional.getRightExpression();
+            
+            // Operator && with false always returns false
+            if(!booleanExpr.getValue())
+                return new LLIRBoolean(false);
         }
 
         return conditional;
