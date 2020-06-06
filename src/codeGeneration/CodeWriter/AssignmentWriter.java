@@ -3,6 +3,8 @@ package codeGeneration.CodeWriter;
 import codeGeneration.CGConst;
 import codeGeneration.FunctionBody;
 import llir.*;
+import optimizations.ConstantFoldingConditional;
+import optimizations.ConstantFoldingNegation;
 import optimizations.OptimizationManager;
 import symbols.ConstantDescriptor;
 import symbols.NamedTypeDescriptor;
@@ -33,6 +35,16 @@ public class AssignmentWriter {
             }
 
             type =getVariableCode(variableIndexNotFound);
+
+            if(OptimizationManager.constantFolding && assignment.getExpression() instanceof LLIRConditional){
+                LLIRConditional assignmentConditional = (LLIRConditional)assignment.getExpression();
+                ConstantFoldingConditional constantFoldingConditional = new ConstantFoldingConditional(assignmentConditional);
+                assignment.setExpression(constantFoldingConditional.getConditional());
+            }else if(OptimizationManager.constantFolding && assignment.getExpression() instanceof LLIRNegation){
+                LLIRNegation assignmentNegation = (LLIRNegation)assignment.getExpression();
+                ConstantFoldingNegation constantFoldingNegation = new ConstantFoldingNegation(assignmentNegation);
+                assignment.setExpression(constantFoldingNegation.getNegation());
+            }
 
             getAssignmentExpression();
 

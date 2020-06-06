@@ -6,8 +6,9 @@ import java.util.ArrayList;
 import llir.LLIRArithmetic;
 import llir.LLIRExpression;
 import llir.LLIRInteger;
-import llir.LLIRParenthesis;
 import llir.ArithmeticOperation;
+
+import optimizations.*;
 
 public class ArithmeticTransformer {
     LLIRArithmetic originalArithmetic;
@@ -36,9 +37,21 @@ public class ArithmeticTransformer {
         }
 
         expressions.add(originalArithmetic.getRightExpression());
-
+       
         LLIRArithmetic result = (LLIRArithmetic) recursiveTransform(expressions, operators, 1);
 
+        if(OptimizationManager.constantFolding){
+            LLIRArithmetic actual = result;
+            ConstantFoldingArithmetic constantFolding = new ConstantFoldingArithmetic(actual);
+            LLIRExpression expr = constantFolding.getArithmetic();
+
+            if(expr instanceof LLIRArithmetic){
+                result = (LLIRArithmetic)expr;
+            }else{
+                result = new LLIRArithmetic(ArithmeticOperation.SUM, expr, new LLIRInteger(0));
+            }
+        }
+        
         return result;
     }
 
@@ -54,15 +67,27 @@ public class ArithmeticTransformer {
                     List<LLIRExpression> leftExpressions = sliceExpressions(expressions, 0, i+1);
                     List<LLIRExpression> rightExpressions = sliceExpressions(expressions, i+1, expressions.size());
 
+                    ArithmeticOperation op = operators.get(i);
+                    while(rightOperations.size() > 0 && (rightOperations.get(0) == ArithmeticOperation.SUM || rightOperations.get(0) == ArithmeticOperation.SUBTRACTION)) {
+                        leftOperations.add(op);
+                        op = rightOperations.get(0);
+                        rightOperations.remove(0);
+
+                        leftExpressions.add(rightExpressions.get(0));
+                        rightExpressions.remove(0);
+
+                        i++;
+                    }
+
                     // build tree left - right in order of descending depth
                     if(leftExpressions.size() >= rightExpressions.size()) {
                         return new LLIRArithmetic(
-                            operators.get(i), 
+                            op, 
                             recursiveTransform(leftExpressions, leftOperations, priorityLevel), 
                             recursiveTransform(rightExpressions, rightOperations, priorityLevel)
                             );
                     }
-                    else if(operators.get(i) == ArithmeticOperation.SUBTRACTION) {
+                    else if(op == ArithmeticOperation.SUBTRACTION) {
                         return new LLIRArithmetic(
                             ArithmeticOperation.SUM,
                             new LLIRArithmetic(ArithmeticOperation.SUBTRACTION, new LLIRInteger(0), recursiveTransform(rightExpressions, rightOperations, priorityLevel)), 
@@ -71,7 +96,7 @@ public class ArithmeticTransformer {
                     }
                     else {
                         return new LLIRArithmetic(
-                            operators.get(i), 
+                            op, 
                             recursiveTransform(rightExpressions, rightOperations, priorityLevel), 
                             recursiveTransform(leftExpressions, leftOperations, priorityLevel)
                             );

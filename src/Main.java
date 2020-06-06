@@ -18,6 +18,8 @@ public class Main {
                 initializedWarning = true;
             }else if(args[i].equals("-o")){
                 OptimizationManager.constantPropagation = true;
+            }else if(args[i].equals("-f")){
+                OptimizationManager.constantFolding = true;
             }
         }
 
