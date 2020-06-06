@@ -107,8 +107,7 @@ public class ConstantFoldingConditional {
             
             if(parenthesis.getExpression() instanceof LLIRArithmetic){
                 ConstantFoldingArithmetic constantFoldingArithmetic = new ConstantFoldingArithmetic((LLIRArithmetic)parenthesis.getExpression());
-                System.out.println(constantFoldingArithmetic.getArithmetic());
-                conditional.setLeftExpression(constantFoldingArithmetic.getArithmetic());
+                parenthesis.setExpression(constantFoldingArithmetic.getArithmetic());
             }
             
             if(parenthesis.getExpression() instanceof LLIRInteger){
@@ -124,7 +123,7 @@ public class ConstantFoldingConditional {
             
             if(parenthesis.getExpression() instanceof LLIRArithmetic){
                 ConstantFoldingArithmetic constantFoldingArithmetic = new ConstantFoldingArithmetic((LLIRArithmetic)parenthesis.getExpression());
-                conditional.setRightExpression(constantFoldingArithmetic.getArithmetic());
+                parenthesis.setExpression(constantFoldingArithmetic.getArithmetic());
             }
             
             if(parenthesis.getExpression() instanceof LLIRInteger){
@@ -172,7 +171,6 @@ public class ConstantFoldingConditional {
                         if(rightArithmetic.getOperation() == ArithmeticOperation.SUBTRACTION 
                            && rightArithmetic.getLeftExpression() instanceof LLIRInteger
                            && rightArithmetic.getRightExpression() instanceof LLIRInteger){
-                            
                             // If the number on the left side isn't 0 this can't be a negative number 
                             if(((LLIRInteger)rightArithmetic.getLeftExpression()).getValue() == 0){
                                 LLIRInteger rightInteger2 = (LLIRInteger)rightArithmetic.getRightExpression();

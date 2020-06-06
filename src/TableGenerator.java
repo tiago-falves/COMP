@@ -3,6 +3,8 @@ import symbols.*;
 
 import java.util.*;
 
+import codeGeneration.CodeWriter.ArithmeticTransformer;
+
 public class TableGenerator {
     SimpleNode rootNode;
     SymbolsTable symbolsTable;
@@ -1509,7 +1511,8 @@ public class TableGenerator {
                     this.llirPopulator.fixConditional();
 
                     //CONDITIONAL <
-                    if(llirPopulator.lastIsLLIRExpression()) this.llirPopulator.addConditional(new LLIRConditional());
+                    if(llirPopulator.lastIsLLIRExpression()) 
+                        this.llirPopulator.addConditional(new LLIRConditional());
                     this.llirPopulator.addOperator(node.getId());
 
                     String otherType = inspectExpression(argumentNode, symbolsTable, i+1);
@@ -1517,8 +1520,39 @@ public class TableGenerator {
                         this.semanticError.printError(node, "CAN'T COMPARE " + otherType + " WITH OPERATOR <");
                         return null;
                     }
+
                     if(!(llirPopulator.peek() instanceof LLIRConditional))
                         this.llirPopulator.popExpression();
+
+
+                    if(this.llirPopulator.peek() instanceof LLIRConditional){
+                        LLIRConditional conditional = (LLIRConditional)this.llirPopulator.peek();
+                                        
+                        if(conditional.getLeftExpression() instanceof LLIRArithmetic){
+                            ArithmeticTransformer transformer = new ArithmeticTransformer((LLIRArithmetic) conditional.getLeftExpression());
+                            conditional.setLeftExpression(transformer.transform());
+                        }else if(conditional.getLeftExpression() instanceof LLIRParenthesis){
+                            LLIRParenthesis llirParenthesis = (LLIRParenthesis)conditional.getLeftExpression();
+                            if(llirParenthesis.getExpression() instanceof LLIRArithmetic){
+                                ArithmeticTransformer transformer = new ArithmeticTransformer((LLIRArithmetic) llirParenthesis.getExpression());
+                                llirParenthesis.setExpression(transformer.transform());
+                            }
+                            conditional.setLeftExpression(llirParenthesis);
+                        }
+
+                        if(conditional.getRightExpression() instanceof LLIRArithmetic){
+                            ArithmeticTransformer transformer = new ArithmeticTransformer((LLIRArithmetic) conditional.getRightExpression());
+                            conditional.setRightExpression(transformer.transform());
+                        }else if(conditional.getRightExpression() instanceof LLIRParenthesis){
+                            LLIRParenthesis llirParenthesis = (LLIRParenthesis)conditional.getRightExpression();
+                            if(llirParenthesis.getExpression() instanceof LLIRArithmetic){
+                                ArithmeticTransformer transformer = new ArithmeticTransformer((LLIRArithmetic) llirParenthesis.getExpression());
+                                llirParenthesis.setExpression(transformer.transform());
+                            }
+                            conditional.setRightExpression(llirParenthesis);
+                        }
+                    }
+
                     return "boolean";
                 }
                 case JavammTreeConstants.JJTDOT: {
