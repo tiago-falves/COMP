@@ -47,7 +47,8 @@ public class ExpressionWriter {
         else if (expression instanceof LLIRNegation){
             NegationWriter negationWriter = new NegationWriter((LLIRNegation)expression);
             this.code += negationWriter.getCode();
-        }else if (expression instanceof LLIRParenthesis) {
+        }
+        else if (expression instanceof LLIRParenthesis) {
             ExpressionWriter expressionWriter = new ExpressionWriter(((LLIRParenthesis) expression).getExpression());
             this.code += expressionWriter.getCode();
         }

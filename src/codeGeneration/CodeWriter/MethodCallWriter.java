@@ -19,7 +19,7 @@ public class MethodCallWriter {
     public MethodCallWriter(LLIRMethodCall methodCall){
 
         if(methodCall.getClassVariableInstantiation() != null){
-            ClassVariableInstantiationWriter classVariableInstantiationWriter = new ClassVariableInstantiationWriter(methodCall.getClassVariableInstantiation());
+            ClassVariableInstantiationWriter classVariableInstantiationWriter = new ClassVariableInstantiationWriter(methodCall.getClassVariableInstantiation(), true);
             this.code += classVariableInstantiationWriter.getCode();
         }
         else if (methodCall.getClassName() == "") {
@@ -44,10 +44,12 @@ public class MethodCallWriter {
 
 
         this.code += methodCall.getMethodName() + "(" + arguments + ")"+ CGConst.types.get(methodCall.getReturnType()) + "\n";
-        FunctionBody.decStack(methodCall.getParametersTable().getSize()-(methodCall.getReturnType() == Type.VOID ? 0 : 1));
+        FunctionBody.decStack(1 + methodCall.getParametersTable().getSize()-(methodCall.getReturnType() == Type.VOID ? 0 : 1));
 
-        if(methodCall.isIsolated())
+        if(methodCall.isIsolated()) {
             this.code += POP + "\n";
+            FunctionBody.decStack(1);
+        }
     }
 
     public String getCode(){

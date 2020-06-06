@@ -18,7 +18,7 @@ public class ArrayAccessWriter {
         this.code += generateAccessCode(arrayAccess.getAccess());
         if(isLoad){
             this.code += "\tiaload\n";
-            FunctionBody.incStack();
+            //FunctionBody.incStack();
         }
     }
 
@@ -43,9 +43,13 @@ public class ArrayAccessWriter {
     }
 
     public String generateAccessCode(LLIRExpression expression) {
-         String result = new String();
-         IntOperationWriter intOperationWriter = new IntOperationWriter(expression);
-         result = intOperationWriter.getCode();
+        String result = new String();
+        IntOperationWriter intOperationWriter = new IntOperationWriter(expression);
+        result = intOperationWriter.getCode();
+
+        if (expression instanceof LLIRArrayAccess) {
+            FunctionBody.decStack(1);
+        }
 
         return result;
     }

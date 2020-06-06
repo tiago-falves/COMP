@@ -27,11 +27,11 @@ public class ConditionalWriter {
 
                 this.code += "\t" + "if_icmpge notLess_" + conditionalGotoNumber + "\n";
                 this.code += CGConst.TRUE_VALUE + "\n";
-                FunctionBody.incStack();
+                //FunctionBody.incStack();
                 this.code += "\t" + "goto endLess_" + conditionalGotoNumber + "\n";
                 this.code += "notLess_" + conditionalGotoNumber + ":" + "\n";
                 this.code += CGConst.FALSE_VALUE + "\n";
-                FunctionBody.incStack();
+                //FunctionBody.incStack();
                 this.code += "endLess_" + conditionalGotoNumber + ":";
                 conditionalGotoNumber++;
                 break;
