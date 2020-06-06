@@ -1,6 +1,9 @@
 package codeGeneration.CodeWriter;
 
 import llir.*;
+import optimizations.ConstantFoldingConditional;
+import optimizations.ConstantFoldingNegation;
+import optimizations.OptimizationManager;
 
 public class IfElseWriter extends BlockStatementWriter{
     private String code;
@@ -18,6 +21,15 @@ public class IfElseWriter extends BlockStatementWriter{
         this.block = block;
         
         //If expression
+        if(OptimizationManager.constantFolding && block.getExpression() instanceof LLIRConditional){
+            LLIRConditional assignmentConditional = (LLIRConditional)block.getExpression();
+            ConstantFoldingConditional constantFoldingConditional = new ConstantFoldingConditional(assignmentConditional);
+            block.setExpression(constantFoldingConditional.getConditional());
+        }else if(OptimizationManager.constantFolding && block.getExpression() instanceof LLIRNegation){
+            LLIRNegation assignmentNegation = (LLIRNegation)block.getExpression();
+            ConstantFoldingNegation constantFoldingNegation = new ConstantFoldingNegation(assignmentNegation);
+            block.setExpression(constantFoldingNegation.getNegation());
+        }
         this.code += generateCode(block.getExpression(),name);
 
         this.code += "\t" + "ifeq else_" + localIfNumber + "\n";

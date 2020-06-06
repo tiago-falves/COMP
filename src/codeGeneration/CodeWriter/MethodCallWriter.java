@@ -3,8 +3,13 @@ package codeGeneration.CodeWriter;
 import codeGeneration.CGConst;
 import codeGeneration.FunctionBody;
 import codeGeneration.FunctionParameters;
+import llir.LLIRConditional;
 import llir.LLIRExpression;
 import llir.LLIRMethodCall;
+import llir.LLIRNegation;
+import optimizations.ConstantFoldingConditional;
+import optimizations.ConstantFoldingNegation;
+import optimizations.OptimizationManager;
 import symbols.SymbolsTable;
 import symbols.Type;
 
@@ -61,6 +66,15 @@ public class MethodCallWriter {
 
         List<LLIRExpression> parameters = methodCall.getParametersExpressions();
         for (LLIRExpression expression : parameters){
+            if(OptimizationManager.constantFolding && expression instanceof LLIRConditional){
+                LLIRConditional assignmentConditional = (LLIRConditional)expression;
+                ConstantFoldingConditional constantFoldingConditional = new ConstantFoldingConditional(assignmentConditional);
+                expression = constantFoldingConditional.getConditional();
+            }else if(OptimizationManager.constantFolding && expression instanceof LLIRNegation){
+                LLIRNegation assignmentNegation = (LLIRNegation)expression;
+                ConstantFoldingNegation constantFoldingNegation = new ConstantFoldingNegation(assignmentNegation);
+                expression = constantFoldingNegation.getNegation();
+            }
             ExpressionWriter expressionWriter = new ExpressionWriter(expression);
             result += expressionWriter.getCode();
         }

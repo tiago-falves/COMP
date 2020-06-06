@@ -107,6 +107,7 @@ public class ConstantFoldingConditional {
             
             if(parenthesis.getExpression() instanceof LLIRArithmetic){
                 ConstantFoldingArithmetic constantFoldingArithmetic = new ConstantFoldingArithmetic((LLIRArithmetic)parenthesis.getExpression());
+                System.out.println(constantFoldingArithmetic.getArithmetic());
                 conditional.setLeftExpression(constantFoldingArithmetic.getArithmetic());
             }
             
