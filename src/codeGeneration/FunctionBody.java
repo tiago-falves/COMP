@@ -82,9 +82,11 @@ public class FunctionBody {
 
         for(LLIRNode node : this.functionDescriptor.getFunctionBody()) {
 
-            if(OptimizationManager.reducedLocals)
+            if(OptimizationManager.reducedLocals){
                 OptimizationsR.incrementLine();
-                
+                OptimizationsR.addPredSucc();
+            }
+
             FunctionBody.resetStack();
             if (node instanceof LLIRAssignment) {
                 AssignmentWriter assignmentWriter = new AssignmentWriter((LLIRAssignment) node);

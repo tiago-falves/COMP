@@ -77,6 +77,13 @@ public class OptimizationsR {
         }
     }
 
+    public static void addPredSucc(){
+        if(currentLine > 1){
+            addPred(currentLine-1);
+        }
+        addSucc(currentLine+1);
+    }
+
     public static void print() {
         String s = "";
         System.out.println(currentLine);
