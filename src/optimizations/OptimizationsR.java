@@ -1,5 +1,7 @@
 package optimizations;
 
+import codeGeneration.CodeWriter.BlockStatementWriter;
+import codeGeneration.CodeWriter.WhileWriter;
 import llir.LLIRNode;
 import symbols.Descriptor;
 
@@ -65,6 +67,33 @@ public class OptimizationsR {
         }
     }
 
+    public static void addSucc(int successor,int id){
+        List<Integer> succsList;
+        if (succ.containsKey(id)){ //Nao e muito necessario
+            succsList = succ.get(id);
+            succsList.add(successor);
+        }else{
+            succsList = new ArrayList<>();
+            succsList.add(successor);
+            succ.put(id,succsList);
+        }
+    }
+    public static void addSuccIfExists(int successor,int id){
+        List<Integer> succsList;
+        if (succ.containsKey(id)){ //Nao e muito necessario
+            succsList = succ.get(id);
+            succsList.add(successor);
+        }
+    }
+
+    public static void addPredIfExists(int predec,int id){
+        List<Integer> predList;
+        if (pred.containsKey(id)){ //Nao e muito necessario
+            predList = pred.get(id);
+            predList.add(predec);
+        }
+    }
+
     public static void addPred(int predessor){
         List<Integer> predsList;
         if (pred.containsKey(currentLine)){ //Nao e muito necessario
@@ -84,6 +113,28 @@ public class OptimizationsR {
         addSucc(currentLine+1);
     }
 
+    public static void addBlockPredSuccExpression(BlockStatementWriter blockStatementWriter,int expressionStatement){
+        if(blockStatementWriter instanceof WhileWriter){
+            addPredIfExists(currentLine,expressionStatement);
+            addSuccIfExists(expressionStatement,currentLine);
+        }
+        addSucc(currentLine+1,expressionStatement);
+
+    }
+
+    public static void addPredSuccWhile(BlockStatementWriter blockStatementWriter,int i){
+        addPredSucc();
+        if(blockStatementWriter instanceof WhileWriter){
+            if(i == 0){
+
+            }
+        }
+        if(currentLine > 1){
+            addPred(currentLine-1);
+        }
+        addSucc(currentLine+1);
+    }
+
     public static void print() {
         String s = "";
         System.out.println(currentLine);
@@ -91,8 +142,13 @@ public class OptimizationsR {
             System.out.println("Statement " + i);
             List<String> defs = def.get(i);
             List<String> uses = use.get(i);
+            List<Integer> preds = pred.get(i);
+            List<Integer> succs = succ.get(i);
+
             for(String defName : defs) System.out.println("\tDef: " + defName);
             for(String useName : uses) System.out.println("\tUse: " + useName);
+            for(Integer predInt : preds) System.out.println("\tPred: " + predInt);
+            for(Integer sucssInt : succs) System.out.println("\tSucc: " + sucssInt);
 
         }
 

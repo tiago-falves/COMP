@@ -10,14 +10,24 @@ import optimizations.OptimizationsR;
 public abstract class BlockStatementWriter {
 
     protected String generateNodesCode(List<LLIRNode> nodes, String name){
+
+        int expressionNumber = 0;
+        if(OptimizationManager.reducedLocals)
+            expressionNumber = OptimizationsR.currentLine;
+
+
         String result = new String();
         for(int i = 0; i < nodes.size(); i++){
 
-            if(OptimizationManager.reducedLocals)
+            if(OptimizationManager.reducedLocals){
                 OptimizationsR.incrementLine();
-                
+                OptimizationsR.addPredSucc();
+            }
             result += generateCode(nodes.get(i), name);
         }
+
+        if(OptimizationManager.reducedLocals)
+            OptimizationsR.addBlockPredSuccExpression(this,expressionNumber);
         return result;
     }
 
