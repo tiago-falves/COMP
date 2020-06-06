@@ -15,6 +15,10 @@ public class OptimizationsR {
     public static LinkedHashMap<Integer, List<String>> use = new LinkedHashMap<>(); //Statement Number Variable Indexes
     public static LinkedHashMap<Integer, List<Integer>> succ = new LinkedHashMap<>(); //Statement Number Successors
     public static LinkedHashMap<Integer, List<Integer>> pred = new LinkedHashMap<>(); //Statement Number Predecessors
+    public static LinkedHashMap<Integer, List<String>> in = new LinkedHashMap<>(); //Statement Number Predecessors
+    public static LinkedHashMap<Integer, List<String>> out = new LinkedHashMap<>(); //Statement Number Predecessors
+
+
     public static int currentLine = 0;
 
     public static void incrementLine(){
@@ -155,17 +159,56 @@ public class OptimizationsR {
         System.out.println(s);
     }
 
+    public static void calculateInOut(){
+
+        boolean condition = true;
+
+        LinkedHashMap<Integer, List<String>> in_tmp = new LinkedHashMap<>();
+        LinkedHashMap<Integer, List<String>> out_tmp = new LinkedHashMap<>();
+
+        do {
+            condition = true;
+            for (int i = 1; i <= currentLine; i++) {
+                in_tmp.put(i,in.get(i));
+                out_tmp.put(i,out.get(i));
+
+                for (Integer successor :succ.get(i)) {
+                    out.put(i,addWithoutDuplicates(out.get(i),in.get(successor)));
+                }
+
+                List<String> removedDuplicates = removeSubSet(out.get(i),def.get(i));
+                in.put(i,addWithoutDuplicates(use.get(i),removedDuplicates));
+            }
+
+            for (int i = 1; i <= currentLine ; i++) {
+                if(!((in_tmp.get(i).equals(in.get(i))) && (out_tmp.get(i).equals(out.get(i))))){
+                    condition = false;
+                    break;
+                }
+            }
+
+        } while (condition);
+    }
+
+    public static List<String> removeSubSet(List<String> list1, List<String> list2){
+        // Prepare a union
+        List<String> union = new ArrayList<String>(list1);
+        // Prepare an intersection
+        List<String> intersection = new ArrayList<String>(list2);
+        // Subtract the intersection from the union
+        union.removeAll(intersection);
+        return union;
+    }
+
+    public static List<String> addWithoutDuplicates(List<String> one, List<String> two){
+        Set<String> fooSet = new LinkedHashSet<>(one);
+        fooSet.addAll(two);
+        return new ArrayList<>(fooSet);
+    }
+
 
 }
 
 
 
 
-/*for each n
-        in[n]  {}; out[n]  {}
-        repeat
-        for each n
-        in’[n]  in[n]; out’[n]  out[n]
-        in[n]  use[n]  (out[n] – def [n])
-        out[n]  in[s]
-        until in’[n] = in[n] and out’[n] = out[n] for all n*/
