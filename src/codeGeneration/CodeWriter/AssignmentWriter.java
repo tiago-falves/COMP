@@ -3,6 +3,7 @@ package codeGeneration.CodeWriter;
 import codeGeneration.CGConst;
 import codeGeneration.FunctionBody;
 import llir.*;
+import optimizations.OptimizationManager;
 import optimizations.OptimizationsR;
 import symbols.NamedTypeDescriptor;
 import symbols.Type;
@@ -26,7 +27,7 @@ public class AssignmentWriter {
         if(variableIndex == ""){
             variableIndexNotFound = true;
             this.code += "\taload_0\n";
-        }else{
+        }else if(OptimizationManager.reducedLocals){
             //Adds if the variable Index already exists
             OptimizationsR.addDef(name);
         }

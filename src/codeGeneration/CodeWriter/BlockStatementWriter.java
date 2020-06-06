@@ -4,6 +4,7 @@ import java.util.List;
 
 import codeGeneration.FunctionBody;
 import llir.*;
+import optimizations.OptimizationManager;
 import optimizations.OptimizationsR;
 
 public abstract class BlockStatementWriter {
@@ -11,7 +12,10 @@ public abstract class BlockStatementWriter {
     protected String generateNodesCode(List<LLIRNode> nodes, String name){
         String result = new String();
         for(int i = 0; i < nodes.size(); i++){
-            OptimizationsR.incrementLine();
+
+            if(OptimizationManager.reducedLocals)
+                OptimizationsR.incrementLine();
+                
             result += generateCode(nodes.get(i), name);
         }
         return result;

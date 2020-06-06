@@ -4,6 +4,7 @@ import codeGeneration.CGConst;
 import codeGeneration.FunctionBody;
 import llir.LLIRInteger;
 import llir.LLIRVariable;
+import optimizations.OptimizationManager;
 import optimizations.OptimizationsR;
 import symbols.Type;
 
@@ -27,7 +28,9 @@ public class VariableWriter {
         else{
             this.code += CGConst.load.get(variable.getVariable().getType());
             this.code +=variableIndex + "\n";
-            OptimizationsR.addUse(variable.getVariable().getName());
+
+            if(OptimizationManager.reducedLocals) 
+                OptimizationsR.addUse(variable.getVariable().getName());
         } 
     }
 
