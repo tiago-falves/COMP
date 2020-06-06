@@ -1,8 +1,10 @@
 package optimizations;
 
+import llir.LLIRArithmetic;
 import llir.LLIRBoolean;
 import llir.LLIRConditional;
 import llir.LLIRExpression;
+import llir.LLIRInteger;
 import llir.LLIRNegation;
 import llir.LLIRParenthesis;
 
@@ -17,7 +19,7 @@ public class ConstantFoldingConditional {
     public LLIRExpression transformConditional(LLIRConditional conditional){
         switch(conditional.getOperation()){
             case LESS_THAN:
-                break; //return transformConditionalLessThan(conditional);
+                return transformConditionalLessThan(conditional);
             case AND:
                 return transformConditionalAnd(conditional);
         }
@@ -83,11 +85,61 @@ public class ConstantFoldingConditional {
         return conditional;
     }
 
+    private LLIRExpression transformConditionalLessThan(LLIRConditional conditional){
+        if(conditional.getLeftExpression() instanceof LLIRArithmetic){
+            ConstantFoldingArithmetic constantFoldingArithmetic = new ConstantFoldingArithmetic((LLIRArithmetic)conditional.getLeftExpression());
+            conditional.setLeftExpression(constantFoldingArithmetic.getArithmetic());
+        }else if(conditional.getLeftExpression() instanceof LLIRParenthesis){
+            LLIRParenthesis parenthesis = (LLIRParenthesis)conditional.getLeftExpression();
+            
+            if(parenthesis.getExpression() instanceof LLIRArithmetic){
+                ConstantFoldingArithmetic constantFoldingArithmetic = new ConstantFoldingArithmetic((LLIRArithmetic)parenthesis.getExpression());
+                conditional.setLeftExpression(constantFoldingArithmetic.getArithmetic());
+            }
+            
+            if(parenthesis.getExpression() instanceof LLIRInteger){
+                conditional.setLeftExpression(parenthesis.getExpression());
+            }
+        }
+
+        if(conditional.getRightExpression() instanceof LLIRArithmetic){
+            ConstantFoldingArithmetic constantFoldingArithmetic = new ConstantFoldingArithmetic((LLIRArithmetic)conditional.getRightExpression());
+            conditional.setRightExpression(constantFoldingArithmetic.getArithmetic());
+        }else if(conditional.getRightExpression() instanceof LLIRParenthesis){
+            LLIRParenthesis parenthesis = (LLIRParenthesis)conditional.getRightExpression();
+            
+            if(parenthesis.getExpression() instanceof LLIRArithmetic){
+                ConstantFoldingArithmetic constantFoldingArithmetic = new ConstantFoldingArithmetic((LLIRArithmetic)parenthesis.getExpression());
+                conditional.setRightExpression(constantFoldingArithmetic.getArithmetic());
+            }
+            
+            if(parenthesis.getExpression() instanceof LLIRInteger){
+                conditional.setRightExpression(parenthesis.getExpression());
+            }
+        }
+
+        if(conditional.getLeftExpression() instanceof LLIRInteger){
+            if(conditional.getRightExpression() instanceof LLIRInteger){
+                return calculateLessThan(conditional);
+            }
+        }
+
+        return conditional;
+    }
+
     private LLIRExpression calculateAnd(LLIRConditional conditional){
         boolean n1, n2;
         n1 = ((LLIRBoolean)conditional.getLeftExpression()).getValue();
         n2 = ((LLIRBoolean)conditional.getRightExpression()).getValue();
 
         return new LLIRBoolean(n1 && n2);
+    }
+
+    private LLIRExpression calculateLessThan(LLIRConditional conditional){
+        int n1, n2;
+        n1 = ((LLIRInteger)conditional.getLeftExpression()).getValue();
+        n2 = ((LLIRInteger)conditional.getRightExpression()).getValue();
+
+        return new LLIRBoolean(n1 < n2);
     }
 }
