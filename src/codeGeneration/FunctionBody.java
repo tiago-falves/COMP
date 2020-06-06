@@ -135,18 +135,38 @@ public class FunctionBody {
 
     public String generate(){
 
+
+        if(OptimizationManager.reducedLocals){
+
+            OptimizationsR.firstPass = true;
+
+            for(LLIRNode node : this.functionDescriptor.getFunctionBody()) {
+                OptimizationsR.incrementLine();
+                OptimizationsR.addPredSucc();
+
+                FunctionBody.resetStack();
+                
+                if (node instanceof LLIRAssignment) new AssignmentWriter((LLIRAssignment) node);
+                else if (node instanceof LLIRMethodCall) new MethodCallWriter((LLIRMethodCall) node);
+                else if (node instanceof LLIRImport) new ImportWriter((LLIRImport) node);
+                else if (node instanceof LLIRIfElseBlock) new IfElseWriter((LLIRIfElseBlock) node, "");
+                else if (node instanceof LLIRWhileBlock) new WhileWriter((LLIRWhileBlock) node, "");            
+                else if (node instanceof LLIRReturn) new ReturnWriter((LLIRReturn) node);
+            }
+        }
+
         boolean foundReturn = false;
         String generatedCode = new String();
 
         // Add variables to hash map
         pushVariables();
 
-        for(LLIRNode node : this.functionDescriptor.getFunctionBody()) {
+        if(OptimizationManager.reducedLocals) {
+            OptimizationsR.firstPass = false;
+            //OptimizationsR.calculateInOut();
+        }
 
-            if(OptimizationManager.reducedLocals){
-                OptimizationsR.incrementLine();
-                OptimizationsR.addPredSucc();
-            }
+        for(LLIRNode node : this.functionDescriptor.getFunctionBody()) {
 
             FunctionBody.resetStack();
             if (node instanceof LLIRAssignment) {
@@ -175,6 +195,11 @@ public class FunctionBody {
             }
         }
         if(!foundReturn) generatedCode += "\treturn\n";
+
+        if(OptimizationManager.reducedLocals) {
+            OptimizationsR.print();
+            OptimizationsR.reset();
+        }
         
         return STACK_LIMIT + maxStack + "\n" + LOCALS_LIMIT + "\n" + generatedCode;
     }

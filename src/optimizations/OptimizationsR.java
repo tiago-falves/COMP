@@ -17,8 +17,7 @@ public class OptimizationsR {
     public static LinkedHashMap<Integer, List<Integer>> pred = new LinkedHashMap<>(); //Statement Number Predecessors
     public static LinkedHashMap<Integer, List<String>> in = new LinkedHashMap<>(); //Statement Number Predecessors
     public static LinkedHashMap<Integer, List<String>> out = new LinkedHashMap<>(); //Statement Number Predecessors
-
-
+    public static boolean firstPass = true;
     public static int currentLine = 0;
 
     public static void incrementLine(){
@@ -139,26 +138,6 @@ public class OptimizationsR {
         addSucc(currentLine+1);
     }
 
-    public static void print() {
-        String s = "";
-        System.out.println(currentLine);
-        for (int i = 1; i <= currentLine; i++) {
-            System.out.println("Statement " + i);
-            List<String> defs = def.get(i);
-            List<String> uses = use.get(i);
-            List<Integer> preds = pred.get(i);
-            List<Integer> succs = succ.get(i);
-
-            for(String defName : defs) System.out.println("\tDef: " + defName);
-            for(String useName : uses) System.out.println("\tUse: " + useName);
-            for(Integer predInt : preds) System.out.println("\tPred: " + predInt);
-            for(Integer sucssInt : succs) System.out.println("\tSucc: " + sucssInt);
-
-        }
-
-        System.out.println(s);
-    }
-
     public static void calculateInOut(){
 
         boolean condition = true;
@@ -206,6 +185,35 @@ public class OptimizationsR {
         return new ArrayList<>(fooSet);
     }
 
+    public static void reset() {
+        def = new LinkedHashMap<>();
+        use = new LinkedHashMap<>();
+        succ = new LinkedHashMap<>();
+        pred = new LinkedHashMap<>();
+        in = new LinkedHashMap<>();
+        out = new LinkedHashMap<>();
+        firstPass = true;
+        currentLine = 0;
+    }
+
+    public static void print() {
+        String s = "";
+        System.out.println(currentLine);
+        for (int i = 1; i <= currentLine; i++) {
+            System.out.println("Statement " + i);
+            List<String> defs = def.get(i);
+            List<String> uses = use.get(i);
+            List<Integer> preds = pred.get(i);
+            List<Integer> succs = succ.get(i);
+
+            for(String defName : defs) System.out.println("\tDef: " + defName);
+            for(String useName : uses) System.out.println("\tUse: " + useName);
+            for(Integer predInt : preds) System.out.println("\tPred: " + predInt);
+            for(Integer sucssInt : succs) System.out.println("\tSucc: " + sucssInt);
+        }
+
+        System.out.println(s);
+    }
 
 }
 

@@ -19,15 +19,20 @@ public abstract class BlockStatementWriter {
         String result = new String();
         for(int i = 0; i < nodes.size(); i++){
 
-            if(OptimizationManager.reducedLocals){
+            // Calculate liveness on first pass
+            if(OptimizationManager.reducedLocals && OptimizationsR.firstPass){
                 OptimizationsR.incrementLine();
                 OptimizationsR.addPredSucc();
             }
             result += generateCode(nodes.get(i), name);
         }
 
-        if(OptimizationManager.reducedLocals)
+        // Continue calculating liveness on first pass
+        if(OptimizationManager.reducedLocals && OptimizationsR.firstPass) {
             OptimizationsR.addBlockPredSuccExpression(this,expressionNumber);
+            return "";
+        }
+
         return result;
     }
 

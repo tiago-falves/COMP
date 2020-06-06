@@ -51,7 +51,7 @@ public class VariableWriter {
                 this.code += CGConst.load.get(variable.getVariable().getType());
                 this.code +=variableIndex + "\n";
 
-                if(OptimizationManager.reducedLocals) 
+                if(OptimizationManager.reducedLocals && OptimizationsR.firstPass)
                     OptimizationsR.addUse(variable.getVariable().getName());
             } 
         }

@@ -32,9 +32,10 @@ public class AssignmentWriter {
             if(variableIndex == ""){
                 variableIndexNotFound = true;
                 this.code += "\taload_0\n";
-            } else if(OptimizationManager.reducedLocals){
+            } else if(OptimizationManager.reducedLocals && OptimizationsR.firstPass){
                 //Adds if the variable Index already exists
                 OptimizationsR.addDef(name);
+                return;
             }
 
             type =getVariableCode(variableIndexNotFound);

@@ -67,7 +67,6 @@ public class Main {
         CodeGenerator codeGenerator = new CodeGenerator(classDescriptor);
         codeGenerator.generate();
 
-        OptimizationsR.print();
 	}
 
 }
