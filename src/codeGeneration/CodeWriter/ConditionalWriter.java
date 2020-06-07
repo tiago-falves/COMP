@@ -16,6 +16,9 @@ public class ConditionalWriter {
     public ConditionalWriter(LLIRConditional conditional){
         this.code  = "";
         this.conditional = conditional;
+        
+        
+
         this.code += generateCode(conditional.getLeftExpression());     // left
         this.code += generateCode(conditional.getRightExpression());    // right
         FunctionBody.decStack(1);

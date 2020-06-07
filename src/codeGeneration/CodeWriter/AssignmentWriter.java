@@ -37,7 +37,7 @@ public class AssignmentWriter {
             type =getVariableCode(variableIndexNotFound);
 
             if(OptimizationManager.constantFolding && assignment.getExpression() instanceof LLIRConditional){
-                LLIRConditional assignmentConditional = (LLIRConditional)assignment.getExpression();
+                LLIRConditional assignmentConditional = (LLIRConditional)assignment.getExpression();                
                 ConstantFoldingConditional constantFoldingConditional = new ConstantFoldingConditional(assignmentConditional);
                 assignment.setExpression(constantFoldingConditional.getConditional());
             }else if(OptimizationManager.constantFolding && assignment.getExpression() instanceof LLIRNegation){
