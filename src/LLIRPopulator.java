@@ -293,6 +293,18 @@ public class LLIRPopulator {
         }
     }
 
+
+    public void popArgumentsClassInstantiation(int parametersNumber){
+        if(peek() instanceof LLIRClassVariableInstantiation){
+            LLIRClassVariableInstantiation classVariableInstantiation = (LLIRClassVariableInstantiation)this.llirStack.pop();
+            for(int i = 0; i < parametersNumber; i++){
+                LLIRExpression expression = (LLIRExpression)this.llirStack.pop();
+                classVariableInstantiation.addParameter(expression);
+            }
+            this.llirStack.push(classVariableInstantiation);
+        }
+    }
+
     public void popFunctionCallFunction(){
 
         List<LLIRExpression> arguments = new ArrayList<>();

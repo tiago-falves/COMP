@@ -1556,7 +1556,7 @@ public class TableGenerator {
             Descriptor descriptor = descriptorsList.get(0);
             //Example simple = new Simple
             if(descriptor.getClass() == ClassDescriptor.class){
-                this.llirPopulator.addLLIR(new LLIRClassVariableInstantiation((ClassDescriptor) descriptor));
+                this.llirPopulator.addLLIR(new LLIRClassVariableInstantiation(((ClassDescriptor) descriptor).getName()));
                 return classIdentifierNode.jjtGetVal();
             }
         }
@@ -1567,7 +1567,6 @@ public class TableGenerator {
 
             //If it is an Import
             if(descriptor.getClass() == ImportDescriptor.class){
-
                 ImportDescriptor importDescriptor = (ImportDescriptor) descriptor;
                 if(importDescriptor.getIdentifiers().size() != 1)
                     continue;
@@ -1583,6 +1582,11 @@ public class TableGenerator {
                         return null;
                     }
                 } 
+
+                LLIRClassVariableInstantiation llirClassVariableInstantiation = new LLIRClassVariableInstantiation(importDescriptor.getIdentifiers().get(0));
+                llirClassVariableInstantiation.addParameterTypes(importParameters);
+                this.llirPopulator.addLLIR(llirClassVariableInstantiation);
+                this.llirPopulator.popArgumentsClassInstantiation(parameters.size());
 
                 return classIdentifierNode.jjtGetVal();
 

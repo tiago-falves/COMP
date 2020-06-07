@@ -18,7 +18,11 @@ public class ImportWriter {
     public ImportWriter(LLIRImport importLLIR){
         this.code ="";
         this.code += getParameters(importLLIR);
-        this.code += INSTRUCTION;
+
+        if(importLLIR.getImportDescriptor().isStatic())
+            this.code += INSTRUCTION;
+        else 
+            this.code += "\tinvokevirtual ";
 
         String arguments = FunctionParameters.getParametersTypes(importLLIR.getImportDescriptor().getParameters());
         this.code += getIdentifiers(importLLIR) + "(" + arguments + ")"+ CGConst.types.get(importLLIR.getImportDescriptor().getReturn()) + "\n";
