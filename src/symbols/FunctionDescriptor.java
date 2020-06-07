@@ -43,28 +43,8 @@ public class FunctionDescriptor extends TypeDescriptor {
         return bodyTable;
     }
 
-    public void setBodyTable(SymbolsTable bodyTable) {
-        this.bodyTable = bodyTable;
-    }
-
-    public Type getVariableType(String name) {
-        List<Descriptor> descriptors;
-        
-        descriptors = this.bodyTable.getDescriptor(name);
-        if(descriptors != null) {
-            TypeDescriptor variable = (TypeDescriptor) descriptors.get(0);
-            return variable.getType();
-        }
-
-        return null;
-    }
-
     public SymbolsTable getParametersTable() {
         return parametersTable;
-    }
-
-    public void setParametersTable(SymbolsTable parametersTable) {
-        this.parametersTable = parametersTable;
     }
 
     public Type getReturnValue() {
@@ -75,7 +55,6 @@ public class FunctionDescriptor extends TypeDescriptor {
 
         TypeString typeString = new TypeString(returnValue);
         Type type = typeString.parseType();
-        //Nao falta string no type?
         this.type = type;
     }
 
@@ -85,14 +64,6 @@ public class FunctionDescriptor extends TypeDescriptor {
     
     public boolean isStatic(){
         return this.isStatic;
-    }
-    
-    public Access getAccess(){
-        return access;
-    }
-    
-    public void setAccess(Access access){
-        this.access = access;
     }
 
     public void setAccessVal(String val){
@@ -152,13 +123,6 @@ public class FunctionDescriptor extends TypeDescriptor {
         functionBody.add(node);
     }
 
-    public LLIRNode getLastLLIRNode() {
-        if(functionBody.size() > 0) {
-            return functionBody.get(functionBody.size() - 1);
-        }
-
-        return null;
-    }
 
     public List<LLIRNode> getFunctionBody() {
         return functionBody;

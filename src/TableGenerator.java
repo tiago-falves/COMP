@@ -11,8 +11,6 @@ public class TableGenerator {
     SemanticError semanticError;
     FunctionDescriptor currentFunctionDescriptor;
     LLIRPopulator llirPopulator;
-    LLIRNode currentLLIRNode;
-    //LLIRMethodCall currentMethodCall;
     private String className;
     private boolean initializedWarning;
     private HashSet<VariableDescriptor> initializedIfVars = new HashSet<>();
@@ -20,15 +18,10 @@ public class TableGenerator {
     private HashSet<VariableDescriptor> possibleWarningVars = new HashSet<>();
     private boolean insideStaticMethod;
 
-    public TableGenerator(SimpleNode rootNode) {
-        this(rootNode, false);
-    }
-
     public TableGenerator(SimpleNode rootNode, boolean initializedWarning){
         this.rootNode = rootNode;
         this.symbolsTable = new SymbolsTable();
         this.semanticError = new SemanticError();
-        //this.currentMethodCall= new LLIRMethodCall();
         this.llirPopulator = new LLIRPopulator();
         this.className = null;
         this.initializedWarning = initializedWarning;
@@ -59,7 +52,6 @@ public class TableGenerator {
                     inspectClass(currentNode);
                     break;
             }
-
             i++;
         }
     }
@@ -71,7 +63,6 @@ public class TableGenerator {
         if(importNode.jjtGetChild(0).getId() == JavammTreeConstants.JJTSTATIC) {
             importDescriptor.makeStatic();
         }
-
         // collect identifiers, parameter types and return type
         for (int i = 0; i < importNode.jjtGetNumChildren(); i++) {
             SimpleNode child = (SimpleNode) importNode.jjtGetChild(i);

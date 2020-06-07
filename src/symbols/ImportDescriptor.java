@@ -24,26 +24,12 @@ public class ImportDescriptor extends TypeDescriptor {
         return this.identifiers.get(this.identifiers.size() - 1);
     }
 
-    public void setIdentifiers(ArrayList<String> identifiers) {
-        this.identifiers = identifiers;
-    }
-
     public void addIdentifier(String identifier) {
         this.identifiers.add(identifier);
     }
 
-
-    // Parameters 
-    public boolean hasParameters() {
-        return this.parameters.size() != 0;
-    }
-
     public ArrayList<Type> getParameters() {
         return this.parameters;
-    }
-
-    public void setParameters(ArrayList<Type> parameters) {
-        this.parameters = parameters;
     }
 
     public void addParameter(Type parameter) {
@@ -60,11 +46,6 @@ public class ImportDescriptor extends TypeDescriptor {
         return this.isStatic;
     }
 
-
-    // Return
-    public boolean hasReturn() {
-        return this.type != null;
-    }
 
     public Type getReturn() {
         return this.type;

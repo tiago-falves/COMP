@@ -14,10 +14,6 @@ public class SymbolsTable {
         table = new LinkedHashMap<String, List<Descriptor>>();
     }
 
-    public SymbolsTable getParent() {
-        return this.parent;
-    }
-
     public void setParent(SymbolsTable parent) {
         this.parent = parent;
     }
@@ -73,11 +69,6 @@ public class SymbolsTable {
     }
 
     public void print(String prefix) {
-        /*
-        if(this.parent != null) 
-            this.parent.print(prefix);
-        */    
-
         for(Map.Entry<String, List<Descriptor>> entry : table.entrySet()) {
             String name = entry.getKey();
 
@@ -101,8 +92,7 @@ public class SymbolsTable {
                 else {
                     System.out.println(prefix + name + " ---> " + descriptor.getClass().getName());
                 }
-         }
-
+            }
         }
     }
 }

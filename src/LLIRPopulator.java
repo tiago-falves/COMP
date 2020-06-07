@@ -8,7 +8,7 @@ import java.util.Stack;
 public class LLIRPopulator {
 
 
-
+    //Stack that deals with the created LLIR
     private Stack<LLIRNode> llirStack;
 
     public LLIRPopulator() {
@@ -29,24 +29,16 @@ public class LLIRPopulator {
         this.llirStack.push(assignment);
     }
 
-
     public Stack<LLIRNode> getLlirStack() {
         return llirStack;
     }
 
-    public void setLlirStack(Stack<LLIRNode> llirStack) {
-        this.llirStack = llirStack;
-    }
-
-    public void addInteger(LLIRInteger integer){
-        addExpression(integer);
-    }
-
-    //Simple Expression
+    //Add a LLIR Expression to the stack
     public void addExpression(LLIRExpression expression){
         this.llirStack.push(expression);
     }
 
+    //Sets the variable of the assignment
     public void setAssignmentVariable(LLIRExpression variable){
         if (this.peek() instanceof LLIRAssignment){
             LLIRAssignment assignment = (LLIRAssignment) this.peek();
@@ -56,9 +48,9 @@ public class LLIRPopulator {
                 assignment.setVariable((LLIRArrayAccess) variable);
             }
         }
-
     }
 
+    //Sets the Array Acess in the correponding LLIT
     public void popArrayAcessExpression(){
         if(lastIsLLIRExpression()){
             LLIRExpression expression =(LLIRExpression) this.llirStack.pop();
@@ -70,7 +62,6 @@ public class LLIRPopulator {
         }
     }
 
-    //TODO Check if this function is needed
     public void popArrayAfterFunction(){
         if(!lastIsFunctionCall()){
             LLIRExpression expression = (LLIRExpression) this.llirStack.pop();
@@ -95,16 +86,12 @@ public class LLIRPopulator {
         }
 
     }
+    //Add Method call to the stack
     public void addMethodCall(LLIRMethodCall methodCall){
-        //TODO Associate method call with the class instantiation ? 
-        /*if(peek() instanceof LLIRClassVariableInstantiation){
-            LLIRClassVariableInstantiation classVariableInstantiation = (LLIRClassVariableInstantiation)this.llirStack.pop();
-            methodCall.setClassVariableInstantiation(classVariableInstantiation);
-        }*/
-        //If empty then simpleFunctionCall
         addExpression(methodCall);
     }
 
+    //Add import to the stack and sets its parameters
     public void addImport(LLIRImport llirImport){
         if(peek() instanceof LLIRMethodCall){
             LLIRMethodCall methodCall = (LLIRMethodCall) llirStack.pop();
@@ -113,6 +100,7 @@ public class LLIRPopulator {
         }
     }
 
+    //Pops Parenthsis of the stack and sets it's expression
     public void popParenthesis(){
         if (this.llirStack.empty()) return;
         LLIRExpression node = (LLIRExpression) this.llirStack.pop();
@@ -122,6 +110,7 @@ public class LLIRPopulator {
 
     }
 
+    //True if the top member of the stack is a Method
     public boolean lastIsFunctionCall(){
         if (llirStack.isEmpty()) return false;
         if(peek() instanceof LLIRMethodCall) return true;
@@ -129,6 +118,7 @@ public class LLIRPopulator {
     }
 
 
+    //Adds an arithmetic function
     public void addArithmetic(LLIRArithmetic arithmetic){
         if(peek() instanceof LLIRExpression){
             arithmetic.setLeftExpression((LLIRExpression) this.llirStack.pop());
@@ -136,11 +126,11 @@ public class LLIRPopulator {
         this.llirStack.push(arithmetic);
     }
 
+    //Adds a conditional Expressions and sets it's left expression
     public void addConditional(LLIRConditional conditional){
         if(peek() instanceof LLIRExpression){
             conditional.setLeftExpression((LLIRExpression) this.llirStack.pop());
         }
-
         this.llirStack.push(conditional);
     }
 
@@ -152,10 +142,7 @@ public class LLIRPopulator {
 
     }
 
-    public void addReturn(LLIRReturn returnLLIR){
-        this.llirStack.push(returnLLIR);
-    }
-
+    //Pops the negation expression from the stack and sets the corresponding LLIR
     public void popNegation(){
 
         if(peek() instanceof LLIRExpression){
@@ -163,11 +150,11 @@ public class LLIRPopulator {
 
             if(peek() instanceof LLIRNegation){
                 ((LLIRNegation)peek()).setExpression((LLIRExpression) node);
-            }else{
-                llirStack.push(node);
-            }
+            }else llirStack.push(node);
         }
     }
+
+    //Pops simple expressions from the stack and deals with all the logic
     public void popExpression(){
 
         //In case of a simple Assignment
@@ -198,7 +185,6 @@ public class LLIRPopulator {
         }
 
         //In case of a complex assignment
-        //Isto estava aqui um
         while (peek() instanceof LLIRArithmetic || peek() instanceof LLIRConditional || peek() instanceof LLIRNegation){
             LLIRExpression actual = (LLIRExpression) this.llirStack.pop();
 
@@ -210,12 +196,6 @@ public class LLIRPopulator {
                 LLIRConditional previous = (LLIRConditional) peek();
                 previous.setRightExpression(actual);
             }
-
-            /*else if (peek() instanceof LLIRIfElseBlock){
-                LLIRIfElseBlock previous = (LLIRIfElseBlock) peek();
-                previous.setExpression(actual);
-                break;
-            }*/
             else if (peek() instanceof LLIRNegation){
                 LLIRNegation previous = (LLIRNegation) peek();
                 previous.setExpression(actual);
@@ -244,13 +224,12 @@ public class LLIRPopulator {
         }
     }
 
+    //Peeks from the stack if it is not empty
     public LLIRNode peek(){
         if(!this.llirStack.empty()){
             return this.llirStack.peek();
         }
         return new LLIRNull();
-
-
     }
 
     public void popReturn(){
@@ -262,6 +241,7 @@ public class LLIRPopulator {
             }
         }
     }
+
     public void popArrayInstantiation(){
         if(lastIsLLIRExpression()){
             LLIRExpression expression = (LLIRExpression) this.llirStack.pop();
@@ -275,6 +255,7 @@ public class LLIRPopulator {
         }
     }
 
+    //Pops functions arguments and deals with all the logic
     public void popArguments(int parametersNumber){
         List<LLIRExpression> arguments = new ArrayList<>();
         
@@ -291,8 +272,6 @@ public class LLIRPopulator {
             arguments.add(0,actual);
             parametersNumber--;
         }
-
-
         if (peek() instanceof LLIRMethodCall){
             LLIRMethodCall function = (LLIRMethodCall) peek();
             function.setParametersExpressions(arguments);
@@ -300,16 +279,12 @@ public class LLIRPopulator {
     }
 
     public void popArgumentsClassInstantiation(){
-
-        List<LLIRExpression> arguments = new ArrayList<>();
-
         if(peek() instanceof  LLIRMethodCall){
             LLIRMethodCall methodCall = (LLIRMethodCall) this.llirStack.pop();
             int numberArguments = methodCall.getParametersTable().getSize();
             for (int i = 0; i < numberArguments; i++) {
                 this.llirStack.pop();
             }
-
             if(peek() instanceof  LLIRClassVariableInstantiation){
                 LLIRClassVariableInstantiation classVariableInstantiation = (LLIRClassVariableInstantiation) this.llirStack.pop();
                 methodCall.setClassVariableInstantiation(classVariableInstantiation);
@@ -364,6 +339,7 @@ public class LLIRPopulator {
     }
 
 
+    //Adds a statement to the stack
     public void addStatement(FunctionDescriptor currentFunctionDescriptor){
         if(!llirStack.empty()) {
             LLIRNode node = this.llirStack.pop();
@@ -395,6 +371,7 @@ public class LLIRPopulator {
         }
     }
 
+    //Pops If and while Blocks from the stack
     public void popBlock(){
         if(peek() instanceof LLIRIfElseBlock) {
             LLIRIfElseBlock node = (LLIRIfElseBlock) this.llirStack.peek();
@@ -405,6 +382,7 @@ public class LLIRPopulator {
         }
     }
 
+    //Pops if and While expressions from the stack
     public void popBlockExpression(){
         if(peek() instanceof LLIRExpression) {
             LLIRExpression node = (LLIRExpression) this.llirStack.pop();
@@ -419,36 +397,19 @@ public class LLIRPopulator {
         }
     }
 
+    //True if the top of the stack is an arithmetic expression
     public boolean lastIsArithmetic(){
         if (this.peek() instanceof LLIRArithmetic) return true;
         return false;
     }
-
+    //True if the top of the stack is an conditional expression
     public boolean lastIsConditional(){
         if(this.peek() instanceof LLIRConditional) return true;
         return false;
     }
 
-    public boolean lastIsAssignment(){
-        if (this.peek() instanceof LLIRAssignment) return true;
-        return false;
-    }
     public boolean lastIsLLIRExpression(){
         if (this.peek() instanceof LLIRExpression) return true;
-        return false;
-    }
-    public boolean shouldAddArithmetic(){
-        if (lastIsArithmetic()){
-            LLIRArithmetic arithmetic = (LLIRArithmetic) peek();
-            if (arithmetic.foundOperator()) return true;
-        }
-        return false;
-    }
-    public boolean shouldAddConditional(){
-        if (lastIsConditional()){
-            LLIRConditional conditional = (LLIRConditional) peek();
-            if (conditional.foundOperator()) return true;
-        }
         return false;
     }
 
@@ -493,9 +454,7 @@ public class LLIRPopulator {
         }
     }
 
-
-
-
+    //Gets a String containing all the statements from a Block, If or while
     public String getBlockStatements(LLIRIfElseBlock ifElseBlock,String identation){
         String stack = "";
         stack = identation +  "IF:\n";
@@ -517,8 +476,8 @@ public class LLIRPopulator {
         return stack;
     }
 
+    //Prints the stack in a nice format
     public void printStack(){
-
         String stack = "";
         Stack<LLIRNode> copy = (Stack<LLIRNode>) this.llirStack.clone();
         while (!copy.empty()){
@@ -526,7 +485,6 @@ public class LLIRPopulator {
             stack += getNodeString(node,"");
         }
         System.out.println("STACK\n\n" + stack);
-
     }
 
     private String getNodeString(LLIRNode node,String identation){
