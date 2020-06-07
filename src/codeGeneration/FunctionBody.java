@@ -45,6 +45,11 @@ public class FunctionBody {
     
     public static void decStack(int value){
         totalStack -= value;
+        if (totalStack < 0)
+            totalStack = 0;
+        System.out.println("TotalStack "+totalStack);
+        System.out.println("MaxStack "+maxStack);
+        System.out.println();
     }
 
     public static void resetStack(){
