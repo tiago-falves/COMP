@@ -6,7 +6,7 @@ import llir.LLIRInteger;
 import llir.LLIRBoolean;
 import llir.LLIRVariable;
 import optimizations.OptimizationManager;
-import optimizations.OptimizationsR;
+import optimizations.RegisterReducer;
 import symbols.ConstantDescriptor;
 import symbols.ConstantInt;
 import symbols.ConstantBoolean;
@@ -48,11 +48,25 @@ public class VariableWriter {
                 this.code += CGConst.GET_FIELD + FunctionBody.getField(variable.getVariable().getName().equals("field") ? "_field" : variable.getVariable().getName(),variable.getVariable().getType());
             }
             else{
-                this.code += CGConst.load.get(variable.getVariable().getType());
-                this.code +=variableIndex + "\n";
 
-                if(OptimizationManager.reducedLocals && OptimizationsR.firstPass)
-                    OptimizationsR.addUse(variable.getVariable().getName());
+                boolean foundVariable = false;
+                this.code += CGConst.load.get(variable.getVariable().getType());
+                
+                if(OptimizationManager.reducedLocals && !RegisterReducer.firstPass) {
+                    String variableName = variable.getVariable().getName();
+
+                    if(RegisterReducer.allocation.containsKey(variableName)) {
+                        int register = RegisterReducer.allocation.get(variableName);
+                        this.code += FunctionBody.getVariableIndexOptimized(register) + "\n";
+                        foundVariable = true;
+                    }   
+                }
+
+                if(!foundVariable)
+                    this.code += variableIndex + "\n";
+
+                if(OptimizationManager.reducedLocals && RegisterReducer.firstPass)
+                    RegisterReducer.addUse(variable.getVariable().getName());
             } 
         }
     }

@@ -5,10 +5,8 @@ import codeGeneration.CodeWriter.WhileWriter;
 
 import java.util.*;
 
-public class OptimizationsR {
+public class RegisterReducer {
 
-    //O variable Index remoceça em cada função? aqui ja nao e suposto right?
-    //Mais vale usar Strings?
     public static int usedRegisters = -1; // Number of used registers for a function
     public static LinkedHashMap<String, Integer> allocation = new LinkedHashMap<>(); // Variable name to allocated register
     public static LinkedHashMap<Integer, List<String>> def = new LinkedHashMap<>(); //Statement Number Variable Indexes
@@ -20,15 +18,54 @@ public class OptimizationsR {
     public static boolean firstPass = true;
     public static int currentLine = 0;
 
-    public static boolean allocateRegisters() {
-        RegisterGraph registerGraph = new RegisterGraph(in);
-        registerGraph.populateGraph();
-        
-        if(!registerGraph.colorGraph()) 
-            return false;
+    public static boolean allocateRegisters(Set<String> parameters, boolean isMain) {
 
-        allocation = registerGraph.getAllocation();
-        usedRegisters = registerGraph.getCurrentRegister();
+        // Create a graph of variables, with edges between variables with the conflicting liveness
+        RegisterGraph registerGraph = new RegisterGraph(in, out);
+        registerGraph.populateGraph();
+
+        // Color the graph with unique colors between edges
+        if(!registerGraph.colorGraph())  {
+            usedRegisters = registerGraph.getCurrentColor();
+            return false;
+        }
+
+        // The minimum number of registers is equal to the number of different colors
+        usedRegisters = registerGraph.getCurrentColor();
+
+        // Assign the colors as registers, taking into account that the function paremeters must be first
+        int registerNumber = 1;
+        LinkedHashMap<String, Integer> colors = registerGraph.getColors();
+
+        if(isMain) {
+            LinkedHashMap<String, Integer> updatedColors = new LinkedHashMap<>();
+            for(String key : colors.keySet()) {
+                updatedColors.put(key, colors.get(key)-1);
+            }
+            colors = updatedColors;
+        }
+
+        for(String parameter : parameters) {
+            if(colors.containsKey(parameter)) {
+                int originalColor = colors.get(parameter);
+
+                // Translate the colors from register to original
+                LinkedHashMap<String, Integer> updatedColors = new LinkedHashMap<>();
+                for(String key : colors.keySet()) {
+                    int color = colors.get(key);
+                    if(color == originalColor) {
+                        updatedColors.put(key, registerNumber);
+                    } else if(color == registerNumber) {
+                        updatedColors.put(key, originalColor);
+                    } else {
+                        updatedColors.put(key, color);
+                    }
+                }
+                colors = updatedColors;
+                registerNumber++;
+            }
+        }
+        allocation = colors;
         return true;
     }
 
@@ -160,7 +197,6 @@ public class OptimizationsR {
         do {
             condition = true;
             for (int i = currentLine; i >= 1; i--) {
-                System.out.println("AQUI");
                 in_tmp.put(i,in.get(i));
                 out_tmp.put(i,out.get(i));
 
@@ -168,8 +204,6 @@ public class OptimizationsR {
                     out.put(i,addWithoutDuplicates(out.get(i),in.get(successor)));
                 }
                 
-                // USE MUST HAVE fm IN FIND MAXIMUM
-                System.out.println(use.get(i));
                 List<String> removedDuplicates = removeSubSet(out.get(i),def.get(i));
                 in.put(i,addWithoutDuplicates(use.get(i),removedDuplicates));
             }
@@ -194,7 +228,6 @@ public class OptimizationsR {
             }
 
         } while (condition);
-        System.out.println(in);
     }
 
     public static List<String> removeSubSet(List<String> list1, List<String> list2){
@@ -264,11 +297,11 @@ public class OptimizationsR {
         System.out.println(s);
     }
 
-    public static void printAllocation() {
+    public static void printAllocation(String indent) {
         String s = "";
 
         for(String variable : allocation.keySet()) {
-            System.out.println("Variable " + variable + ": " + allocation.get(variable));
+            s += indent + "Variable " + variable + ": " + allocation.get(variable) + "\n";
         }
 
         System.out.println(s);

@@ -4,7 +4,7 @@ import codeGeneration.CGConst;
 import codeGeneration.FunctionBody;
 import llir.*;
 import optimizations.OptimizationManager;
-import optimizations.OptimizationsR;
+import optimizations.RegisterReducer;
 import optimizations.ConstantFoldingConditional;
 import optimizations.ConstantFoldingNegation;
 import symbols.ConstantDescriptor;
@@ -55,13 +55,26 @@ public class AssignmentWriter {
                 variableIndex = FunctionBody.getVariableIndexExists(name);
 
                 if(variableIndex != ""){
-                    this.code += CGConst.store.get(type);
-                    // assign to the correct variable
-                    this.code = this.code + variableIndex + "\n";
+                    boolean foundVariable = false;
 
-                    if(OptimizationManager.reducedLocals && OptimizationsR.firstPass){
+                    this.code += CGConst.store.get(type);
+                    
+                    if(OptimizationManager.reducedLocals && !RegisterReducer.firstPass) {
+                        String variableName = assignment.getVariable().getVariable().getName();
+    
+                        if(RegisterReducer.allocation.containsKey(variableName)) {
+                            int register = RegisterReducer.allocation.get(variableName);
+                            this.code += FunctionBody.getVariableIndexOptimized(register) + "\n";
+                            foundVariable = true;
+                        }   
+                    }
+
+                    if(!foundVariable)
+                        this.code += variableIndex + "\n";
+
+                    if(OptimizationManager.reducedLocals && RegisterReducer.firstPass){
                         //Adds if the variable Index already exists
-                        OptimizationsR.addDef(name);
+                        RegisterReducer.addDef(name);
                     }
                 }else{
                     this.code += CGConst.PUT_FIELD + FunctionBody.getField(name.equals("field") ? "_field" : name, type);

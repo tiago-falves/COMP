@@ -10,6 +10,7 @@ import llir.LLIRNegation;
 import optimizations.ConstantFoldingConditional;
 import optimizations.ConstantFoldingNegation;
 import optimizations.OptimizationManager;
+import optimizations.RegisterReducer;
 import symbols.SymbolsTable;
 import symbols.Type;
 
@@ -30,8 +31,25 @@ public class MethodCallWriter {
         else if (methodCall.getClassName() == "") {
             this.code = LOAD + "_0\n";
         }else{
-            String variableIndex = FunctionBody.getVariableIndexString(methodCall.getClassName());
-            this.code = LOAD + variableIndex + "\n";
+            boolean foundVariable = false;
+
+            if(OptimizationManager.reducedLocals && !RegisterReducer.firstPass) {
+                String variableName = methodCall.getClassName();
+
+                if(RegisterReducer.allocation.containsKey(variableName)) {
+                    int register = RegisterReducer.allocation.get(variableName);
+                    this.code += LOAD + FunctionBody.getVariableIndexOptimized(register) + "\n";
+                    foundVariable = true;
+                }   
+            }
+
+            if(!foundVariable) {
+                String variableIndex = FunctionBody.getVariableIndexString(methodCall.getClassName());
+                this.code = LOAD + variableIndex + "\n";
+            }
+
+            if(OptimizationManager.reducedLocals && RegisterReducer.firstPass)
+                RegisterReducer.addUse(methodCall.getClassName());
         }
         FunctionBody.incStack();
 

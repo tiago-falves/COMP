@@ -1,4 +1,4 @@
-import optimizations.OptimizationsR;
+import optimizations.RegisterReducer;
 import symbols.ClassDescriptor;
 import symbols.SymbolsTable;
 import optimizations.OptimizationManager;

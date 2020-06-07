@@ -6,13 +6,13 @@ public class VariableNode {
     private String name;
     private boolean removed;
     private LinkedHashMap<String, VariableNode> edges;
-    private int register;
+    private int color;
 
     public VariableNode(String name) {
         this.name = name;
         this.removed = false;
         this.edges = new LinkedHashMap<>();
-        this.register = -1;
+        this.color = -1;
     }
 
     public String getName() {
@@ -29,7 +29,7 @@ public class VariableNode {
 
     public void addEdge(VariableNode variableNode) {
         if(variableNode.getName() == name) return;
-        
+
         if(!edges.containsKey(variableNode.getName()))
             edges.put(variableNode.getName(), variableNode);
     }
@@ -52,17 +52,21 @@ public class VariableNode {
         return num;
     }
 
-    public int getRegister() {
-        return register;
+    public LinkedHashMap<String, VariableNode> getEdges() {
+        return edges;
     }
 
-    public void setRegister(int registerNum) {
-        this.register = registerNum;
+    public int getColor() {
+        return color;
     }
 
-    public boolean edgesHaveRegister(int registerNum) {
+    public void setColor(int colorNum) {
+        this.color = colorNum;
+    }
+
+    public boolean edgesHaveColor(int colorNum) {
         for(String key : edges.keySet()) {
-            if(edges.get(key).getRegister() == registerNum) return true;
+            if(edges.get(key).getColor() == colorNum) return true;
         }
 
         return false;
