@@ -2,8 +2,6 @@ package optimizations;
 
 import codeGeneration.CodeWriter.BlockStatementWriter;
 import codeGeneration.CodeWriter.WhileWriter;
-import llir.LLIRNode;
-import symbols.Descriptor;
 
 import java.util.*;
 
@@ -11,6 +9,7 @@ public class OptimizationsR {
 
     //O variable Index remoceça em cada função? aqui ja nao e suposto right?
     //Mais vale usar Strings?
+    public static LinkedHashMap<String, Integer> allocation = new LinkedHashMap<>(); // Variable name to allocated register
     public static LinkedHashMap<Integer, List<String>> def = new LinkedHashMap<>(); //Statement Number Variable Indexes
     public static LinkedHashMap<Integer, List<String>> use = new LinkedHashMap<>(); //Statement Number Variable Indexes
     public static LinkedHashMap<Integer, List<Integer>> succ = new LinkedHashMap<>(); //Statement Number Successors
@@ -19,6 +18,17 @@ public class OptimizationsR {
     public static LinkedHashMap<Integer, List<String>> out = new LinkedHashMap<>(); //Statement Number Predecessors
     public static boolean firstPass = true;
     public static int currentLine = 0;
+
+    public static boolean allocateRegisters() {
+        RegisterGraph registerGraph = new RegisterGraph(in);
+        registerGraph.populateGraph();
+        
+        if(!registerGraph.colorGraph()) 
+            return false;
+
+        allocation = registerGraph.getAllocation();
+        return true;
+    }
 
     public static void incrementLine(){
         currentLine++;

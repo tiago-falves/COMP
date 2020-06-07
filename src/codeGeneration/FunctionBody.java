@@ -164,6 +164,7 @@ public class FunctionBody {
         if(OptimizationManager.reducedLocals) {
             OptimizationsR.firstPass = false;
             //OptimizationsR.calculateInOut();
+            //OptimizationsR.allocateRegisters();
         }
 
         for(LLIRNode node : this.functionDescriptor.getFunctionBody()) {
