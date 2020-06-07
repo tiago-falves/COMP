@@ -6,4 +6,5 @@ public class OptimizationManager {
 
     public static boolean reducedLocals = false;
     public static int maximumLocalVariables;
+    public static boolean error = false;
 }
