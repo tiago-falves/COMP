@@ -3,8 +3,13 @@ package codeGeneration.CodeWriter;
 import codeGeneration.CGConst;
 import codeGeneration.FunctionBody;
 import codeGeneration.FunctionParameters;
+import llir.LLIRConditional;
 import llir.LLIRExpression;
 import llir.LLIRMethodCall;
+import llir.LLIRNegation;
+import optimizations.ConstantFoldingConditional;
+import optimizations.ConstantFoldingNegation;
+import optimizations.OptimizationManager;
 import symbols.SymbolsTable;
 import symbols.Type;
 
@@ -19,7 +24,7 @@ public class MethodCallWriter {
     public MethodCallWriter(LLIRMethodCall methodCall){
 
         if(methodCall.getClassVariableInstantiation() != null){
-            ClassVariableInstantiationWriter classVariableInstantiationWriter = new ClassVariableInstantiationWriter(methodCall.getClassVariableInstantiation());
+            ClassVariableInstantiationWriter classVariableInstantiationWriter = new ClassVariableInstantiationWriter(methodCall.getClassVariableInstantiation(), true);
             this.code += classVariableInstantiationWriter.getCode();
         }
         else if (methodCall.getClassName() == "") {
@@ -44,10 +49,12 @@ public class MethodCallWriter {
 
 
         this.code += methodCall.getMethodName() + "(" + arguments + ")"+ CGConst.types.get(methodCall.getReturnType()) + "\n";
-        FunctionBody.decStack(methodCall.getParametersTable().getSize()-(methodCall.getReturnType() == Type.VOID ? 0 : 1));
+        FunctionBody.decStack(1 + methodCall.getParametersTable().getSize()-(methodCall.getReturnType() == Type.VOID ? 0 : 1));
 
-        if(methodCall.isIsolated())
+        if(methodCall.isIsolated()) {
             this.code += POP + "\n";
+            FunctionBody.decStack(1);
+        }
     }
 
     public String getCode(){
@@ -59,6 +66,15 @@ public class MethodCallWriter {
 
         List<LLIRExpression> parameters = methodCall.getParametersExpressions();
         for (LLIRExpression expression : parameters){
+            if(OptimizationManager.constantFolding && expression instanceof LLIRConditional){
+                LLIRConditional assignmentConditional = (LLIRConditional)expression;
+                ConstantFoldingConditional constantFoldingConditional = new ConstantFoldingConditional(assignmentConditional);
+                expression = constantFoldingConditional.getConditional();
+            }else if(OptimizationManager.constantFolding && expression instanceof LLIRNegation){
+                LLIRNegation assignmentNegation = (LLIRNegation)expression;
+                ConstantFoldingNegation constantFoldingNegation = new ConstantFoldingNegation(assignmentNegation);
+                expression = constantFoldingNegation.getNegation();
+            }
             ExpressionWriter expressionWriter = new ExpressionWriter(expression);
             result += expressionWriter.getCode();
         }

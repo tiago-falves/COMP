@@ -16,8 +16,12 @@ public class ConditionalWriter {
     public ConditionalWriter(LLIRConditional conditional){
         this.code  = "";
         this.conditional = conditional;
+        
+        
+
         this.code += generateCode(conditional.getLeftExpression());     // left
         this.code += generateCode(conditional.getRightExpression());    // right
+        FunctionBody.decStack(1);
 
         switch(conditional.getOperation()){
             case AND:
@@ -27,11 +31,11 @@ public class ConditionalWriter {
 
                 this.code += "\t" + "if_icmpge notLess_" + conditionalGotoNumber + "\n";
                 this.code += CGConst.TRUE_VALUE + "\n";
-                FunctionBody.incStack();
+                //FunctionBody.incStack();
                 this.code += "\t" + "goto endLess_" + conditionalGotoNumber + "\n";
                 this.code += "notLess_" + conditionalGotoNumber + ":" + "\n";
                 this.code += CGConst.FALSE_VALUE + "\n";
-                FunctionBody.incStack();
+                //FunctionBody.incStack();
                 this.code += "endLess_" + conditionalGotoNumber + ":";
                 conditionalGotoNumber++;
                 break;

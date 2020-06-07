@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
+import java.io.File;
 
 
 public class CodeGenerator {
@@ -22,6 +23,8 @@ public class CodeGenerator {
 
         String className = classDescriptor.getName();
         try {
+            File f = new File("compiled/jasmin/");
+            f.mkdirs();
             FileWriter file = new FileWriter("compiled/jasmin/" + className + ".j", false);
             BufferedWriter bufferedWriter = new BufferedWriter(file);
             this.out = new PrintWriter(bufferedWriter);

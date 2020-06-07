@@ -47,6 +47,8 @@ public class FunctionBody {
     
     public static void decStack(int value){
         totalStack -= value;
+        if (totalStack < 0)
+            totalStack = 0;
     }
 
     public static void resetStack(){

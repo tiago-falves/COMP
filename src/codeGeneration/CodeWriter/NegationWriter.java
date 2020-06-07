@@ -14,7 +14,7 @@ public class NegationWriter {
         this.negation = negation;
         this.code += generateCode(negation.getExpression());
         this.code += CGConst.TRUE_VALUE + "\n";
-        FunctionBody.incStack();
+        //FunctionBody.incStack();
         this.code += "\t" + "ixor";
         this.code += "\n";
     }

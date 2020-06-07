@@ -10,14 +10,20 @@ public class ClassVariableInstantiationWriter {
 
     private String code;
 
-    public ClassVariableInstantiationWriter(LLIRClassVariableInstantiation variable){
+    public ClassVariableInstantiationWriter(LLIRClassVariableInstantiation variable, boolean onMethodCall){
         this.code = "";
 
-        FunctionBody.incStack();
-        FunctionBody.incStack();
+        if (!onMethodCall) {
+            FunctionBody.incStack();
+            FunctionBody.incStack();
+        }
         this.code += NEW + variable.getClassDescriptor().getName() + "\n";
         this.code += DUP;
         this.code += INSTRUCTION + variable.getClassDescriptor().getName() + "/<init>()V\n";
+    }
+
+    public ClassVariableInstantiationWriter(LLIRClassVariableInstantiation variable) {
+        this(variable, false);
     }
 
     public String getCode(){

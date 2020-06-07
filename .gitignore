@@ -30,3 +30,5 @@ test/Simple.j
 *.class
 
 compiled/jasmin/*
+
+.classpath
