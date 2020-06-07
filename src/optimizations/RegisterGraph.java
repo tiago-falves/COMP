@@ -2,18 +2,22 @@ package optimizations;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 public class RegisterGraph {
     public LinkedHashMap<String, VariableNode> variables;
     public LinkedHashMap<Integer, List<String>> in;
+    public LinkedHashMap<Integer, List<String>> out;
     public List<VariableNode> stack;
     public LinkedHashMap<String, Integer> allocation;
     public int currentRegister;
     
-    public RegisterGraph(LinkedHashMap<Integer, List<String>> in) {
+    public RegisterGraph(LinkedHashMap<Integer, List<String>> in, LinkedHashMap<Integer, List<String>> out) {
         this.variables = new LinkedHashMap<>();
         this.in = in;
+        this.out = out;
         this.stack = new ArrayList<>();
         this.allocation = new LinkedHashMap<>();
         this.currentRegister = 1;
@@ -64,10 +68,15 @@ public class RegisterGraph {
 
     public void populateGraph() {
         for(int currentStatement = 0; currentStatement < OptimizationsR.currentLine; currentStatement++) {
-            List<String> variableNames = in.get(currentStatement);
+            List<String> liveInVariables = in.get(currentStatement);
+            if(liveInVariables == null) liveInVariables = new ArrayList<>();
 
-            if(variableNames != null && variableNames.size() > 0)
-                addNode(variableNames.get(0), currentStatement);
+            List<String> liveOutVariables = out.get(currentStatement);
+            if(liveOutVariables == null) liveOutVariables = new ArrayList<>();
+
+            List<String> liveVariables = getLiveAtStatement(liveInVariables, liveOutVariables);
+
+            if(liveVariables.size() > 0) addNode(liveVariables.get(0), currentStatement);
         }
 
     }
@@ -100,4 +109,11 @@ public class RegisterGraph {
 
         return true;
     }
+
+    private List<String> getLiveAtStatement(List<String> inAtStatement, List<String> outAtStatement) {
+        Set<String> liveSet = new LinkedHashSet<>(inAtStatement);
+        liveSet.addAll(outAtStatement);
+        return new ArrayList<>(liveSet);
+    }
+    
 }

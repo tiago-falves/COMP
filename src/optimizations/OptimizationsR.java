@@ -21,7 +21,7 @@ public class OptimizationsR {
     public static int currentLine = 0;
 
     public static boolean allocateRegisters() {
-        RegisterGraph registerGraph = new RegisterGraph(in);
+        RegisterGraph registerGraph = new RegisterGraph(in, out);
         registerGraph.populateGraph();
         
         if(!registerGraph.colorGraph()) 
