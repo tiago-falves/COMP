@@ -238,6 +238,31 @@ public class OptimizationsR {
         System.out.println(s);
     }
 
+    public static void printInOut() {
+        String s = "";
+        System.out.println(currentLine);
+        for (int i = 1; i <= currentLine; i++) {
+            System.out.println("Statement " + i);
+            List<String> ins = in.get(i);
+            List<String> outs = out.get(i);
+
+            for(String inName : ins) System.out.println("\tIn: " + inName);
+            for(String outName : outs) System.out.println("\tOut: " + outName);
+        }
+
+        System.out.println(s);
+    }
+
+    public static void printAllocation() {
+        String s = "";
+
+        for(String variable : allocation.keySet()) {
+            System.out.println("Variable " + variable + ": " + allocation.get(variable));
+        }
+
+        System.out.println(s);
+    }
+
 }
 
 

@@ -42,7 +42,7 @@ public class RegisterGraph {
 
         } while(previousStackSize != stack.size());
 
-        if(checkIfEmpty())
+        if(!checkIfEmpty())
             return false;
 
         for(int i = stack.size()-1; i >= 0; i--) {

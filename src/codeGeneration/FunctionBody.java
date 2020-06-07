@@ -135,6 +135,8 @@ public class FunctionBody {
 
     public String generate(){
 
+        // Add variables to hash map
+        pushVariables();
 
         if(OptimizationManager.reducedLocals){
 
@@ -158,19 +160,17 @@ public class FunctionBody {
         boolean foundReturn = false;
         String generatedCode = new String();
 
-        // Add variables to hash map
-        pushVariables();
 
         if(OptimizationManager.reducedLocals) {
             OptimizationsR.firstPass = false;
             OptimizationsR.calculateInOut();
 
-            /*
+
             if(OptimizationsR.allocateRegisters())
-                System.out.println("Impossible to allocate registers");
-            else
                 System.out.println("Register allocation was successful");
-            */
+            else
+                System.out.println("Impossible to allocate registers");
+
         }
 
         for(LLIRNode node : this.functionDescriptor.getFunctionBody()) {
@@ -204,7 +204,9 @@ public class FunctionBody {
         if(!foundReturn) generatedCode += "\treturn\n";
 
         if(OptimizationManager.reducedLocals) {
-            OptimizationsR.print();
+            //OptimizationsR.print();
+            OptimizationsR.printInOut();
+            //OptimizationsR.printAllocation();
             OptimizationsR.reset();
         }
         

@@ -30,7 +30,6 @@ public abstract class BlockStatementWriter {
         // Continue calculating liveness on first pass
         if(OptimizationManager.reducedLocals && OptimizationsR.firstPass) {
             OptimizationsR.addBlockPredSuccExpression(this,expressionNumber);
-            return "";
         }
 
         return result;

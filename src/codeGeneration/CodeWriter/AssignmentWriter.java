@@ -32,10 +32,6 @@ public class AssignmentWriter {
             if(variableIndex == ""){
                 variableIndexNotFound = true;
                 this.code += "\taload_0\n";
-            } else if(OptimizationManager.reducedLocals && OptimizationsR.firstPass){
-                //Adds if the variable Index already exists
-                OptimizationsR.addDef(name);
-                return;
             }
 
             type =getVariableCode(variableIndexNotFound);
@@ -62,6 +58,11 @@ public class AssignmentWriter {
                     this.code += CGConst.store.get(type);
                     // assign to the correct variable
                     this.code = this.code + variableIndex + "\n";
+
+                    if(OptimizationManager.reducedLocals && OptimizationsR.firstPass){
+                        //Adds if the variable Index already exists
+                        OptimizationsR.addDef(name);
+                    }
                 }else{
                     this.code += CGConst.PUT_FIELD + FunctionBody.getField(name.equals("field") ? "_field" : name, type);
                     FunctionBody.incStack();FunctionBody.incStack();
