@@ -1,0 +1,67 @@
+import io.println(int);
+import io.println(boolean);
+
+/**
+ * This class serves to test the compiler's function overload capabilites.
+ * It's also a good way to show the compiler's constant propagation optimization
+ * (the -o option), as there are a lot of constant variables.
+ */
+class Overload {
+    public static void main(String[] args) {
+        int a;
+        int b;
+        int c;
+        boolean d;
+        boolean e;
+        boolean f;
+        boolean g;
+        Overload ourClass;
+
+        a = 1;
+        b = 2;
+        c = 3;
+
+        d = true;
+        e = true;
+        f = true;
+        g = false;
+
+        ourClass = new Overload();
+
+        io.println(ourClass.sum(a,b));
+        io.println(ourClass.sum(a,b,c));
+        io.println(ourClass.and(d,e,f));
+        io.println(ourClass.and(d,e,f,g));
+    }
+
+    public int sum(int a, int b, int c) {
+        return a + b + c;
+    }
+
+    public int sum(int a, int b){
+        return a + b;
+    }
+
+    public int and(boolean a, boolean b, boolean c) {
+        int res;
+        if(a && b && c) {
+            res = 1;
+        }
+        else {
+            res = 0;
+        }
+        return res;
+    }
+
+    public int and(boolean a, boolean b, boolean c, boolean d) {
+        int res;
+        if(a && b && c && d) {
+            res = 1;
+        }
+        else {
+            res = 0;
+        }
+        return res;
+    }
+
+}
