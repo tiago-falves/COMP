@@ -25,18 +25,26 @@ public class RegisterReducer {
         registerGraph.populateGraph();
 
         // Color the graph with unique colors between edges
-        if(!registerGraph.colorGraph()) 
+        if(!registerGraph.colorGraph())  {
+            usedRegisters = registerGraph.getCurrentColor();
             return false;
+        }
 
         // The minimum number of registers is equal to the number of different colors
         usedRegisters = registerGraph.getCurrentColor();
 
         // Assign the colors as registers, taking into account that the function paremeters must be first
-        int registerNumber;
-        if(isMain) registerNumber = 0;
-        else registerNumber = 1;
-
+        int registerNumber = 1;
         LinkedHashMap<String, Integer> colors = registerGraph.getColors();
+
+        if(isMain) {
+            LinkedHashMap<String, Integer> updatedColors = new LinkedHashMap<>();
+            for(String key : colors.keySet()) {
+                updatedColors.put(key, colors.get(key)-1);
+            }
+            colors = updatedColors;
+        }
+
         for(String parameter : parameters) {
             if(colors.containsKey(parameter)) {
                 int originalColor = colors.get(parameter);
@@ -289,11 +297,11 @@ public class RegisterReducer {
         System.out.println(s);
     }
 
-    public static void printAllocation() {
+    public static void printAllocation(String indent) {
         String s = "";
 
         for(String variable : allocation.keySet()) {
-            System.out.println("Variable " + variable + ": " + allocation.get(variable));
+            s += indent + "Variable " + variable + ": " + allocation.get(variable) + "\n";
         }
 
         System.out.println(s);

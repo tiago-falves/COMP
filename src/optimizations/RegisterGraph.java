@@ -46,8 +46,36 @@ public class RegisterGraph {
 
         } while(previousStackSize != stack.size());
 
-        if(!checkIfEmpty())
+        if(!checkIfEmpty()) {
+            int offset = 0;
+            do {
+                offset++;
+                do {
+                    previousStackSize = stack.size();
+        
+                    for(String key : variables.keySet()) {
+                        VariableNode currentVariable = variables.get(key);
+                        if(!currentVariable.isRemoved() && currentVariable.getNumEdges() < (OptimizationManager.maximumLocalVariables + offset)) {
+                            stack.add(currentVariable);
+                            currentVariable.setRemoved(true);
+                        }
+                    }
+        
+                } while(previousStackSize != stack.size());
+            } while(!checkIfEmpty());
+
+            for(int i = stack.size()-1; i >= 0; i--) {
+                VariableNode variable = stack.get(i);
+    
+                while(variable.edgesHaveColor(currentColor)) {
+                    currentColor++;
+                }
+                int assignedColor = currentColor;
+                variable.setColor(assignedColor);
+            }
+
             return false;
+        }
 
         for(int i = stack.size()-1; i >= 0; i--) {
             VariableNode variable = stack.get(i);
