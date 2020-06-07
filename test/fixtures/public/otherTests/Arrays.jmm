@@ -1,6 +1,11 @@
-import ioa.println(int);
+import io.println(int);
+
+/*
+ * This class serves to test the compiler's capabilites regarding array
+ * creation and access using complex expressions
+ */
 class Arrays {
-	public static void main(String[] args) {
+    public static void main(String[] args) {
         int a;
         int b;
         int c; 
@@ -9,38 +14,37 @@ class Arrays {
         int result;
         int[] newField;
         Arrays x;
-
         x = new Arrays();
 
         newField = new int[5];
+
         i = 0;
-        
+
         while(i < newField.length){
             newField[i] = newField.length - i;
             i = i + 1;
         }
 
-        a = x.add(1,1) * newField[1] + (2 * newField[1]);
-        
-        b = new Arrays().add(1,1);
-        
-        c = x.add(1,1);
+        newField[newField.length-1] = newField[1+ x.add(1,1)] + (2 * newField[1]);
 
+        a = x.add(1,1) * newField[1] + (2 * newField[1]);
+        b = new Arrays().add(1,1);
+        c = newField[newField.length-1];
         d = new Arrays().array().length;
-        
-        if((b+d) < (a-c)){
+
+        if(((b+d) < (a-c)) && true && (!false)){
             result = (new Arrays().array()[0]) + x.array().length;
         }
         else{
             result = 0-1;
         }
 
-        ioa.println(result);
-	}
+        io.println(result);
+    }
 
-	public int add(int a, int b){
-		return a+b;
-	}
+    public int add(int a, int b){
+        return a+b;
+    }
 
     public int[] array(){
         int[] x;
@@ -49,4 +53,3 @@ class Arrays {
         return x;
     }
 }
-
