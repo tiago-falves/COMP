@@ -2,40 +2,43 @@ package codeGeneration;
 
 import java.util.*;
 
-import optimizations.*;
 import codeGeneration.CodeWriter.*;
 import llir.*;
 import optimizations.OptimizationManager;
-import optimizations.OptimizationsR;
+import optimizations.RegisterReducer;
 import symbols.*;
 
 
 public class FunctionBody {
-    private FunctionDescriptor functionDescriptor;
+    
+    // Static variables
     public static LinkedHashMap<String, Integer> variableToIndex;
     public static LinkedHashMap<String, Integer> fieldsToIndex;
     public static int currentVariableIndex;
     public static int maxStack = 0;
     public static int totalStack = 0;
-    private String STACK_LIMIT = "\t.limit stack ";
-    private final String LOCALS_LIMIT;
     private static SymbolsTable fieldsTable;
     private static ClassDescriptor classDescriptor;
 
+    // Non-static variables
+    private final String LOCALS_LIMIT;
+    private FunctionDescriptor functionDescriptor;
+    private String STACK_LIMIT = "\t.limit stack ";
+
     public FunctionBody(FunctionDescriptor functionDescriptor, LinkedHashMap<String, Integer> variableToIndex, ClassDescriptor classDescriptor) {
         this.functionDescriptor = functionDescriptor;
-        this.variableToIndex = variableToIndex;
-        this.currentVariableIndex = variableToIndex.size();
+        FunctionBody.variableToIndex = variableToIndex;
+        FunctionBody.currentVariableIndex = variableToIndex.size();
 
         if(functionDescriptor.getName().equals("main")){
-            this.currentVariableIndex--;
+            FunctionBody.currentVariableIndex--;
         }
 
         this.LOCALS_LIMIT = "\t.limit locals " + ((functionDescriptor.isStatic()?0:1) + functionDescriptor.getParametersTable().getSize() + functionDescriptor.getBodyTable().getSize());
-        totalStack = 0;
-        maxStack = 0;
-        this.fieldsTable = classDescriptor.getVariablesTable();
-        this.classDescriptor = classDescriptor;
+        FunctionBody.totalStack = 0;
+        FunctionBody.maxStack = 0;
+        FunctionBody.fieldsTable = classDescriptor.getVariablesTable();
+        FunctionBody.classDescriptor = classDescriptor;
     }
 
     public static void incStack(){
@@ -142,11 +145,11 @@ public class FunctionBody {
 
         if(OptimizationManager.reducedLocals){
 
-            OptimizationsR.firstPass = true;
+            RegisterReducer.firstPass = true;
 
             for(LLIRNode node : this.functionDescriptor.getFunctionBody()) {
-                OptimizationsR.incrementLine();
-                OptimizationsR.addPredSucc();
+                RegisterReducer.incrementLine();
+                RegisterReducer.addPredSucc();
 
                 FunctionBody.resetStack();
                 
@@ -164,14 +167,17 @@ public class FunctionBody {
 
 
         if(OptimizationManager.reducedLocals) {
-            OptimizationsR.firstPass = false;
-            OptimizationsR.calculateInOut();
+            String functionName = functionDescriptor.getName();
 
+            Set<String> parameters = functionDescriptor.getParametersTable().getTable().keySet();
+            boolean isMain = (functionDescriptor.getName() == "main");
 
-            if(OptimizationsR.allocateRegisters())
-                System.out.println("Register allocation was successful");
+            RegisterReducer.firstPass = false;
+            RegisterReducer.calculateInOut();
+            if(RegisterReducer.allocateRegisters(parameters, isMain))
+                System.out.println("Register allocation for " + functionName + " was successful");
             else
-                System.out.println("Impossible to allocate registers");
+                System.out.println("Impossible to allocate registers for " + functionName);
 
         }
 
@@ -206,10 +212,10 @@ public class FunctionBody {
         if(!foundReturn) generatedCode += "\treturn\n";
 
         if(OptimizationManager.reducedLocals) {
-            //OptimizationsR.print();
-            OptimizationsR.printInOut();
-            //OptimizationsR.printAllocation();
-            OptimizationsR.reset();
+            //RegisterReducer.print();
+            //OptimizationsR.printInOut();
+            RegisterReducer.printAllocation();
+            RegisterReducer.reset();
         }
         
         return STACK_LIMIT + maxStack + "\n" + LOCALS_LIMIT + "\n" + generatedCode;
@@ -224,8 +230,11 @@ public class FunctionBody {
                 }
         );
         return variableIndex;
+    }
 
-
+    public static String getVariableIndexOptimized(int index) {
+        if(index <= 3) return "_" + index;
+        else return "\t" + index;
     }
 
     public static String getVariableIndexExists(String name){

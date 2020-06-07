@@ -5,7 +5,7 @@ import java.util.List;
 import codeGeneration.FunctionBody;
 import llir.*;
 import optimizations.OptimizationManager;
-import optimizations.OptimizationsR;
+import optimizations.RegisterReducer;
 
 public abstract class BlockStatementWriter {
 
@@ -13,23 +13,23 @@ public abstract class BlockStatementWriter {
 
         int expressionNumber = 0;
         if(OptimizationManager.reducedLocals)
-            expressionNumber = OptimizationsR.currentLine;
+            expressionNumber = RegisterReducer.currentLine;
 
 
         String result = new String();
         for(int i = 0; i < nodes.size(); i++){
 
             // Calculate liveness on first pass
-            if(OptimizationManager.reducedLocals && OptimizationsR.firstPass){
-                OptimizationsR.incrementLine();
-                OptimizationsR.addPredSucc();
+            if(OptimizationManager.reducedLocals && RegisterReducer.firstPass){
+                RegisterReducer.incrementLine();
+                RegisterReducer.addPredSucc();
             }
             result += generateCode(nodes.get(i), name);
         }
 
         // Continue calculating liveness on first pass
-        if(OptimizationManager.reducedLocals && OptimizationsR.firstPass) {
-            OptimizationsR.addBlockPredSuccExpression(this,expressionNumber);
+        if(OptimizationManager.reducedLocals && RegisterReducer.firstPass) {
+            RegisterReducer.addBlockPredSuccExpression(this,expressionNumber);
         }
 
         return result;

@@ -2,7 +2,6 @@ package codeGeneration.CodeWriter;
 
 import codeGeneration.FunctionBody;
 import llir.*;
-import symbols.Type;
 
 public class ArrayAccessWriter {
     private String code;
