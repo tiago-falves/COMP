@@ -8,13 +8,13 @@ NAME2: Nuno Cardoso, NR2: 201706162, GRADE2: 20, CONTRIBUTION2: 25%
 NAME3: Pedro Esteves, NR3: 201705160, GRADE3: 20, CONTRIBUTION3: 25%
 NAME4: Tiago Alves, NR4: 201603820, GRADE4: 20, CONTRIBUTION4: 25%
 
-Given the features added to the compiler (which are detailed in the following sections), the group believes that a fair global grade would be 20 (approximately).
+Given the features added to the compiler (which are detailed in the following sections), the group believes that a fair global grade would be 20 (approximately). A lot of work was put into this project and the group made sure to implement almost every bonus feature that was proposed by the professors, as well as every optimization option.
 
 1. SUMMARY
 
-The intention of this assignment was to develop a compiler, named jmm, which is able to translate Java-- programs into java bytecodes. The compiler follows a well defined compilation flow, which includes: lexical analysis (using an LL(1) parser), syntactic analysis, semantic analysis and code generation. The code generation was also optimized using register allocation, constant propagation and by using templates for compiling while loops. Among these stages, it includes:
+The intention of this assignment was to develop a compiler which is able to translate Java-- (jmm) programs into java bytecodes. The compiler follows a well defined compilation flow, which includes: lexical analysis (using an LL(1) parser), syntactic analysis, semantic analysis and code generation. The code generation was also optimized using register allocation, constant propagation, constant folding for integers and booleans (as bonus) and by using templates for compiling while loops. Among these stages, it includes:
 
-- Error treatment and recover mechanisms
+- Error treatment and recovery mechanisms
 - Generation of a Syntax Tree (Abstract Syntax Tree)
 - Generation of an LLIR (Low-Level Intermediate Representation)
 - Generation of java bytecodes  
@@ -30,7 +30,7 @@ To add the flags, they have to be edited in the script.
 
 To run a single File with the pretended flags, please insert the following command:
 
-java –jar jmm.jar [-r=<num>] [-o] <input_file.jmm>
+java –jar jmm.jar [-r=<num>] [-o] [-f] [-d] [-Winit] <input_file.jmm>
 
 
 Debug mode 
@@ -100,23 +100,34 @@ The compiler implements the following semantic rules:
 5. INTERMEDIATE REPRESENTATIONS (IRs)
 
 The intermediate representation is being delivered by both the Syntax Tree (Abstract Syntax Tree) and the LLIR (Low-Level Intermidiate Representation). 
-This representation is made after both the lexical and syntax are complete. Also, the IR help us structure the Java-- code in something more simpler and manageable. 
-The creation of the LLIR also modularized our code to something closer the created Jasmin Code, becoming very easy to add new features and to aplly new optimizations.
+This representation is made after both the lexical and syntax are complete. Also, the IR help us structure the Java-- code in something simpler and more manageable. 
+The creation of the LLIR also modularized our code to something closer the created Jasmin Code, becoming very easy to add new features and to apply optimizations as seen fit.
 
 6. CODE GENERATION 
 
-The Code generation is performed using as an input the LLIR, which is populated during the Semantic Analysis. 
+The Code generation is performed using as an input the LLIR, which is populated during the Semantic Analysis, as to make the process more efficient, rather that traversing the AST to analyse the semantics and then having to traverse it again to populate the LLIR.
 The List of LLIRs is then transversed, each one having a correspondent Writer, which knows how to transform the LLIR in a JVM instruction. 
 The code is all written to a file with the same name of the one recieved as an argument, but with a '.j' extention.
-
-The code generation has only one problem: when the file imports non-static functions, it treats them like static functions. 
-This error is because the given test files have only static import statements.
+The code generation supports both static and non-static imports. It's important to mention this, given the fact that the given test files have only static import statements.
 
 7. OVERVIEW
 
-TODO O QUE POR AQUI?
+The development of the Java-- compiler followed the checkpoints presented in the project's description:
+    1. Developed a parser for Java-- using JavaCC and taking as starting point the Java-- grammar furnished, using an LL(1) parser;
+    2. Included error treatment and recovery mechanisms;
+    3. Proceeded with the specification of the AST;
+    4. Included the necessary symbol tables;
+    5. Performed Semantic Analysis;
+    6. Generated JVM code accepted by jasmin corresponding to the invocation of functions in Java--;
+    7. Generated JVM code accepted by jasmin for arithmetic expressions;
+    8. Generated JVM code accepted by jasmin for conditional instructions (if and if-else);
+    9. Generated JVM code accepted by jasmin for loops;
+    10. Generated JVM code accepted by jasmin to deal with arrays.
+    11. Completed the compiler and tested it using a set of Java-- classes;
+    12. Proceeded with the optimizations related to the code generation, related to the register allocation (“-r” option) and the optimizations related to the “-o” option and, as a bonus, the "-f" option.
 
-refer the approach used in your tool, the main algorithms, the third-party tools and/or packages, etc.)
+Regarding the optimizations, both the "-o" option (Constant Propagation) and the "f" option (Constant Folding) used algorithms completely developed by the members of the group. In the "-o" option, any variable that can be considered as constant is printed on the screen at runtime. As for the "-r" option (Register Allocation with Liveness Analysis), the Dataflow and Liveness Analysis algorithms used were based on the ones presented in the theoretical classes. The Register Allocation was based on a graph-coloring algorithm defined in "Modern Compiler Implementation in Java" by Andrew Appel and Jens Palsberg. However, it does not contemplate spilling.
+
 
 8. TASK DISTRIBUTION
 
