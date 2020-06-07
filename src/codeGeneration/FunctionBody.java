@@ -94,6 +94,7 @@ public class FunctionBody {
 
     }
 
+    // Optimization -o
     public int searchForAssignments(VariableDescriptor varDes, List<LLIRNode> body) {
         int assignments = 0;
 
@@ -108,16 +109,47 @@ public class FunctionBody {
                 if(namedTypeDescriptor.getName() == varDes.getName()) {
                     assignments++;
 
+                    // Simple integer
                     if((assignmentNode.getExpression() instanceof LLIRInteger) && !varDes.getConstantDescriptor().isSimple()) {
                         LLIRInteger assignementInteger = (LLIRInteger) assignmentNode.getExpression();
                         varDes.setConstantDescriptor(new ConstantInt(assignementInteger.getValue()));
                     }
+                    // Simple boolean
                     else if((assignmentNode.getExpression() instanceof LLIRBoolean) && !varDes.getConstantDescriptor().isSimple()) {
                         LLIRBoolean assignementBoolean = (LLIRBoolean) assignmentNode.getExpression();
                         varDes.setConstantDescriptor(new ConstantBoolean(assignementBoolean.getValue()));
                     }
+                    // Another constant variable
+                    else if((assignmentNode.getExpression() instanceof LLIRVariable) && !varDes.getConstantDescriptor().isSimple()) {
+                        LLIRVariable constantVariable = (LLIRVariable) assignmentNode.getExpression();
 
-                    // TODO: add more cases, for ex, a constant variable
+                        if(constantVariable.getVariable().getName() != varDes.getName()) {
+
+                            LinkedHashMap<String, List<Descriptor>> bodyTable = functionDescriptor.getBodyTable().getTable();
+                            if(bodyTable.containsKey(constantVariable.getVariable().getName())) {
+
+                                if(bodyTable.get(constantVariable.getVariable().getName()).get(0) instanceof VariableDescriptor) {
+
+                                    VariableDescriptor constVar = (VariableDescriptor) bodyTable.get(constantVariable.getVariable().getName()).get(0);
+
+                                    if(constVar.getConstantDescriptor() instanceof ConstantBoolean) {
+
+                                        ConstantBoolean b = (ConstantBoolean) constVar.getConstantDescriptor();
+                                        if(b.isConstant()) {
+                                            varDes.setConstantDescriptor(new ConstantBoolean(b.getValue()));
+                                        }
+                                    }
+                                    else if (constVar.getConstantDescriptor() instanceof ConstantInt) {
+
+                                        ConstantInt i = (ConstantInt) constVar.getConstantDescriptor();
+                                        if(i.isConstant()) {
+                                            varDes.setConstantDescriptor(new ConstantInt(i.getValue()));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
             else if (node instanceof LLIRIfElseBlock) {
