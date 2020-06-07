@@ -11,9 +11,6 @@ public enum ConditionalOperation {
         this.operation = operation;
     }
 
-    public String getOperation() {
-        return  this.operation;
-    }
 
 
 };

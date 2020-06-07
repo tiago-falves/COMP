@@ -6,15 +6,6 @@ public class LLIRAssignment extends LLIRNode {
     LLIRVariableAndArray variable;
     LLIRExpression expression;
 
-    public LLIRAssignment() {
-        
-    }
-
-    public LLIRAssignment(LLIRVariableAndArray var, LLIRExpression expr) {
-        this.variable = var;
-        this.expression = expr;
-    }
-
     /**
      * @return the variable
      */

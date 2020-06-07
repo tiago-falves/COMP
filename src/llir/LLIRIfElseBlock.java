@@ -17,7 +17,6 @@ public class LLIRIfElseBlock extends LLIRNode{
         elseNodes = new ArrayList<>();
         this.foundElse = false;
         this.finishedElse = false;
-
     }
 
     public void setExpression(LLIRExpression expression){
@@ -27,8 +26,7 @@ public class LLIRIfElseBlock extends LLIRNode{
     public void addNode(LLIRNode node){
         if(!this.foundElse){
             this.addIfNode(node);
-        }
-        else {
+        } else {
             this.addElseNode(node);
         }
     }
@@ -59,10 +57,6 @@ public class LLIRIfElseBlock extends LLIRNode{
 
     public void setFinishedElse(boolean finishedElse) {
         this.finishedElse = finishedElse;
-    }
-
-    public boolean isFoundElse() {
-        return foundElse;
     }
 
     public void setFoundElse(boolean foundElse) {

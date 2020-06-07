@@ -19,17 +19,6 @@ public class LLIRImport extends LLIRExpression {
         this.parametersExpressions = new ArrayList<>();
         this.isIsolated = false;
     }
-    public LLIRImport() {
-        this.parametersExpressions = new ArrayList<>();
-        this.isIsolated = false;
-    }
-
-    /**
-     * @param importDescriptor the importDescriptor to set
-     */
-    public void setImportDescriptor(ImportDescriptor importDescriptor) {
-        this.importDescriptor = importDescriptor;
-    }
 
     /**
      * @return the importDescriptor

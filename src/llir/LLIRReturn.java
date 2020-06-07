@@ -6,13 +6,6 @@ public class LLIRReturn extends LLIRNode {
     LLIRExpression expression;
     private Type returnType;
 
-    public LLIRReturn(LLIRExpression expr) {
-        this.expression = expr;
-    }
-    public LLIRReturn() {
-
-    }
-
     /**
      * @return the expression
      */

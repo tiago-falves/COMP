@@ -13,15 +13,6 @@ public class BlockDescriptor extends Descriptor {
     public SymbolsTable getLocalTable() {
         return this.blockTable;
     }
-
-    public void setLocalTable(SymbolsTable blockTable) {
-        this.blockTable = blockTable;
-    }
-    
-    public void addSymbol(String name, Descriptor descriptor){
-        this.blockTable.addSymbol(name, descriptor, false);
-    }
-
     public void print(String prefix) {
         System.out.println("");
     }

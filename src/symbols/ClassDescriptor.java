@@ -37,13 +37,6 @@ public class ClassDescriptor extends Descriptor {
     public boolean isStatic(){
         return this.isStatic;
     }
-    public Access getAccess(){
-        return access;
-    }
-
-    public void makeStatic() {
-        this.isStatic = true;
-    }
 
     public void addVariable(VariableDescriptor variable) {
         SymbolsTable variablesTable = this.classVariablesTable;
