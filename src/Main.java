@@ -2,11 +2,12 @@ import optimizations.RegisterReducer;
 import symbols.ClassDescriptor;
 import symbols.SymbolsTable;
 import optimizations.OptimizationManager;
+import optimizations.OptimizationsRException;
 
 
 public class Main {
 	
-	public static void main(String[] args) throws ParseException, java.io.FileNotFoundException, SemanticErrorException {
+	public static void main(String[] args) throws ParseException, java.io.FileNotFoundException, SemanticErrorException, OptimizationsRException {
 
         // Check Flags
         boolean debugMode = false;
@@ -67,6 +68,9 @@ public class Main {
         CodeGenerator codeGenerator = new CodeGenerator(classDescriptor);
         codeGenerator.generate();
 
+        if (OptimizationManager.error) {
+            throw new OptimizationsRException();
+        }
 	}
 
 }

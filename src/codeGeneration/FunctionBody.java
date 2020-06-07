@@ -176,11 +176,16 @@ public class FunctionBody {
             RegisterReducer.calculateInOut();
             if(RegisterReducer.allocateRegisters(parameters, isMain)) {
                 System.out.println("Register allocation for " + functionName + " was successful");
-                System.out.println("\tUsed " + RegisterReducer.usedRegisters + " registers:");
+                if (RegisterReducer.usedRegisters == 0)
+                    System.out.println("\tUsed " + RegisterReducer.usedRegisters + " registers");
+                else if (RegisterReducer.usedRegisters == 1)
+                    System.out.println("\tUsed " + RegisterReducer.usedRegisters + " register");
+                else System.out.println("\tUsed " + RegisterReducer.usedRegisters + " registers:");
                 RegisterReducer.printAllocation("\t  ");
             } else {
                 System.out.println("Impossible to allocate registers for " + functionName);
-                System.out.println("\tNeeded " + RegisterReducer.usedRegisters + " registers");
+                System.out.println("\tNeeded " + RegisterReducer.usedRegisters + " registers\n");
+                OptimizationManager.error = true;
             }
 
         }
@@ -217,7 +222,7 @@ public class FunctionBody {
 
         if(OptimizationManager.reducedLocals) {
             //RegisterReducer.print();
-            //OptimizationsR.printInOut();
+            //RegisterReducer.printInOut();
             RegisterReducer.reset();
         }
         

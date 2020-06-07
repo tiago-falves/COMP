@@ -20,7 +20,7 @@ public class RegisterGraph {
         this.out = out;
         this.stack = new ArrayList<>();
         this.colors = new LinkedHashMap<>();
-        this.currentColor = 1;
+        this.currentColor = 0;
     }
 
     public LinkedHashMap<String, Integer> getColors() {
@@ -64,6 +64,8 @@ public class RegisterGraph {
                 } while(previousStackSize != stack.size());
             } while(!checkIfEmpty());
 
+            if (stack.size() > 0) currentColor = 1;
+
             for(int i = stack.size()-1; i >= 0; i--) {
                 VariableNode variable = stack.get(i);
     
@@ -76,6 +78,8 @@ public class RegisterGraph {
 
             return false;
         }
+        
+        if (stack.size() > 0) currentColor = 1;
 
         for(int i = stack.size()-1; i >= 0; i--) {
             VariableNode variable = stack.get(i);
