@@ -157,33 +157,44 @@ public class OptimizationsR {
 
         LinkedHashMap<Integer, List<String>> in_tmp = new LinkedHashMap<>();
         LinkedHashMap<Integer, List<String>> out_tmp = new LinkedHashMap<>();
-
         do {
             condition = true;
-            for (int i = 1; i <= currentLine; i++) {
+            for (int i = currentLine; i >= 1; i--) {
+                System.out.println("AQUI");
                 in_tmp.put(i,in.get(i));
                 out_tmp.put(i,out.get(i));
 
                 for (Integer successor :succ.get(i)) {
                     out.put(i,addWithoutDuplicates(out.get(i),in.get(successor)));
                 }
-
+                
+                // USE MUST HAVE fm IN FIND MAXIMUM
+                System.out.println(use.get(i));
                 List<String> removedDuplicates = removeSubSet(out.get(i),def.get(i));
                 in.put(i,addWithoutDuplicates(use.get(i),removedDuplicates));
             }
 
             for (int i = 1; i <= currentLine ; i++) {
-                if(!((in_tmp.get(i) == null && in.get(i) == null) && (out_tmp.get(i) == null && out.get(i) == null))){
-                    condition = false;
+                if(!((in_tmp.get(i) == null && in.get(i) == null))){
+                    if(!(out_tmp.get(i) == null && out.get(i) == null))
+                        condition = false;
+                    else if(!(out_tmp.get(i).equals(out.get(i))))
+                        condition = false;
+
                     break;
                 }
-                else if(!((in_tmp.get(i).equals(in.get(i))) && (out_tmp.get(i).equals(out.get(i))))){
-                    condition = false;
+                else if(!((in_tmp.get(i).equals(in.get(i))))){
+                    if(!(out_tmp.get(i) == null && out.get(i) == null))
+                        condition = false;
+                    else if(!(out_tmp.get(i).equals(out.get(i))))
+                        condition = false;
+
                     break;
                 }
             }
 
         } while (condition);
+        System.out.println(in);
     }
 
     public static List<String> removeSubSet(List<String> list1, List<String> list2){
