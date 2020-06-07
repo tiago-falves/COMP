@@ -28,7 +28,7 @@ class_name="${file_name%.*}"
 gradle build
 
 # compile the JMM file
-java -jar "$executable".jar "$file_path" -o -f
+java -jar "$executable".jar "$file_path" -r=10
 
 # generate bytecode with jasmin
 java -jar jasmin-2.4/jasmin.jar -d ./compiled/bytecode ./compiled/jasmin/"$class_name".j

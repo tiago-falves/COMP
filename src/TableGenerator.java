@@ -819,7 +819,7 @@ public class TableGenerator {
             if(d.getClass() == FunctionParameterDescriptor.class || d.getClass() == VariableDescriptor.class){
                 idDescriptor = (NamedTypeDescriptor) d;
                 if(idDescriptor.getType() != Type.INT_ARRAY && idDescriptor.getType() != Type.STRING_ARRAY){
-                    this.semanticError.printError(idNode, "CAN ONLY ACCESS ARRAYS OF INT OR STRING");
+                    this.semanticError.printError(idNode, "Can only access arrays of int or string");
                     return null;
                 }
                 if (d.getClass() == VariableDescriptor.class) {
@@ -984,7 +984,7 @@ public class TableGenerator {
                 }
                 for(int j = 0; j < importIdentifiers.size(); j++){
                     if(!identifiers.get(j).equals(importIdentifiers.get(j))){
-                        this.semanticError.printError((SimpleNode)statementNode.jjtGetChild(nextChild-1), "INCOMPATIBLE TYPE");
+                        this.semanticError.printError((SimpleNode)statementNode.jjtGetChild(nextChild-1), "Incompatible type");
                         return null;
                     }
                 }
@@ -999,7 +999,7 @@ public class TableGenerator {
                 for(int j = 0; j < importParameters.size(); j++){
                     StringType stringType = new StringType(importParameters.get(j));
                     if(!parameters.get(j).equals(stringType.getString())){
-                        this.semanticError.printError((SimpleNode)statementNode.jjtGetChild(nextChild-1), "INCOMPATIBLE TYPE");
+                        this.semanticError.printError((SimpleNode)statementNode.jjtGetChild(nextChild-1), "Incompatible type");
                         return null;
                     }
                 } 
@@ -1204,7 +1204,7 @@ public class TableGenerator {
                         type = "int";
                     }
                     else if(!type.equals("int")){
-                        this.semanticError.printError(node, "INT IS INCOMPATIBLE WITH " + type);
+                        this.semanticError.printError(node, "Int is incompatible with " + type);
                         return null;
                     }
                     //ARITHMETIC
@@ -1218,7 +1218,7 @@ public class TableGenerator {
                     if(type == null){
                         type = "boolean";
                     } else if(!type.equals("boolean")){
-                        this.semanticError.printError(node, "BOOLEAN IS INCOMPATIBLE WITH " + type);
+                        this.semanticError.printError(node, "Boolean is imcompatible with " + type);
                         return null;
                     }
                     //CONDITIONAL Expression
@@ -1240,7 +1240,7 @@ public class TableGenerator {
                     if(type == null){
                         type = functionType;
                     }else if(!type.equals(functionType)){
-                        this.semanticError.printError(node, functionType + " IS INCOMPATIBLE WITH " + type);
+                        this.semanticError.printError(node, functionType + " is incompatible with " + type);
                         return null;
                     }
                     i += 3;
@@ -1300,7 +1300,7 @@ public class TableGenerator {
                             if(typeString.parseType() == Type.INT_ARRAY || typeString.parseType() == Type.STRING_ARRAY){
                                 functionType = inspectArrayNodeAfterFunctionCall(argumentNode, symbolsTable, functionType, i+4);
                                 if(functionType == null){
-                                    this.semanticError.printError(nextNextNode, "CAN'T EVALUATE NULL EXPRESSION");
+                                    this.semanticError.printError(nextNextNode, "Can't evaluate null expression");
                                     return null;
                                 }
                                 if(!functionType.equals("int[]") && !functionType.equals("String[]")){
@@ -1315,7 +1315,7 @@ public class TableGenerator {
                             if(type == null){
                                 type = functionType;
                             }else if(!type.equals(functionType)){
-                                this.semanticError.printError(nextNextNode, functionType + " IS INCOMPATIBLE WITH " + type);
+                                this.semanticError.printError(nextNextNode, functionType + " is incompatible with " + type);
                                 return null;
                             }
                             i += 3; // Jump function identifiers
@@ -1330,7 +1330,7 @@ public class TableGenerator {
                             if(type == null){
                                 type = arrayType;
                             }else if(!type.equals(arrayType)){
-                                this.semanticError.printError(nextNode, arrayType + " IS INCOMPATIBLE WITH " + type);
+                                this.semanticError.printError(nextNode, arrayType + " is incompatible with " + type);
                                 return null;
                             }
 
@@ -1348,7 +1348,7 @@ public class TableGenerator {
                     
                     Type descriptorType = descriptor.getType();
                     if(descriptorType == Type.CLASS){
-                        this.semanticError.printError(node, "OPERATION CAN'T INVOLVE A CLASS TYPE");
+                        this.semanticError.printError(node, "Operation can't involve a class type");
                         return null;
                     }
 
@@ -1356,7 +1356,7 @@ public class TableGenerator {
                     if(type == null){
                         type = descType;
                     }else if(!type.equals(descType)){
-                        this.semanticError.printError(node, descType + " IS INCOMPATIBLE WITH " + type);
+                        this.semanticError.printError(node, descType + " is incompatible with " + type);
                         return null;
                     }
 
@@ -1385,7 +1385,7 @@ public class TableGenerator {
                 }
                 case JavammTreeConstants.JJTAND:{
                     if(!type.equals("boolean")){
-                        this.semanticError.printError(node, "OPERATION && IS INCOMPATIBLE WITH " + type);
+                        this.semanticError.printError(node, "Operation && is incompatible with " + type);
                         return null;
                     }
                     //CONDITIONAL &&
@@ -1396,7 +1396,7 @@ public class TableGenerator {
                 }
                 case JavammTreeConstants.JJTNEW: {
                     if(i != initialChild){
-                        this.semanticError.printError(node, "CAN'T INSTANTIATE CLASS INSIDE AN EXPRESSION");
+                        this.semanticError.printError(node, "Can't instantiate class inside an expression");
                         return null;
                     }
                     SimpleNode nextNode = (SimpleNode) argumentNode.jjtGetChild(initialChild+2);
@@ -1404,7 +1404,7 @@ public class TableGenerator {
                     if(nextNode.getId() == JavammTreeConstants.JJTARRAY){
                         SimpleNode idNode = (SimpleNode) argumentNode.jjtGetChild(initialChild+1);
                         if(idNode.jjtGetVal() != "int"){
-                            this.semanticError.printError(idNode, "CAN ONLY INSTANTIATE ARRAY OF INT");
+                            this.semanticError.printError(idNode, "Can only instantiate array of int");
                             return null;
                         }
                         
@@ -1445,7 +1445,7 @@ public class TableGenerator {
                     if(type == null){
                         type = "boolean";
                     }else if(!type.equals("boolean")){
-                        this.semanticError.printError(node, "OPERATION ! IS INCOMPATIBLE WITH " + type);
+                        this.semanticError.printError(node, "Operation ! is incompatible with " + type);
                         return null;
                     }
 
@@ -1456,7 +1456,7 @@ public class TableGenerator {
                 //Inspects if it finds "<"
                 case JavammTreeConstants.JJTLESS: {
                     if(!type.equals("int")){
-                        this.semanticError.printError(node, "CAN'T COMPARE " + type + " WITH OPERATOR <");
+                        this.semanticError.printError(node, "Can't compare " + type + " with operator <");
                         return null;
                     }
                     this.llirPopulator.fixConditional();
@@ -1468,7 +1468,7 @@ public class TableGenerator {
 
                     String otherType = inspectExpression(argumentNode, symbolsTable, i+1);
                     if(!otherType.equals("int")){
-                        this.semanticError.printError(node, "CAN'T COMPARE " + otherType + " WITH OPERATOR <");
+                        this.semanticError.printError(node, "Can't compare " + otherType + " with operator <");
                         return null;
                     }
 
@@ -1506,7 +1506,7 @@ public class TableGenerator {
                     return "boolean";
                 }
                 case JavammTreeConstants.JJTDOT: {
-                    this.semanticError.printError(node, "CAN'T ACCESS PROPERTY/METHOD OF VARIABLE OF TYPE " + type);
+                    this.semanticError.printError(node, "Can't access property/method of variable of type " + type);
                     return null;
                 }
                 case JavammTreeConstants.JJTPARENTHESESEXPRESSION: {
@@ -1515,7 +1515,7 @@ public class TableGenerator {
                     if(type == null){
                         type = expressionType;
                     }else if(!type.equals(expressionType)){
-                        this.semanticError.printError(node, "CAN'T EVALUATE EXPRESSION INSIDE PARENTHESES");
+                        this.semanticError.printError(node, "Can't evaluate expression inside parentheses");
                     }
                     this.llirPopulator.popParenthesis();
 
@@ -1525,7 +1525,7 @@ public class TableGenerator {
 
                 default:{ //Plus, Minus, ...
                     if(!type.equals("int")){
-                        this.semanticError.printError(node, "OPERATIONS ARE INCOMPATIBLE WITH " + type);
+                        this.semanticError.printError(node, "Operations are incompatible with " + type);
                         return null;
                     }
                     //ARITHMETIC
@@ -1579,7 +1579,7 @@ public class TableGenerator {
                 for(int j = 0; j < importParameters.size(); j++){
                     StringType stringType = new StringType(importParameters.get(j));
                     if(!parameters.get(j).equals(stringType.getString())){
-                        this.semanticError.printError(argumentsNode, "INCOMPATIBLE TYPE");
+                        this.semanticError.printError(argumentsNode, "Incompatible type");
                         return null;
                     }
                 } 
@@ -1602,13 +1602,13 @@ public class TableGenerator {
                     if(parameterType == Type.CLASS){
                         String className = parameterDescriptor.getClassName();
                         if(!className.equals(parameters.get(j))){
-                            this.semanticError.printError(argumentsNode, "INCOMPATIBLE TYPE");
+                            this.semanticError.printError(argumentsNode, "Incompatible type");
                             return null;
                         }
                     }else{
                         StringType type = new StringType(parameterType);
                         if(!type.getString().equals(parameters.get(j))){
-                            this.semanticError.printError(argumentsNode, "INCOMPATIBLE TYPE");
+                            this.semanticError.printError(argumentsNode, "Incompatible type");
                             return null;
                         }
                     }

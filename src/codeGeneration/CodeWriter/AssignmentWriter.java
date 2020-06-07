@@ -3,11 +3,11 @@ package codeGeneration.CodeWriter;
 import codeGeneration.CGConst;
 import codeGeneration.FunctionBody;
 import llir.*;
+import optimizations.OptimizationManager;
+import optimizations.RegisterReducer;
 import optimizations.ConstantFoldingConditional;
 import optimizations.ConstantFoldingNegation;
-import optimizations.OptimizationManager;
 import symbols.ConstantDescriptor;
-import symbols.NamedTypeDescriptor;
 import symbols.Type;
 
 public class AssignmentWriter {
@@ -55,9 +55,27 @@ public class AssignmentWriter {
                 variableIndex = FunctionBody.getVariableIndexExists(name);
 
                 if(variableIndex != ""){
+                    boolean foundVariable = false;
+
                     this.code += CGConst.store.get(type);
-                    // assign to the correct variable
-                    this.code = this.code + variableIndex + "\n";
+                    
+                    if(OptimizationManager.reducedLocals && !RegisterReducer.firstPass) {
+                        String variableName = assignment.getVariable().getVariable().getName();
+    
+                        if(RegisterReducer.allocation.containsKey(variableName)) {
+                            int register = RegisterReducer.allocation.get(variableName);
+                            this.code += FunctionBody.getVariableIndexOptimized(register) + "\n";
+                            foundVariable = true;
+                        }   
+                    }
+
+                    if(!foundVariable)
+                        this.code += variableIndex + "\n";
+
+                    if(OptimizationManager.reducedLocals && RegisterReducer.firstPass){
+                        //Adds if the variable Index already exists
+                        RegisterReducer.addDef(name);
+                    }
                 }else{
                     this.code += CGConst.PUT_FIELD + FunctionBody.getField(name.equals("field") ? "_field" : name, type);
                     FunctionBody.incStack();

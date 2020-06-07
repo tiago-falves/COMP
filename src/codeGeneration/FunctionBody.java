@@ -2,38 +2,43 @@ package codeGeneration;
 
 import java.util.*;
 
-import optimizations.*;
 import codeGeneration.CodeWriter.*;
 import llir.*;
+import optimizations.OptimizationManager;
+import optimizations.RegisterReducer;
 import symbols.*;
 
 
 public class FunctionBody {
-    private FunctionDescriptor functionDescriptor;
+    
+    // Static variables
     public static LinkedHashMap<String, Integer> variableToIndex;
     public static LinkedHashMap<String, Integer> fieldsToIndex;
     public static int currentVariableIndex;
     public static int maxStack = 0;
     public static int totalStack = 0;
-    private String STACK_LIMIT = "\t.limit stack ";
-    private final String LOCALS_LIMIT;
     private static SymbolsTable fieldsTable;
     private static ClassDescriptor classDescriptor;
 
+    // Non-static variables
+    private final String LOCALS_LIMIT;
+    private FunctionDescriptor functionDescriptor;
+    private String STACK_LIMIT = "\t.limit stack ";
+
     public FunctionBody(FunctionDescriptor functionDescriptor, LinkedHashMap<String, Integer> variableToIndex, ClassDescriptor classDescriptor) {
         this.functionDescriptor = functionDescriptor;
-        this.variableToIndex = variableToIndex;
-        this.currentVariableIndex = variableToIndex.size();
+        FunctionBody.variableToIndex = variableToIndex;
+        FunctionBody.currentVariableIndex = variableToIndex.size();
 
         if(functionDescriptor.getName().equals("main")){
-            this.currentVariableIndex--;
+            FunctionBody.currentVariableIndex--;
         }
 
         this.LOCALS_LIMIT = "\t.limit locals " + ((functionDescriptor.isStatic()?0:1) + functionDescriptor.getParametersTable().getSize() + functionDescriptor.getBodyTable().getSize());
-        totalStack = 0;
-        maxStack = 0;
-        this.fieldsTable = classDescriptor.getVariablesTable();
-        this.classDescriptor = classDescriptor;
+        FunctionBody.totalStack = 0;
+        FunctionBody.maxStack = 0;
+        FunctionBody.fieldsTable = classDescriptor.getVariablesTable();
+        FunctionBody.classDescriptor = classDescriptor;
     }
 
     public static void incStack(){
@@ -89,6 +94,7 @@ public class FunctionBody {
 
     }
 
+    // Optimization -o
     public int searchForAssignments(VariableDescriptor varDes, List<LLIRNode> body) {
         int assignments = 0;
 
@@ -103,16 +109,47 @@ public class FunctionBody {
                 if(namedTypeDescriptor.getName() == varDes.getName()) {
                     assignments++;
 
+                    // Simple integer
                     if((assignmentNode.getExpression() instanceof LLIRInteger) && !varDes.getConstantDescriptor().isSimple()) {
                         LLIRInteger assignementInteger = (LLIRInteger) assignmentNode.getExpression();
                         varDes.setConstantDescriptor(new ConstantInt(assignementInteger.getValue()));
                     }
+                    // Simple boolean
                     else if((assignmentNode.getExpression() instanceof LLIRBoolean) && !varDes.getConstantDescriptor().isSimple()) {
                         LLIRBoolean assignementBoolean = (LLIRBoolean) assignmentNode.getExpression();
                         varDes.setConstantDescriptor(new ConstantBoolean(assignementBoolean.getValue()));
                     }
+                    // Another constant variable
+                    else if((assignmentNode.getExpression() instanceof LLIRVariable) && !varDes.getConstantDescriptor().isSimple()) {
+                        LLIRVariable constantVariable = (LLIRVariable) assignmentNode.getExpression();
 
-                    // TODO: add more cases, for ex, a constant variable
+                        if(constantVariable.getVariable().getName() != varDes.getName()) {
+
+                            LinkedHashMap<String, List<Descriptor>> bodyTable = functionDescriptor.getBodyTable().getTable();
+                            if(bodyTable.containsKey(constantVariable.getVariable().getName())) {
+
+                                if(bodyTable.get(constantVariable.getVariable().getName()).get(0) instanceof VariableDescriptor) {
+
+                                    VariableDescriptor constVar = (VariableDescriptor) bodyTable.get(constantVariable.getVariable().getName()).get(0);
+
+                                    if(constVar.getConstantDescriptor() instanceof ConstantBoolean) {
+
+                                        ConstantBoolean b = (ConstantBoolean) constVar.getConstantDescriptor();
+                                        if(b.isConstant()) {
+                                            varDes.setConstantDescriptor(new ConstantBoolean(b.getValue()));
+                                        }
+                                    }
+                                    else if (constVar.getConstantDescriptor() instanceof ConstantInt) {
+
+                                        ConstantInt i = (ConstantInt) constVar.getConstantDescriptor();
+                                        if(i.isConstant()) {
+                                            varDes.setConstantDescriptor(new ConstantInt(i.getValue()));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
             else if (node instanceof LLIRIfElseBlock) {
@@ -132,15 +169,61 @@ public class FunctionBody {
         return assignments;
     }
 
-    public String generate(){
 
-        boolean foundReturn = false;
-        String generatedCode = new String();
+    public String generate(){
 
         // Add variables to hash map
         pushVariables();
 
+        if(OptimizationManager.reducedLocals){
+
+            RegisterReducer.firstPass = true;
+
+            for(LLIRNode node : this.functionDescriptor.getFunctionBody()) {
+                RegisterReducer.incrementLine();
+                RegisterReducer.addPredSucc();
+
+                FunctionBody.resetStack();
+                
+                if (node instanceof LLIRAssignment) new AssignmentWriter((LLIRAssignment) node);
+                else if (node instanceof LLIRMethodCall) new MethodCallWriter((LLIRMethodCall) node);
+                else if (node instanceof LLIRImport) new ImportWriter((LLIRImport) node);
+                else if (node instanceof LLIRIfElseBlock) new IfElseWriter((LLIRIfElseBlock) node, "");
+                else if (node instanceof LLIRWhileBlock) new WhileWriter((LLIRWhileBlock) node, "");            
+                else if (node instanceof LLIRReturn) new ReturnWriter((LLIRReturn) node);
+            }
+        }
+
+        boolean foundReturn = false;
+        String generatedCode = new String();
+
+
+        if(OptimizationManager.reducedLocals) {
+            String functionName = functionDescriptor.getName();
+
+            Set<String> parameters = functionDescriptor.getParametersTable().getTable().keySet();
+            boolean isMain = (functionDescriptor.getName() == "main");
+
+            RegisterReducer.firstPass = false;
+            RegisterReducer.calculateInOut();
+            if(RegisterReducer.allocateRegisters(parameters, isMain)) {
+                System.out.println("Register allocation for " + functionName + " was successful");
+                if (RegisterReducer.usedRegisters == 0)
+                    System.out.println("\tUsed " + RegisterReducer.usedRegisters + " registers");
+                else if (RegisterReducer.usedRegisters == 1)
+                    System.out.println("\tUsed " + RegisterReducer.usedRegisters + " register");
+                else System.out.println("\tUsed " + RegisterReducer.usedRegisters + " registers:");
+                RegisterReducer.printAllocation("\t  ");
+            } else {
+                System.out.println("Impossible to allocate registers for " + functionName);
+                System.out.println("\tNeeded " + RegisterReducer.usedRegisters + " registers\n");
+                OptimizationManager.error = true;
+            }
+
+        }
+
         for(LLIRNode node : this.functionDescriptor.getFunctionBody()) {
+
             FunctionBody.resetStack();
             if (node instanceof LLIRAssignment) {
                 AssignmentWriter assignmentWriter = new AssignmentWriter((LLIRAssignment) node);
@@ -168,6 +251,12 @@ public class FunctionBody {
             }
         }
         if(!foundReturn) generatedCode += "\treturn\n";
+
+        if(OptimizationManager.reducedLocals) {
+            //RegisterReducer.print();
+            //RegisterReducer.printInOut();
+            RegisterReducer.reset();
+        }
         
         return STACK_LIMIT + maxStack + "\n" + LOCALS_LIMIT + "\n" + generatedCode;
     }
@@ -181,8 +270,11 @@ public class FunctionBody {
                 }
         );
         return variableIndex;
+    }
 
-
+    public static String getVariableIndexOptimized(int index) {
+        if(index <= 3) return "_" + index;
+        else return "\t" + index;
     }
 
     public static String getVariableIndexExists(String name){

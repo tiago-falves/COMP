@@ -4,14 +4,34 @@ import java.util.List;
 
 import codeGeneration.FunctionBody;
 import llir.*;
+import optimizations.OptimizationManager;
+import optimizations.RegisterReducer;
 
 public abstract class BlockStatementWriter {
 
     protected String generateNodesCode(List<LLIRNode> nodes, String name){
+
+        int expressionNumber = 0;
+        if(OptimizationManager.reducedLocals)
+            expressionNumber = RegisterReducer.currentLine;
+
+
         String result = new String();
         for(int i = 0; i < nodes.size(); i++){
+
+            // Calculate liveness on first pass
+            if(OptimizationManager.reducedLocals && RegisterReducer.firstPass){
+                RegisterReducer.incrementLine();
+                RegisterReducer.addPredSucc();
+            }
             result += generateCode(nodes.get(i), name);
         }
+
+        // Continue calculating liveness on first pass
+        if(OptimizationManager.reducedLocals && RegisterReducer.firstPass) {
+            RegisterReducer.addBlockPredSuccExpression(this,expressionNumber);
+        }
+
         return result;
     }
 

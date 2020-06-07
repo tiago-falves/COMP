@@ -1,11 +1,13 @@
+import optimizations.RegisterReducer;
 import symbols.ClassDescriptor;
 import symbols.SymbolsTable;
 import optimizations.OptimizationManager;
+import optimizations.OptimizationsRException;
 
 
 public class Main {
 	
-	public static void main(String[] args) throws ParseException, java.io.FileNotFoundException, SemanticErrorException {
+	public static void main(String[] args) throws ParseException, java.io.FileNotFoundException, SemanticErrorException, OptimizationsRException {
 
         // Check Flags
         boolean debugMode = false;
@@ -20,6 +22,13 @@ public class Main {
                 OptimizationManager.constantPropagation = true;
             }else if(args[i].equals("-f")){
                 OptimizationManager.constantFolding = true;
+            }else if(args[i].matches("-r=\\d+")){
+                try {
+                    OptimizationManager.reducedLocals = true;
+                    OptimizationManager.maximumLocalVariables = Integer.parseInt(args[i].substring(3));
+                } catch (final NumberFormatException e) {
+                    System.err.println("Invalid -r option");
+                }
             }
         }
 
@@ -58,6 +67,10 @@ public class Main {
         ClassDescriptor classDescriptor = CodeGenerator.getClass(root, symbolsTable);
         CodeGenerator codeGenerator = new CodeGenerator(classDescriptor);
         codeGenerator.generate();
+
+        if (OptimizationManager.error) {
+            throw new OptimizationsRException();
+        }
 	}
 
 }
