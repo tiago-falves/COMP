@@ -1020,19 +1020,14 @@ public class TableGenerator {
             else if(descriptorsList.get(i).getClass() == FunctionDescriptor.class){
 
                 FunctionDescriptor functionDescriptor = (FunctionDescriptor) descriptorsList.get(i);
-
                 SymbolsTable parametersTable = functionDescriptor.getParametersTable();
-
 
                 if(this.llirPopulator.lastIsFunctionCall()){
                     LLIRMethodCall methodCall= ((LLIRMethodCall) this.llirPopulator.getLlirStack().peek());
                     methodCall.setMethodName(functionDescriptor.getName());
                     methodCall.setParametersTable(parametersTable);
                     methodCall.setReturnType(functionDescriptor.getType());
-                    //TODO Falta adicionar as parameters expressions
-
                 }
-
 
                 HashMap<String, List<Descriptor>> functionParameters = parametersTable.getTable();
 
@@ -1046,6 +1041,7 @@ public class TableGenerator {
 
                 int j = 0;
 
+                //Iterates through all the parameters
                 for(HashMap.Entry<String, List<Descriptor>> functionParametersEntry : functionParameters.entrySet()){
                     List<Descriptor> descList = functionParametersEntry.getValue();
                     
@@ -1053,11 +1049,11 @@ public class TableGenerator {
                         this.semanticError.printError((SimpleNode)statementNode.jjtGetChild(nextChild-1), "Function can't have more than 1 parameter with the same identifier");
                         return null;
                     }
-                    
                     FunctionParameterDescriptor parameterDescriptor = (FunctionParameterDescriptor) descList.get(0);
                 
                     Type parameterType = parameterDescriptor.getType();
-                    
+
+                    //If parameter is a class variable
                     if(parameterType == Type.CLASS){
                         String className = parameterDescriptor.getClassName();
                         if(!className.equals(parameters.get(j))){
@@ -1078,9 +1074,7 @@ public class TableGenerator {
                 // If the function was found, the function type is returned
                 Type functionType = functionDescriptor.getType();
 
-
-                if(functionType == Type.CLASS)
-                    return functionDescriptor.getClassName();
+                if(functionType == Type.CLASS) return functionDescriptor.getClassName();
                 
                 StringType stringType = new StringType(functionType);
                 return stringType.getString();
@@ -1090,9 +1084,8 @@ public class TableGenerator {
         return null;
     }
 
+    //Inspect Function and Import arguments
     private List<String> inspectArguments(SimpleNode argumentsNode, SymbolsTable symbolsTable) throws SemanticErrorException {
-
-
         List<String> parameters = new ArrayList<>();
         for(int i = 0; i < argumentsNode.jjtGetNumChildren(); i++){
             SimpleNode argumentNode = (SimpleNode) argumentsNode.jjtGetChild(i);
@@ -1100,11 +1093,7 @@ public class TableGenerator {
                 this.semanticError.printError(argumentNode, "Unexpected argument node with id=" + argumentNode.getId());
                 return null;
             }
-
             String parameterType = inspectArgument(argumentNode, symbolsTable);
-
-
-
             parameters.add(parameterType);
         }
 
@@ -1129,10 +1118,12 @@ public class TableGenerator {
         return inspectExpressionComplex(expressionNode, symbolsTable, initialChild);
     }
 
+    //Inspects Expression if it simple
     private String inspectExpressionSimple(SimpleNode argumentNode, SymbolsTable symbolsTable, int initialChild) throws SemanticErrorException {
         SimpleNode node = (SimpleNode) argumentNode.jjtGetChild(initialChild);
 
         switch(node.getId()){
+            //Inspects if it is an Integer
             case JavammTreeConstants.JJTINTEGERLITERAL: {
 
                 LLIRInteger llirInteger = new LLIRInteger(Integer.parseInt( node.jjtGetVal()));
@@ -1140,17 +1131,15 @@ public class TableGenerator {
 
                 return "int";
             }
-
+            //Inspects expression it has the value "true"
             case JavammTreeConstants.JJTTRUE:
             {
                 this.llirPopulator.addExpression(new llir.LLIRBoolean(true));
                 return "boolean";
-
             }
+            //Inspects expression if it is "false"
             case JavammTreeConstants.JJTFALSE: {
-
                 this.llirPopulator.addExpression(new llir.LLIRBoolean(false));
-
                 return "boolean";
             }
             case JavammTreeConstants.JJTIDENTIFIER: {
@@ -1159,14 +1148,13 @@ public class TableGenerator {
                     this.semanticError.printError(node, "Undefined variable " + node.jjtGetVal());
                     return null;
                 }
-
                 TypeDescriptor descriptor = (TypeDescriptor) descriptors.get(0);
                 
                 Type type = descriptor.getType();
                 if(type == Type.CLASS){
                     return descriptor.getClassName();
                 }
-
+                //If it is a variable
                 if(descriptor.getClass() == VariableDescriptor.class){
                     VariableDescriptor variableDescriptor = (VariableDescriptor) descriptor;
                     if(!variableDescriptor.isInitialized() && !variableDescriptor.isInitializedInIf()){
@@ -1181,6 +1169,7 @@ public class TableGenerator {
                     }
                     this.llirPopulator.addExpression(new LLIRVariable(variableDescriptor));
                 }
+                //If it is a function parameter
                 if(descriptor.getClass() == FunctionParameterDescriptor.class){
                     NamedTypeDescriptor variableDescriptor = (NamedTypeDescriptor) descriptor;
                     this.llirPopulator.addExpression(new LLIRVariable(variableDescriptor));
@@ -1188,6 +1177,7 @@ public class TableGenerator {
 
                 return (new StringType(type)).getString();
             }
+            //If it is a Parenthesis expression
             case JavammTreeConstants.JJTPARENTHESESEXPRESSION: {
                 return inspectExpression(node, symbolsTable);
             }
@@ -1200,13 +1190,12 @@ public class TableGenerator {
         return null;
     }
 
-
-    //If it is an operation Right?
+    //Deals with complex expressions, like arithmetic operations, conditionals, function calls and arrays
     private String inspectExpressionComplex(SimpleNode argumentNode, SymbolsTable symbolsTable, int initialChild) throws SemanticErrorException {
 
         String type = null;
 
-
+        //Iterates through nodes of the statement
         for(int i = initialChild; i < argumentNode.jjtGetNumChildren(); i++){
             SimpleNode node = (SimpleNode) argumentNode.jjtGetChild(i);
             switch(node.getId()){
@@ -1223,6 +1212,7 @@ public class TableGenerator {
 
                     break;
                 }
+                //Inspects if it is a boolean
                 case JavammTreeConstants.JJTTRUE:
                 case JavammTreeConstants.JJTFALSE: {
                     if(type == null){
@@ -1231,12 +1221,12 @@ public class TableGenerator {
                         this.semanticError.printError(node, "BOOLEAN IS INCOMPATIBLE WITH " + type);
                         return null;
                     }
-
-                    //CONDITIONAL
+                    //CONDITIONAL Expression
                     this.llirPopulator.addExpression(new llir.LLIRBoolean(node.getId() == JavammTreeConstants.JJTTRUE ? true : false));
 
                     break;
                 }
+                //If it has a this then it has to be a function
                 case JavammTreeConstants.JJTTHIS: {
                     if(this.insideStaticMethod){
                         this.semanticError.printError(node, "Non-static variable this cannot be referenced from a static context");
@@ -1254,11 +1244,6 @@ public class TableGenerator {
                         return null;
                     }
                     i += 3;
-
-
-                    //arithmetics.get(arithmetics.size()-1).setExpression(this.currentMethodCall);
-                    //this.currentMethodCall.setParametersExpressions(null);
-
                     break;
                 } 
                 case JavammTreeConstants.JJTIDENTIFIER: {
@@ -1358,10 +1343,7 @@ public class TableGenerator {
                     if(descriptors == null ){
                         this.semanticError.printError(node, "Argument " + node.jjtGetVal() + " is not defined");
                         return null;
-                    }/*else if(descriptors.size() > 1){
-                        this.semanticError.printError(node, "Argument " + node.jjtGetVal() + " is defined more than once");
-                        return null;
-                    }*/ 
+                    }
                     TypeDescriptor descriptor = (TypeDescriptor) descriptors.get(0);
                     
                     Type descriptorType = descriptor.getType();
@@ -1406,7 +1388,6 @@ public class TableGenerator {
                         this.semanticError.printError(node, "OPERATION && IS INCOMPATIBLE WITH " + type);
                         return null;
                     }
-                    
                     //CONDITIONAL &&
                     if(llirPopulator.lastIsLLIRExpression()) this.llirPopulator.addConditional(new LLIRConditional());
                     this.llirPopulator.addOperator(node.getId());
@@ -1418,7 +1399,6 @@ public class TableGenerator {
                         this.semanticError.printError(node, "CAN'T INSTANTIATE CLASS INSIDE AN EXPRESSION");
                         return null;
                     }
-                    
                     SimpleNode nextNode = (SimpleNode) argumentNode.jjtGetChild(initialChild+2);
 
                     if(nextNode.getId() == JavammTreeConstants.JJTARRAY){
@@ -1448,20 +1428,19 @@ public class TableGenerator {
                     }
                     //Class
                     else if (initialChild+3 < argumentNode.jjtGetNumChildren()) {
-                        //Quando tem mais coisas
                         if (argumentNode.jjtGetChild(initialChild+3).getId() == JavammTreeConstants.JJTDOT) {
                             String classType = inspectClassInstantiation(argumentNode, symbolsTable, initialChild);
                             if (classType == null) {
                                 this.semanticError.printError(nextNode,"Undefined class type");
                                 return null;
                             }
-                            //TODO
                             return inspectFunctionOnClass(argumentNode, classType, symbolsTable, initialChild);
                         }
                     }
                     String returnValue = inspectClassInstantiation(argumentNode, symbolsTable, initialChild);
                     return returnValue;
                 }
+                //Inspects expression if it is a negation "!"
                 case JavammTreeConstants.JJTNEGATION: {
                     if(type == null){
                         type = "boolean";
@@ -1474,12 +1453,12 @@ public class TableGenerator {
                     this.llirPopulator.addExpression(new LLIRNegation());
                     break;
                 }
+                //Inspects if it finds "<"
                 case JavammTreeConstants.JJTLESS: {
                     if(!type.equals("int")){
                         this.semanticError.printError(node, "CAN'T COMPARE " + type + " WITH OPERATOR <");
                         return null;
                     }
-                    
                     this.llirPopulator.fixConditional();
 
                     //CONDITIONAL <
@@ -1524,7 +1503,6 @@ public class TableGenerator {
                             conditional.setRightExpression(llirParenthesis);
                         }
                     }
-
                     return "boolean";
                 }
                 case JavammTreeConstants.JJTDOT: {
@@ -1551,7 +1529,6 @@ public class TableGenerator {
                         return null;
                     }
                     //ARITHMETIC
-                    //handleOperation(node.getId(),arithmetics.get(arithmetics.size()-1));
                     if(llirPopulator.lastIsLLIRExpression()) this.llirPopulator.addArithmetic(new LLIRArithmetic());
                     this.llirPopulator.addOperator(node.getId());
                     break;
@@ -1565,34 +1542,7 @@ public class TableGenerator {
         return type;
     }
 
-    //Sets Operator accordingly to operator
-    public void handleOperation(int nodeId,LLIRArithmetic arithmetic){
-        switch (nodeId){
-            case JavammTreeConstants.JJTMULT:{
-                arithmetic.setOperation(ArithmeticOperation.MULTIPLICATION);
-                break;
-            }
-            case JavammTreeConstants.JJTDIV:{
-                arithmetic.setOperation(ArithmeticOperation.DIVISION);
-
-                break;
-            }
-            case JavammTreeConstants.JJTPLUS:{
-                arithmetic.setOperation(ArithmeticOperation.SUM);
-                break;
-            }
-            case JavammTreeConstants.JJTMINUS:{
-                arithmetic.setOperation(ArithmeticOperation.SUBTRACTION);
-                break;
-            }
-        }
-
-    }
-
-    private String inspectClassInstantiation(SimpleNode node, SymbolsTable symbolsTable) throws SemanticErrorException {
-        return inspectClassInstantiation(node, symbolsTable, 0);
-    }
-
+    //Inspects if it is a class instantiation
     private String inspectClassInstantiation(SimpleNode node, SymbolsTable symbolsTable, int newPosition) throws SemanticErrorException {
         SimpleNode classIdentifierNode = (SimpleNode) node.jjtGetChild(newPosition+1);
                       
@@ -1611,8 +1561,11 @@ public class TableGenerator {
             }
         }
 
+        //Iterates through all the descriptors
         for(int i = 0; i < descriptorsList.size(); i++){
             Descriptor descriptor = descriptorsList.get(i);
+
+            //If it is an Import
             if(descriptor.getClass() == ImportDescriptor.class){
 
                 ImportDescriptor importDescriptor = (ImportDescriptor) descriptor;
@@ -1632,11 +1585,11 @@ public class TableGenerator {
                 } 
 
                 return classIdentifierNode.jjtGetVal();
-                
+
+                //If it is a simple function
             }else if(descriptor.getClass() == FunctionDescriptor.class){
                 FunctionDescriptor functionDescriptor = (FunctionDescriptor) descriptor;
                 SymbolsTable parametersTable = functionDescriptor.getParametersTable();
-            
                 LinkedHashMap<String, List<Descriptor>> functionParameters = parametersTable.getTable();
                 if(functionParameters.size() != parameters.size())
                     continue;
@@ -1660,24 +1613,17 @@ public class TableGenerator {
                         }
                     }
                 }
-
                 return classIdentifierNode.jjtGetVal();
             }
         }
-
         this.semanticError.printError(classIdentifierNode, "Class " + classIdentifierNode.jjtGetVal() + " doesn't exist");
         return null;
     }
 
+
     private String inspectArrayAccessAfterFunctionCall(SimpleNode node, TypeString arrayType, int initialChild, SymbolsTable symbolsTable)  throws SemanticErrorException {
-        /*
-            TODO ARRAY AFTER METHOD CALL IN CLASS INSTANTIATION
-            GENERATE CODE
-        */
         SimpleNode arrayNode = (SimpleNode) node.jjtGetChild(initialChild);
-
         this.llirPopulator.addExpression(new LLIRArrayAccess());
-
         String indexType = inspectExpression(arrayNode, symbolsTable);
 
         if(indexType == null){
@@ -1723,7 +1669,7 @@ public class TableGenerator {
 
         return type;
     }
-    //So e chamada quando tem uma funçao a seguir a new Class().
+    //Inspects function on class instantiation
     private String inspectFunctionOnClass(SimpleNode node, String classType, SymbolsTable symbolsTable, int initialChild) throws SemanticErrorException {
         List<Descriptor> descriptors = symbolsTable.getDescriptor(classType);
         Descriptor descriptor = descriptors.get(0);
@@ -1738,7 +1684,6 @@ public class TableGenerator {
 
                 if(typeString.parseType() == Type.INT_ARRAY || typeString.parseType() == Type.STRING_ARRAY){
                     type = inspectArrayNodeAfterFunctionCall(node, symbolsTable, type, initialChild+6);
-
                     this.llirPopulator.popArrayAfterFunction(); 
                 }
 
@@ -1748,15 +1693,11 @@ public class TableGenerator {
         if (descriptor.getClass() == ImportDescriptor.class) {
             if (isInImport(node, classType, symbolsTable, initialChild)){
                 String type = inspectFunctionCall(node, symbolsTable, initialChild+1, true);
-               
                 TypeString typeString = new TypeString(type);
-                
                 if(typeString.parseType() == Type.INT_ARRAY || typeString.parseType() == Type.STRING_ARRAY){
                     type = inspectArrayNodeAfterFunctionCall(node, symbolsTable, type, initialChild+3);
-
                     this.llirPopulator.popArrayAfterFunction();
                 }
-               
                 return type;
             }
         }
