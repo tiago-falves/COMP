@@ -91,6 +91,7 @@ public class OptimizationsR {
             succ.put(id,succsList);
         }
     }
+    
     public static void addSuccIfExists(int successor,int id){
         List<Integer> succsList;
         if (succ.containsKey(id)){ //Nao e muito necessario
@@ -170,7 +171,11 @@ public class OptimizationsR {
             }
 
             for (int i = 1; i <= currentLine ; i++) {
-                if(!((in_tmp.get(i).equals(in.get(i))) && (out_tmp.get(i).equals(out.get(i))))){
+                if(!((in_tmp.get(i) == null && in.get(i) == null) && (out_tmp.get(i) == null && out.get(i) == null))){
+                    condition = false;
+                    break;
+                }
+                else if(!((in_tmp.get(i).equals(in.get(i))) && (out_tmp.get(i).equals(out.get(i))))){
                     condition = false;
                     break;
                 }
@@ -190,8 +195,12 @@ public class OptimizationsR {
     }
 
     public static List<String> addWithoutDuplicates(List<String> one, List<String> two){
-        Set<String> fooSet = new LinkedHashSet<>(one);
-        fooSet.addAll(two);
+        Set<String> fooSet;
+        if (one != null)
+            fooSet = new LinkedHashSet<>(one);
+        else fooSet = new LinkedHashSet<>();
+        if (two != null)
+            fooSet.addAll(two);
         return new ArrayList<>(fooSet);
     }
 
