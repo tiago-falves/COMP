@@ -12,10 +12,6 @@ public class LLIRClassVariableInstantiation extends LLIRExpression {
         this.classDescriptor = variable;
     }
 
-    public LLIRClassVariableInstantiation() {
-        this.classDescriptor= new ClassDescriptor();
-    }
-
     public ClassDescriptor getClassDescriptor(){
         return classDescriptor;
     }

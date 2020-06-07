@@ -4,19 +4,6 @@ public class LLIRArrayAccess extends LLIRVariableAndArray {
     private LLIRExpression array;
     private LLIRExpression access;
 
-    public LLIRArrayAccess(LLIRExpression array, LLIRExpression access) {
-        this.array = array;
-        this.access = access;
-    }
-
-    public LLIRArrayAccess(LLIRExpression array) {
-        this.array = array;
-    }
-
-    public LLIRArrayAccess() {
-
-    }
-
     /**
      * @return the access
      */

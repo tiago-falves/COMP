@@ -62,25 +62,6 @@ public class LLIRMethodCall extends LLIRExpression {
         return this.returnType;
     }
 
-    /**
-     * 
-     * @return the parameters' types
-     */
-    public List<Type> getParameterTypes() {
-        List<Type> parameterTypes = new ArrayList<>();
-
-        if(this.parametersTable != null) {
-            for (HashMap.Entry<String, List<Descriptor>> tableEntry : this.parametersTable.getTable().entrySet()) {
-                if(tableEntry.getValue().size() > 0) {
-                    VariableDescriptor parameter = (VariableDescriptor) tableEntry.getValue().get(0);
-                    parameterTypes.add(parameter.getType());
-                }
-            }
-        }
-
-        return parameterTypes;
-
-    }
 
     /**
      * 
@@ -154,8 +135,4 @@ public class LLIRMethodCall extends LLIRExpression {
         this.classVariableInstantiation = classVariableInstantiation;
     }
 
-    public int  getParentClass(){
-         return this.parametersTable.getParent().getSize();
-
-    }
 }

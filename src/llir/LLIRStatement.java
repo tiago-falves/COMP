@@ -4,11 +4,6 @@ public class LLIRStatement extends LLIRNode {
     LLIRVariable variable;
     LLIRExpression expression;
 
-    public LLIRStatement(LLIRVariable var, LLIRExpression expr) {
-        this.variable = var;
-        this.expression = expr;
-    }
-
     /**
      * @return the variable
      */

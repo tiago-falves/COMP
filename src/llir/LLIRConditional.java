@@ -15,7 +15,6 @@ public class LLIRConditional extends LLIRExpression {
 
     public LLIRConditional(){
         this.foundOperator = false;
-
     }
 
     /**
@@ -52,6 +51,7 @@ public class LLIRConditional extends LLIRExpression {
         this.rightExpression = rightExpression;
     }
 
+    //Sets the expression depending if the operation was found
     public void setExpression(LLIRExpression expression){
         if (foundOperator) {
             setRightExpression(expression);
@@ -59,15 +59,9 @@ public class LLIRConditional extends LLIRExpression {
         else {
             setLeftExpression(expression);
         }
-
     }
-
     public boolean foundOperator(){
         return this.foundOperator;
-    }
-
-    public void setFoundOperator(boolean foundOperator){
-        this.foundOperator = foundOperator;
     }
 
 

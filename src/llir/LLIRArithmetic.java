@@ -15,7 +15,6 @@ public class LLIRArithmetic extends LLIRExpression {
 
     public LLIRArithmetic(){
         this.foundOperator = false;
-
     }
 
     /**
@@ -52,6 +51,7 @@ public class LLIRArithmetic extends LLIRExpression {
         this.rightExpression = rightExpression;
     }
 
+    //Sets Left or Right expression depending if the operator was already found
     public void setExpression(LLIRExpression expression){
         if (foundOperator) {
             setRightExpression(expression);
@@ -59,15 +59,9 @@ public class LLIRArithmetic extends LLIRExpression {
         else {
             setLeftExpression(expression);
         }
-
     }
-
     public boolean foundOperator(){
         return this.foundOperator;
-    }
-
-    public void setFoundOperator(boolean foundOperator){
-        this.foundOperator = foundOperator;
     }
 
 

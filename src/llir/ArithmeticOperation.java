@@ -1,5 +1,6 @@
 package llir;
 
+
 public enum ArithmeticOperation {
     SUM("+"),
     SUBTRACTION("-"),
@@ -11,10 +12,4 @@ public enum ArithmeticOperation {
     ArithmeticOperation(String operation) {
         this.operation = operation;
     }
-
-    public String getOperation() {
-        return  this.operation;
-    }
-
-
 };
