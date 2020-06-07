@@ -164,7 +164,13 @@ public class FunctionBody {
         if(OptimizationManager.reducedLocals) {
             OptimizationsR.firstPass = false;
             OptimizationsR.calculateInOut();
-            //OptimizationsR.allocateRegisters();
+
+            /*
+            if(OptimizationsR.allocateRegisters())
+                System.out.println("Impossible to allocate registers");
+            else
+                System.out.println("Register allocation was successful");
+            */
         }
 
         for(LLIRNode node : this.functionDescriptor.getFunctionBody()) {

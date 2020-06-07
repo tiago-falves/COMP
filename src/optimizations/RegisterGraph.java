@@ -23,6 +23,10 @@ public class RegisterGraph {
         return allocation;
     }
 
+    public int getCurrentRegister() {
+        return currentRegister;
+    }
+
     public boolean colorGraph() { 
         int previousStackSize = 0;
         do {
@@ -62,7 +66,7 @@ public class RegisterGraph {
         for(int currentStatement = 0; currentStatement < OptimizationsR.currentLine; currentStatement++) {
             List<String> variableNames = in.get(currentStatement);
 
-            if(variableNames.size() > 0)
+            if(variableNames != null && variableNames.size() > 0)
                 addNode(variableNames.get(0), currentStatement);
         }
 

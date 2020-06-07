@@ -9,6 +9,7 @@ public class OptimizationsR {
 
     //O variable Index remoceça em cada função? aqui ja nao e suposto right?
     //Mais vale usar Strings?
+    public static int usedRegisters = -1; // Number of used registers for a function
     public static LinkedHashMap<String, Integer> allocation = new LinkedHashMap<>(); // Variable name to allocated register
     public static LinkedHashMap<Integer, List<String>> def = new LinkedHashMap<>(); //Statement Number Variable Indexes
     public static LinkedHashMap<Integer, List<String>> use = new LinkedHashMap<>(); //Statement Number Variable Indexes
@@ -27,6 +28,7 @@ public class OptimizationsR {
             return false;
 
         allocation = registerGraph.getAllocation();
+        usedRegisters = registerGraph.getCurrentRegister();
         return true;
     }
 
@@ -205,6 +207,8 @@ public class OptimizationsR {
     }
 
     public static void reset() {
+        usedRegisters = -1;
+        allocation = new LinkedHashMap<>();
         def = new LinkedHashMap<>();
         use = new LinkedHashMap<>();
         succ = new LinkedHashMap<>();
