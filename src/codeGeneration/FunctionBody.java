@@ -85,7 +85,7 @@ public class FunctionBody {
                 if(searchForAssignments(varDes, functionDescriptor.getFunctionBody()) == 1) {
                     if(varDes.getConstantDescriptor().isSimple()) {
                         varDes.getConstantDescriptor().setConstant(true);
-                        System.out.println("\nConstant variable: " + varDes.getName());
+                        System.out.println("\nConstant variable: " + varDes.getName() + " in " + functionDescriptor.getName());
                     }
                 }
             }

@@ -70,6 +70,8 @@ public class Main {
 
         if (OptimizationManager.error) {
             throw new OptimizationsRException();
+        } else {
+            System.out.println("\nCode generated successfuly\n");
         }
 	}
 

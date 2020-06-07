@@ -81,13 +81,14 @@ public class RegisterGraph {
         
         if (stack.size() > 0) currentColor = 1;
 
+        boolean possibleToAllocate = true;
         for(int i = stack.size()-1; i >= 0; i--) {
             VariableNode variable = stack.get(i);
 
             while(variable.edgesHaveColor(currentColor)) {
                 currentColor++;
                 if(currentColor > OptimizationManager.maximumLocalVariables)
-                    return false;
+                    possibleToAllocate = false;
             }
 
             int assignedColor = currentColor;
@@ -95,7 +96,7 @@ public class RegisterGraph {
             colors.put(variable.getName(), assignedColor);
         }
 
-        return true;
+        return possibleToAllocate;
     }
 
     public void populateGraph() {
