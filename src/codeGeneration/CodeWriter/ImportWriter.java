@@ -6,17 +6,46 @@ import codeGeneration.FunctionParameters;
 import llir.LLIRExpression;
 import llir.LLIRImport;
 import llir.LLIRMethodCall;
+import optimizations.OptimizationManager;
+import optimizations.RegisterReducer;
 import symbols.Type;
 
 import java.util.List;
+import java.util.function.Function;
 
 public class ImportWriter {
     private static String INSTRUCTION = "\tinvokestatic ";
+    private static String LOAD = "\taload";
     private String code;
     private static String POP = "\tpop";
 
     public ImportWriter(LLIRImport importLLIR){
         this.code ="";
+        
+        if(!importLLIR.getImportDescriptor().isStatic()){
+            if(importLLIR.getVariableName() == "")
+                this.code = LOAD + "_0\n";
+            else{
+                boolean foundVariable = false;
+
+                if(OptimizationManager.reducedLocals && !RegisterReducer.firstPass) {
+                    String variableName = importLLIR.getVariableName();
+
+                    if(RegisterReducer.allocation.containsKey(variableName)) {
+                        int register = RegisterReducer.allocation.get(variableName);
+                        this.code += LOAD + FunctionBody.getVariableIndexOptimized(register) + "\n";
+                        foundVariable = true;
+                    }   
+                }
+
+                if(!foundVariable) {
+                    String variableIndex = FunctionBody.getVariableIndexString(importLLIR.getVariableName());
+                    this.code = LOAD + variableIndex + "\n";
+                }
+            }
+            FunctionBody.incStack();
+        }
+
         this.code += getParameters(importLLIR);
 
         if(importLLIR.getImportDescriptor().isStatic())

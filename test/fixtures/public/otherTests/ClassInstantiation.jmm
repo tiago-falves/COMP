@@ -3,6 +3,8 @@ import Pair;
 import Pair(int);
 import Pair(int, int);
 import Pair.getX() int;
+import Pair.getY() int;
+import Pair.printPair();
 
 class ClassInstantiation {
     int x;
@@ -35,11 +37,17 @@ class ClassInstantiation {
         pair3 = new Pair(10, 2);
 
         ioa.println(pair1.getX());
-        
+        ioa.println(pair1.getY());
+        pair1.printPair();
+
         ioa.println(pair2.getX());
+        ioa.println(pair2.getY());
+        pair2.printPair();
 
         ioa.println(pair3.getX());
-	}
+        ioa.println(pair3.getY());
+        pair3.printPair();
+    }
 
     public int setX(int newX){
         x = newX;

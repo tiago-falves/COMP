@@ -96,6 +96,7 @@ public class LLIRPopulator {
         if(peek() instanceof LLIRMethodCall){
             LLIRMethodCall methodCall = (LLIRMethodCall) llirStack.pop();
             llirImport.setParametersExpressions(methodCall.getParametersExpressions());
+            llirImport.setVariableName(methodCall.getClassName());
             this.llirStack.add(llirImport);
         }
     }

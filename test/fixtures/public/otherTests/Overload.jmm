@@ -1,5 +1,5 @@
-import io.println(int);
-import io.println(boolean);
+import static io.println(int);
+import static io.println(boolean);
 
 /**
  * This class serves to test the compiler's function overload capabilites.

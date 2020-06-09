@@ -1,4 +1,4 @@
-import ioa.println(int);
+import static ioa.println(int);
 class Conditionals {
 	public static void main(String[] args) {
         int a;

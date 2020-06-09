@@ -1,4 +1,4 @@
-import io.println(int);
+import static io.println(int);
 
 /*
  * This class serves to test the compiler's capabilites regarding array

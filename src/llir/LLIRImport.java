@@ -9,6 +9,8 @@ import java.util.List;
 public class LLIRImport extends LLIRExpression {
     public ImportDescriptor importDescriptor;
 
+    private String variableName;
+
     private boolean isIsolated;
 
     private List<LLIRExpression> parametersExpressions;
@@ -18,6 +20,7 @@ public class LLIRImport extends LLIRExpression {
         this.importDescriptor = importDescriptor;
         this.parametersExpressions = new ArrayList<>();
         this.isIsolated = false;
+        this.variableName = null;
     }
 
     /**
@@ -47,4 +50,11 @@ public class LLIRImport extends LLIRExpression {
         this.isIsolated = isolated;
     }
 
+    public void setVariableName(String name){
+        this.variableName = name;
+    }
+
+    public String getVariableName(){
+        return this.variableName;
+    }
 }
