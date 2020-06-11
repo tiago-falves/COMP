@@ -92,7 +92,9 @@ public class AssignmentWriter {
         LLIRExpression expression = assignment.getExpression();
         Type type = Type.INT;
 
-        if(expression instanceof LLIRInteger) {
+        if(expression instanceof LLIRThis){
+            this.code += "\taload_0\n";
+        } else if(expression instanceof LLIRInteger) {
             IntegerWriter integerWriter = new IntegerWriter((LLIRInteger) expression);
             this.code += integerWriter.getCode();
             type = Type.INT;

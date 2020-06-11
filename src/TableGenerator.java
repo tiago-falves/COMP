@@ -1181,6 +1181,10 @@ public class TableGenerator {
             case JavammTreeConstants.JJTPARENTHESESEXPRESSION: {
                 return inspectExpression(node, symbolsTable);
             }
+            case JavammTreeConstants.JJTTHIS: {
+                this.llirPopulator.addExpression(new LLIRThis());
+                return this.className;
+            }
             default: {
                 System.out.println("Warning: Unknown Argument Node ID: " + node.getId()); //Para detetar novos casos 
             }
