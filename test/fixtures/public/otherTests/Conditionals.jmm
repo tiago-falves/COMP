@@ -1,4 +1,4 @@
-import static ioa.println(int);
+import static io.println(int);
 class Conditionals {
 	public static void main(String[] args) {
         int a;
@@ -21,7 +21,7 @@ class Conditionals {
             j = i;
             while(j < newField.length){
                 j = j + 1;
-                ioa.println(j+i*j);
+                io.println(j+i*j);
             }
         }
 
@@ -30,16 +30,16 @@ class Conditionals {
         b = new Conditionals().add(1,1);
         
         if((b+1) < (a-1)){
-            ioa.println(1);
+            io.println(1);
             if(true && false){
                 // false
-                ioa.println(0-1);
+                io.println(0-1);
             }else{
-                ioa.println(2);
+                io.println(2);
                 if(true && !false){
-                    ioa.println(1+2);
+                    io.println(1+2);
                 }else{
-                    ioa.println(5);
+                    io.println(5);
                 }
             }
             a = 0-1;
@@ -48,7 +48,7 @@ class Conditionals {
             a = 4;
         }   
 
-        ioa.println(a);
+        io.println(a);
 	}
 
 	public int add(int a, int b){

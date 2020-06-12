@@ -1,4 +1,4 @@
-import static ioa.println(int);
+import static io.println(int);
 import Pair;
 import Pair(int);
 import Pair(int, int);
@@ -28,24 +28,24 @@ class ClassInstantiation {
         c3 = new ClassInstantiation();
         c3.setX(c3.add(1, 2));
 
-        ioa.println(c1.getX());
-        ioa.println(c2.getX());
-        ioa.println(c3.getX());
+        io.println(c1.getX());
+        io.println(c2.getX());
+        io.println(c3.getX());
 
         pair1 = new Pair();
         pair2 = new Pair(1);
         pair3 = new Pair(10, 2);
 
-        ioa.println(pair1.getX());
-        ioa.println(pair1.getY());
+        io.println(pair1.getX());
+        io.println(pair1.getY());
         pair1.printPair();
 
-        ioa.println(pair2.getX());
-        ioa.println(pair2.getY());
+        io.println(pair2.getX());
+        io.println(pair2.getY());
         pair2.printPair();
 
-        ioa.println(pair3.getX());
-        ioa.println(pair3.getY());
+        io.println(pair3.getX());
+        io.println(pair3.getY());
         pair3.printPair();
     }
 

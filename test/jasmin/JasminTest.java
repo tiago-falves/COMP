@@ -40,6 +40,31 @@ public class JasminTest {
 	@Test
     public void testWhileAndIF() {
 		JasminUtils.testJmm("fixtures/public/WhileAndIF.jmm", JasminUtils.getResource("fixtures/public/WhileAndIF.txt"));
-    }
+	}
+	
+	@Test
+	public void testArrays() {
+		JasminUtils.testJmm("fixtures/public/otherTests/Arrays.jmm", JasminUtils.getResource("fixtures/public/otherTests/Arrays.txt"));
+	}
+
+	@Test
+	public void testBlockStatementTest() {
+		JasminUtils.testJmm("fixtures/public/otherTests/BlockStatementTest.jmm", JasminUtils.getResource("fixtures/public/otherTests/BlockStatementTest.txt"));
+	}
+
+	@Test
+	public void testClassInstantiation() {
+		JasminUtils.testJmm("fixtures/public/otherTests/ClassInstantiation.jmm", JasminUtils.getResource("fixtures/public/otherTests/ClassInstantiation.txt"));
+	}
+
+	@Test
+	public void testConditionals() {
+		JasminUtils.testJmm("fixtures/public/otherTests/Conditionals.jmm", JasminUtils.getResource("fixtures/public/otherTests/Conditionals.txt"));
+	}
+
+	@Test
+	public void testOverload() {
+		JasminUtils.testJmm("fixtures/public/otherTests/Overload.jmm", JasminUtils.getResource("fixtures/public/otherTests/Overload.txt"));
+	}
 
 }
